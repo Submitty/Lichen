@@ -74,7 +74,6 @@ int main(int argc, char* argv[]) {
           tmp["type"]="string";
           tmp["value"]=token;
         }
-        tmp["value"]=token;
         tokens.push_back(tmp);
         token="";
         last_was_alpha = false;

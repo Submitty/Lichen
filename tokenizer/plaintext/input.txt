@@ -1,0 +1,6 @@
+    A Sample File
+
+This file contains 1 "sample of plaintext".  We
+can tokenize THIS.  a.b.c1d2e!
+Good-bye.
+

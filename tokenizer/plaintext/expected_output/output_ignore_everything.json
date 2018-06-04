@@ -1,0 +1,122 @@
+[
+    {
+        "char": 5,
+        "line": 1,
+        "type": "string",
+        "value": "a"
+    },
+    {
+        "char": 7,
+        "line": 1,
+        "type": "string",
+        "value": "sample"
+    },
+    {
+        "char": 14,
+        "line": 1,
+        "type": "string",
+        "value": "file"
+    },
+    {
+        "char": 1,
+        "line": 3,
+        "type": "string",
+        "value": "this"
+    },
+    {
+        "char": 6,
+        "line": 3,
+        "type": "string",
+        "value": "file"
+    },
+    {
+        "char": 11,
+        "line": 3,
+        "type": "string",
+        "value": "contains"
+    },
+    {
+        "char": 23,
+        "line": 3,
+        "type": "string",
+        "value": "sample"
+    },
+    {
+        "char": 30,
+        "line": 3,
+        "type": "string",
+        "value": "of"
+    },
+    {
+        "char": 33,
+        "line": 3,
+        "type": "string",
+        "value": "plaintext"
+    },
+    {
+        "char": 46,
+        "line": 3,
+        "type": "string",
+        "value": "we"
+    },
+    {
+        "char": 1,
+        "line": 4,
+        "type": "string",
+        "value": "can"
+    },
+    {
+        "char": 5,
+        "line": 4,
+        "type": "string",
+        "value": "tokenize"
+    },
+    {
+        "char": 14,
+        "line": 4,
+        "type": "string",
+        "value": "this"
+    },
+    {
+        "char": 21,
+        "line": 4,
+        "type": "string",
+        "value": "a"
+    },
+    {
+        "char": 23,
+        "line": 4,
+        "type": "string",
+        "value": "b"
+    },
+    {
+        "char": 25,
+        "line": 4,
+        "type": "string",
+        "value": "c"
+    },
+    {
+        "char": 27,
+        "line": 4,
+        "type": "string",
+        "value": "d"
+    },
+    {
+        "char": 29,
+        "line": 4,
+        "type": "string",
+        "value": "e"
+    },
+    {
+        "char": 1,
+        "line": 5,
+        "type": "string",
+        "value": "good"
+    },
+    {
+        "char": 6,
+        "line": 5,
+        "type": "string",
+        "value": "bye"
+    }
+]

@@ -38,10 +38,16 @@ mkdir -p ${lichen_installation_dir}/bin
 
 ########################################################################################################################
 # compile & install the tokenizers
-pushd ${lichen_repository_dir}
+
+pushd ${lichen_repository_dir}  > /dev/null
 clang++ -I ${nlohmann_dir}/include/ -std=c++11 -Wall tokenizer/plaintext/plaintext_tokenizer.cpp -o ${lichen_installation_dir}/bin/plaintext_tokenizer.out
 popd > /dev/null
 
+
+# compile & install the hash comparison tool
+pushd ${lichen_repository_dir}  > /dev/null
+clang++ -I ${nlohmann_dir}/include/ -lboost_system -lboost_filesystem -Wall -g -std=c++11 -Wall compare_hashes/compare_hashes.cpp -o ${lichen_installation_dir}/bin/compare_hashes.out
+popd > /dev/null
 
 
 ########################################################################################################################

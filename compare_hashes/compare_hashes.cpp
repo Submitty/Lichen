@@ -5,6 +5,7 @@
 #include <string>
 #include <cstdlib>
 #include <fstream>
+#include <set>
 
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
@@ -75,6 +76,9 @@ int main(int argc, char* argv[]) {
   }
 
 
+  std::map<std::string,std::set<int> > similarities;
+  
+
   // WALK OVER THE MAP OF HASHES
   for (specifics_map::iterator itr = hash_counts.begin(); itr != hash_counts.end(); itr++) {
     int count = itr->second.size();
@@ -82,16 +86,32 @@ int main(int argc, char* argv[]) {
 
     // IF SOMETHING IS IN MULTIPLE STUDENT FILES BUT NOT MOST OR ALL...
     if (count > 1 && count < 20) {
-      std::cout << itr->first << " " << count << " : ";
+      //std::cout << itr->first << " " << count << " : ";
                                                  
       const std::map<std::string,std::vector<Specific> > &has_this_hash = itr->second;
       for (std::map<std::string,std::vector<Specific> >::const_iterator itr2 = has_this_hash.begin();
            itr2 != has_this_hash.end(); itr2++) {
-        std::cout << " " << itr2->first;
+        //std::cout << " " << itr2->first;
+        std::string user = itr2->first;
+        for (int i = 0; i < itr2->second.size(); i++) {
+          similarities[itr2->first].insert(itr2->second[i].position);
+        }
       }
-      std::cout << std::endl;
+      //std::cout << std::endl;
     }
   }
+
+
+  for (std::map<std::string,std::set<int> >::iterator itr = similarities.begin();
+       itr != similarities.end(); itr++) {
+
+    std::cout << "similarities for " << itr->first << " " << itr->second.size() << ":";
+    for (std::set<int>::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
+      std::cout << " " << *itr2;
+    }
+    std::cout << std::endl;
+  }
+
   
   std::cout << "done" << std::endl;
   

@@ -43,7 +43,7 @@ def main():
 
     # ===========================================================================
     # create the directory
-    concatenated_dir=os.path.join(course_dir,"Lichen","concatenated",args.gradeable)
+    concatenated_dir=os.path.join(course_dir,"lichen","concatenated",args.gradeable)
     if not os.path.isdir(concatenated_dir):
          os.makedirs(concatenated_dir)
 

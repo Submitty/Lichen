@@ -35,7 +35,7 @@ def tokenize(args,my_concatenated_file,my_tokenized_file):
         tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin","plaintext_tokenizer.out")
         with open(my_concatenated_file,'r') as infile:
             with open (my_tokenized_file,'w')as outfile:
-                subprocess.call([tokenizer],stdin=infile,stdout=outfile)
+                subprocess.call([tokenizer,"--ignore_newlines"],stdin=infile,stdout=outfile)
     elif args.python:
         print("NEED A PYTHON TOKENIZER")
     elif args.cpp:
@@ -55,12 +55,12 @@ def main():
     if not os.path.isdir(course_dir):
         print("ERROR! ",course_dir," is not a valid course directory")
         exit(1)
-    concatenated_dir=os.path.join(course_dir,"Lichen","concatenated",args.gradeable)
+    concatenated_dir=os.path.join(course_dir,"lichen","concatenated",args.gradeable)
     if not os.path.isdir(concatenated_dir):
         print("ERROR! ",concatenated_dir," is not a valid gradeable concatenated directory")
         exit(1)
 
-    tokenized_dir=os.path.join(course_dir,"Lichen","tokenized",args.gradeable)
+    tokenized_dir=os.path.join(course_dir,"lichen","tokenized",args.gradeable)
 
     # ===========================================================================
     # walk the subdirectories

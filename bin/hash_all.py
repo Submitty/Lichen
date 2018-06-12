@@ -11,6 +11,7 @@ import json
 import subprocess
 import sys
 import json
+import hashlib
 
 
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'config')
@@ -57,9 +58,14 @@ def hasher(args,my_tokenized_file,my_hashes_file):
                     print("NEED A C++ HASHER")
                 else:
                     print("UNKNOWN HASHER")
-                h = hash(foo) % args.hash_size
-                my_hf.write(str(h)+"\n")
-                
+                hash_object = hashlib.md5(foo.encode())
+                hash_object_string=hash_object.hexdigest()
+                hash_object_string_truncated=hash_object_string[0:4]
+                #my_hf.write(hash_object_string+"\n")
+                my_hf.write(hash_object_string_truncated+"\n")
+
+                #if "smith" in foo:
+                #    print ("foo ", i, foo, "   ",  hash_object_string_truncated)
 
 def main():
     args = parse_args()
@@ -73,12 +79,12 @@ def main():
     if not os.path.isdir(course_dir):
         print("ERROR! ",course_dir," is not a valid course directory")
         exit(1)
-    tokenized_dir=os.path.join(course_dir,"Lichen","tokenized",args.gradeable) 
+    tokenized_dir=os.path.join(course_dir,"lichen","tokenized",args.gradeable) 
     if not os.path.isdir(tokenized_dir):
         print("ERROR! ",tokenized_dir," is not a valid gradeable tokenized directory")
         exit(1)
 
-    hashes_dir=os.path.join(course_dir,"Lichen","hashes",args.gradeable)
+    hashes_dir=os.path.join(course_dir,"lichen","hashes",args.gradeable)
 
     # ===========================================================================
     # walk the subdirectories

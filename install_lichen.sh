@@ -18,7 +18,7 @@ fi
 lichen_repository_dir=$1
 lichen_installation_dir=$2
 
-echo -e "HERE IN INSTALL LICHEN " $lichen_repository_dir $lichen_installation_dir
+echo -e "Installing lichen... "
 
 nlohmann_dir=${lichen_repository_dir}../vendor/nlohmann/json/
 
@@ -30,10 +30,7 @@ if [ ! -d "${nlohmann_dir}" ]; then
     git clone --depth 1 https://github.com/nlohmann/json.git ${nlohmann_dir}
 fi
 
-
-
 mkdir -p ${lichen_installation_dir}/bin
-
 
 
 ########################################################################################################################
@@ -41,12 +38,20 @@ mkdir -p ${lichen_installation_dir}/bin
 
 pushd ${lichen_repository_dir}  > /dev/null
 clang++ -I ${nlohmann_dir}/include/ -std=c++11 -Wall tokenizer/plaintext/plaintext_tokenizer.cpp -o ${lichen_installation_dir}/bin/plaintext_tokenizer.out
+if [ $? -ne 0 ]; then
+    echo -e "ERROR: FAILED TO BUILD PLAINTEXT TOKENIZER\n"
+    exit 1
+fi
 popd > /dev/null
 
 
 # compile & install the hash comparison tool
 pushd ${lichen_repository_dir}  > /dev/null
 clang++ -I ${nlohmann_dir}/include/ -lboost_system -lboost_filesystem -Wall -g -std=c++11 -Wall compare_hashes/compare_hashes.cpp -o ${lichen_installation_dir}/bin/compare_hashes.out
+if [ $? -ne 0 ]; then
+    echo -e "ERROR: FAILED TO BUILD HASH COMPARISON TOOL\n"
+    exit 1
+fi
 popd > /dev/null
 
 
@@ -62,7 +67,7 @@ chmod 755 ${lichen_installation_dir}
 chmod 755 ${lichen_installation_dir}/bin
 chmod 755 ${lichen_installation_dir}/bin/*
 
-
+echo "done"
 
 
 #${bin_location}/plaintext_tokenizer.out                                                                    < tokenizer/plaintext/input.txt > output.json

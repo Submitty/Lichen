@@ -70,20 +70,21 @@ def main():
                 my_cf.write("USER: "+user+"\n")
                 my_cf.write("VERSION: "+version+"\n")
                 # loop over all files in all subdirectories
-                for root,dirs,files in os.walk(os.path.join(submission_dir,user,version)):
-                    for f in sorted(files):
+                base_path = os.path.join(submission_dir,user,version)
+                for my_dir,dirs,my_files in os.walk(base_path):
+                    for my_file in sorted(my_files):
                         # skip the timestep
-                        if f == ".submit.timestamp":
+                        if my_file == ".submit.timestamp":
                             continue
                         # TODO: skip files that should be ignored
-                        relative_path=os.path.join(*dirs,f)
-                        absolute_path=os.path.join(root,*dirs,f)
+                        absolute_path=os.path.join(my_dir,my_file)
+                        relative_path=absolute_path[len(base_path):]
                         # print a separator & filename
                         my_cf.write("----------------------------------------------------\n")
                         my_cf.write("FILE: "+relative_path+"\n\n")
                         with open(absolute_path) as tmp:
                             # append the contents of the file
-                            my_cf.write(tmp.read())
+                            my_cf.write(tmp.read()+"\n")
 
     print ("done")
                             

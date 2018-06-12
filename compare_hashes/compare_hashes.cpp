@@ -26,13 +26,15 @@ public:
   std::string version;
 };
 
+// to allow sorting
 bool operator<(const Submission &a, const Submission &b) {
   return a.username < b.username ||
                       (a.username == b.username && a.version < b.version);
 }
 
-// A sequence is represented by the start location within in a
-// specific concatenated file.
+
+// A sequence is represented by the start location (integer index of
+// the token) within in a specific concatenated file (the Submission).
 class Sequence {
 public:
   Sequence(std::string u, std::string v, int p) : submission(u,v),position(p) {}
@@ -44,14 +46,18 @@ public:
 // ===================================================================================
 // helper typedefs
 
+
 // common sequence hash -> ( each user -> all match locations by that user across all versions )
 typedef std::map<std::string,std::map<std::string,std::vector<Sequence> > > hashed_sequences;
 
 
 
+// ===================================================================================
+// helper functions
 
 
-
+// Orders all Submissions by percentage of tokens in that match tokens
+// in a small number of other files (but not most or all).
 bool ranking_sorter(const std::pair<Submission,float> &a, const std::pair<Submission,float> &b) {
   return
     a.second > b.second ||
@@ -60,25 +66,27 @@ bool ranking_sorter(const std::pair<Submission,float> &a, const std::pair<Submis
 }
 
 
-
+// ===================================================================================
 // ===================================================================================
 int main(int argc, char* argv[]) {
 
   std::cout << "COMPARE HASHES...";
   fflush(stdout);
 
+
+  // -------------------------------------------
+  // deal with command line arguments
   assert (argc == 4);
 
-
   std::map<Submission,int> submission_length;
-
   
   std::string semester = argv[1];
   std::string course = argv[2];
   std::string gradeable = argv[3];
 
+
+  // error checking, confirm there are hashes to work with
   std::string tmp = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/hashes/"+gradeable;
-  
   boost::filesystem::path hashes_root_directory = boost::filesystem::system_complete(tmp);
   if (!boost::filesystem::exists(hashes_root_directory) ||
       !boost::filesystem::is_directory(hashes_root_directory)) {
@@ -86,7 +94,7 @@ int main(int argc, char* argv[]) {
     exit(0);
   }
 
-
+  
   hashed_sequences hash_counts;
 
   

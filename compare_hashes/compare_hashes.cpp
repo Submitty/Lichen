@@ -74,12 +74,9 @@ int main(int argc, char* argv[]) {
   fflush(stdout);
 
 
-  // -------------------------------------------
+  // ---------------------------------------------------------------------------
   // deal with command line arguments
   assert (argc == 4);
-
-  std::map<Submission,int> submission_length;
-  
   std::string semester = argv[1];
   std::string course = argv[2];
   std::string gradeable = argv[3];
@@ -94,30 +91,31 @@ int main(int argc, char* argv[]) {
     exit(0);
   }
 
-  
+
+  // store the total size (# of tokens) in each submission
+  std::map<Submission,int> submission_length;
+
+
+  // ---------------------------------------------------------------------------
+  // loop over all submissions and populate the hash_counts structure
+
+  // the main data structure that looks for matches between submissions
   hashed_sequences hash_counts;
 
-  
-  // label the parts of the file that are common to many
-  // user,version -> vector<position>
-  std::map<Submission,int> all_counts;
-    
-  // LOOP OVER THE USERNAMES
+  // loop over all users
   boost::filesystem::directory_iterator end_iter;
   for (boost::filesystem::directory_iterator dir_itr( hashes_root_directory ); dir_itr != end_iter; ++dir_itr) {
     boost::filesystem::path username_path = dir_itr->path();
     assert (is_directory(username_path));
     std::string username = dir_itr->path().filename().string();
-
-    // LOOP OVER THE SUBMISSION VERSIONS
+    // loop over all versions
     for (boost::filesystem::directory_iterator username_itr( username_path ); username_itr != end_iter; ++username_itr) {
       boost::filesystem::path version_path = username_itr->path();
       assert (is_directory(version_path));
       std::string version = username_itr->path().filename().string();
-
+      // load the hashes sequences from this submission
       boost::filesystem::path hash_file = version_path;
       hash_file /= "hashes.txt";
-
       std::ifstream istr(hash_file.string());
       std::string tmp;
       int count = 0;
@@ -125,10 +123,11 @@ int main(int argc, char* argv[]) {
         count++;
         hash_counts[tmp][username].push_back(Sequence(username,version,count));
       }
-      all_counts[Submission(username,version)]=count;
+      submission_length[Submission(username,version)]=count;
     }    
   }
 
+  // ---------------------------------------------------------------------------
 
   // label the parts of the file that are common to many
   // user,version -> vector<position>
@@ -141,20 +140,23 @@ int main(int argc, char* argv[]) {
   // document the suspicious parts of this file,
   // user,version -> ( position -> ( other user,version -> std::vector<Sequence> ) )
   std::map<Submission,std::map<int,std::map<Submission, std::vector<Sequence> > > > suspicious;
-  
 
-  // WALK OVER THE MAP OF HASHES
+
+  // ---------------------------------------------------------------------------
+  // walk over the structure containing all of the hashes identifying
+  // common to many/all, provided code, suspicious matches, and unique code
   for (hashed_sequences::iterator itr = hash_counts.begin(); itr != hash_counts.end(); itr++) {
     int count = itr->second.size();
 
-    // IF SOMETHING IS USED BY MULTIPLE STUDENTS (BUT NOT MOST OR ALL)
     if (count >= 20) {
+      // common to many/all
       for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
         for (int i = 0; i < itr2->second.size(); i++) {
           common[itr2->second[i].submission].push_back(itr2->second[i].position);
         }
       }
     } else if (count > 1 && count < 20) {
+      // suspicious matches
       for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
         std::string username = itr2->first;
         for (int i = 0; i < itr2->second.size(); i++) {
@@ -180,21 +182,23 @@ int main(int argc, char* argv[]) {
   }
 
 
+  // ---------------------------------------------------------------------------
+  // prepare a sorted list of all users sorted by match percent
   std::vector<std::pair<Submission,float> > ranking;
-
   for (std::map<Submission,std::map<int,std::map<Submission,std::vector<Sequence> > > >::iterator itr = suspicious.begin();
        itr != suspicious.end(); itr++) {
-    int total = all_counts[itr->first];
+    int total = submission_length[itr->first];
     int overlap = itr->second.size();
     float percent = float(overlap)/float(total);
 
     std::vector<nlohmann::json> info;
-      
+
     std::string username = itr->first.username;
     std::string version = itr->first.version;
-    //std::cout << "suspicious for " << username << " " << version << " " << itr->second.size() << " " << percent << ":";
 
     ranking.push_back(std::make_pair(itr->first,percent));
+
+    // prepare the ranges of suspicious matching tokens
     int range_start=-1;
     int range_end=-1;
     for (std::map<int,std::map<Submission,std::vector<Sequence> > >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
@@ -209,7 +213,6 @@ int main(int argc, char* argv[]) {
         info_data["end"]=std::to_string(range_end);
         info_data["type"]=std::string("match");
         info.push_back(info_data);
-        //std::cout << " " << range_start << "-" << range_end;
         range_start=range_end=-1;
       }
     }
@@ -219,12 +222,10 @@ int main(int argc, char* argv[]) {
       info_data["end"]=std::to_string(range_end);
       info_data["type"]=std::string("match");
       info.push_back(info_data);
-      //std::cout << " " << range_start << "-" << range_end;
       range_start=range_end=-1;
     }
-    //std::cout << std::endl;
 
-
+    // save the file with matches per user
     nlohmann::json match_data = info;
     std::string matches_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/matches/"+gradeable+"/"+username+"/"+version;
     boost::filesystem::create_directories(matches_dir);
@@ -234,8 +235,7 @@ int main(int argc, char* argv[]) {
     ostr << match_data.dump(4) << std::endl;
   }
 
-  
-
+  // save the rankings to a file
   std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/";
   std::string ranking_file = ranking_dir+gradeable+".txt";
   boost::filesystem::create_directories(ranking_dir);
@@ -249,5 +249,6 @@ int main(int argc, char* argv[]) {
   }
 
   
+  // ---------------------------------------------------------------------------
   std::cout << "done" << std::endl;
 }

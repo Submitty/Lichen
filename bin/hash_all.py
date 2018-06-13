@@ -60,12 +60,11 @@ def hasher(args,my_tokenized_file,my_hashes_file):
                     print("UNKNOWN HASHER")
                 hash_object = hashlib.md5(foo.encode())
                 hash_object_string=hash_object.hexdigest()
+                #FIXME: this truncation should be adjusted after more full-scale testing
                 hash_object_string_truncated=hash_object_string[0:4]
                 #my_hf.write(hash_object_string+"\n")
                 my_hf.write(hash_object_string_truncated+"\n")
 
-                #if "smith" in foo:
-                #    print ("foo ", i, foo, "   ",  hash_object_string_truncated)
 
 def main():
     args = parse_args()

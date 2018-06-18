@@ -201,11 +201,13 @@ int main(int argc, char* argv[]) {
     // prepare the ranges of suspicious matching tokens
     int range_start=-1;
     int range_end=-1;
-    for (std::map<int,std::map<Submission,std::vector<Sequence> > >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
-      int pos = itr2->first;
-      if (range_start==-1) {
+    //for (std::map<int,std::map<Submission,std::vector<Sequence> > >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
+    std::map<int,std::map<Submission,std::vector<Sequence> > >::iterator itr2 = itr->second.begin();
+    while (true) {
+      int pos = (itr2 == itr->second.end()) ? -1 : itr2->first;
+      if (pos != -1 && range_start==-1) {
         range_start = range_end = pos;
-      } else if (range_end+1 == pos) {
+      } else if (pos != 01 && range_end+1 == pos) {
         range_end = pos;
       } else {
         std::map<std::string,std::string> info_data;
@@ -215,6 +217,15 @@ int main(int argc, char* argv[]) {
         info.push_back(info_data);
         range_start=range_end=-1;
       }
+      if (itr2 == itr->second.end()) {
+        break;
+      }
+      itr2++;
+    }
+
+    
+      = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
+
     }
     if (range_start != -1) {
       std::map<std::string,std::string> info_data;
@@ -225,6 +236,7 @@ int main(int argc, char* argv[]) {
       range_start=range_end=-1;
     }
 
+    
     // save the file with matches per user
     nlohmann::json match_data = info;
     std::string matches_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/matches/"+gradeable+"/"+username+"/"+version;

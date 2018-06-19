@@ -27,10 +27,13 @@ fi
 
 
 ########################################################################################################################
-# compile & install the tokenizers
+# compile & install the tools
 
 mkdir -p ${lichen_installation_dir}/bin
 
+
+#--------------------
+# plaintext tool
 pushd ${lichen_repository_dir}  > /dev/null
 clang++ -I ${nlohmann_dir}/include/ -std=c++11 -Wall tokenizer/plaintext/plaintext_tokenizer.cpp -o ${lichen_installation_dir}/bin/plaintext_tokenizer.out
 if [ $? -ne 0 ]; then
@@ -40,6 +43,7 @@ fi
 popd > /dev/null
 
 
+#-------------------------------------------
 # compile & install the hash comparison tool
 pushd ${lichen_repository_dir}  > /dev/null
 clang++ -I ${nlohmann_dir}/include/ -lboost_system -lboost_filesystem -Wall -g -std=c++11 -Wall compare_hashes/compare_hashes.cpp -o ${lichen_installation_dir}/bin/compare_hashes.out
@@ -53,6 +57,9 @@ popd > /dev/null
 ########################################################################################################################
 
 cp ${lichen_repository_dir}/bin/* ${lichen_installation_dir}/bin/
+
+cp ${lichen_repository_dir}/tokenizer/c/c_tokenizer.py ${lichen_installation_dir}/bin/c_tokenizer.py
+cp ${lichen_repository_dir}/tokenizer/python/python_tokenizer.py ${lichen_installation_dir}/bin/python_tokenizer.py
 
 
 ########################################################################################################################

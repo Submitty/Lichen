@@ -18,5 +18,8 @@ for token in parsed_data.get_tokens(extent = parsed_data.cursor.extent):
 	tmp["value"]=str(token.spelling)
 	tokens.append(tmp)
 
-with open("output.json", "w") as f:
-    json.dump(tokens, f, indent = 4, sort_keys = True)
+#with open("output.json", "w") as f:
+#json.dump(tokens, f, indent = 4, sort_keys = True)
+
+print ("here")
+print ( json.dumps(tokens, indent=4, sort_keys=True) )

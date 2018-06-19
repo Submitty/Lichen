@@ -21,9 +21,9 @@
 // for a user.
 class Submission {
 public:
-  Submission(std::string u, std::string v) : username(u),version(v) {}
+  Submission(std::string u, int v) : username(u),version(v) {}
   std::string username;
-  std::string version;
+  int version;
 };
 
 // to allow sorting
@@ -37,7 +37,7 @@ bool operator<(const Submission &a, const Submission &b) {
 // the token) within in a specific concatenated file (the Submission).
 class Sequence {
 public:
-  Sequence(std::string username, std::string version, int p) : submission(username,version),position(p) {}
+  Sequence(std::string username, int version, int p) : submission(username,version),position(p) {}
   Submission submission;
   int position;
 };
@@ -89,10 +89,8 @@ void convert(std::map<Submission,std::set<int> > &myset, nlohmann::json &obj) {
     int start = -1;
     int end = -1;
     std::set<int>::iterator itr2 = itr->second.begin();
-    std::cout << " -----------" << std::endl;
     while (true) {
       int pos = (itr2 == itr->second.end()) ? -1 : *itr2;
-      std::cout << "thing " << start << " " << end << " " << pos << std::endl;
       if (pos != -1 && start == -1) {
         start = end = pos;
       } else if (pos != -1 && end+1 == pos) {
@@ -163,7 +161,9 @@ int main(int argc, char* argv[]) {
     for (boost::filesystem::directory_iterator username_itr( username_path ); username_itr != end_iter; ++username_itr) {
       boost::filesystem::path version_path = username_itr->path();
       assert (is_directory(version_path));
-      std::string version = username_itr->path().filename().string();
+      std::string str_version = username_itr->path().filename().string();
+      int version = std::stoi(str_version);
+      assert (version > 0);
       // load the hashes sequences from this submission
       boost::filesystem::path hash_file = version_path;
       hash_file /= "hashes.txt";
@@ -212,7 +212,7 @@ int main(int argc, char* argv[]) {
         std::string username = itr2->first;
         for (int i = 0; i < itr2->second.size(); i++) {
           assert (itr2->second[i].submission.username == username);
-          std::string version = itr2->second[i].submission.version;
+          int version = itr2->second[i].submission.version;
           int position = itr2->second[i].position;
 
           std::map<Submission, std::vector<Sequence> > matches;
@@ -220,7 +220,7 @@ int main(int argc, char* argv[]) {
           for (std::map<std::string,std::vector<Sequence> >::iterator itr3 = itr->second.begin(); itr3 != itr->second.end(); itr3++) {
             std::string match_username = itr3->first;
             for (int j = 0; j < itr3->second.size(); j++) {
-              std::string match_version = itr3->second[j].submission.version;
+              int match_version = itr3->second[j].submission.version;
               Submission ms(match_username,match_version);
               matches[ms].push_back(itr3->second[j]);
             }
@@ -246,7 +246,7 @@ int main(int argc, char* argv[]) {
     std::vector<nlohmann::json> info;
 
     std::string username = itr->first.username;
-    std::string version = itr->first.version;
+    int version = itr->first.version;
 
     ranking.push_back(std::make_pair(itr->first,percent));
 
@@ -265,8 +265,8 @@ int main(int argc, char* argv[]) {
         insert_others(others,itr2->second);
       } else if (range_start != -1) {
         std::map<std::string,nlohmann::json> info_data;
-        info_data["start"]=nlohmann::json(std::to_string(range_start));
-        info_data["end"]=nlohmann::json(std::to_string(range_end));
+        info_data["start"]=nlohmann::json(range_start);
+        info_data["end"]=nlohmann::json(range_end);
         info_data["type"]=nlohmann::json(std::string("match"));
         nlohmann::json obj;
         convert(others,obj);
@@ -293,18 +293,18 @@ int main(int argc, char* argv[]) {
         } else if (range_end+1 == *itr4) {
           range_end = *itr4;
         } else {
-          std::map<std::string,std::string> info_data;
-          info_data["start"]=std::to_string(range_start);
-          info_data["end"]=std::to_string(range_end);
+          std::map<std::string,nlohmann::json> info_data;
+          info_data["start"]=nlohmann::json(range_start);
+          info_data["end"]=nlohmann::json(range_end);
           info_data["type"]=std::string("common");
           info.push_back(info_data);
           range_start = range_end = -1;
         }
       }
       if (range_start != -1) {
-        std::map<std::string,std::string> info_data;
-        info_data["start"]=std::to_string(range_start);
-        info_data["end"]=std::to_string(range_end);
+        std::map<std::string,nlohmann::json> info_data;
+        info_data["start"]=nlohmann::json(range_start);
+        info_data["end"]=nlohmann::json(range_end);
         info_data["type"]=std::string("common");
         info.push_back(info_data);
         range_start=range_end=-1;
@@ -313,7 +313,7 @@ int main(int argc, char* argv[]) {
 
     // save the file with matches per user
     nlohmann::json match_data = info;
-    std::string matches_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/matches/"+gradeable+"/"+username+"/"+version;
+    std::string matches_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/matches/"+gradeable+"/"+username+"/"+std::to_string(version);
     boost::filesystem::create_directories(matches_dir);
     std::string matches_file = matches_dir+"/matches.json";
     std::ofstream ostr(matches_file);

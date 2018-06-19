@@ -37,7 +37,7 @@ bool operator<(const Submission &a, const Submission &b) {
 // the token) within in a specific concatenated file (the Submission).
 class Sequence {
 public:
-  Sequence(std::string u, std::string v, int p) : submission(u,v),position(p) {}
+  Sequence(std::string username, std::string version, int p) : submission(username,version),position(p) {}
   Submission submission;
   int position;
 };
@@ -47,7 +47,7 @@ public:
 // helper typedefs
 
 
-// common sequence hash -> ( each user -> all match locations by that user across all versions )
+// matching sequence hash -> ( each user -> all match locations by that user across all versions )
 typedef std::map<std::string,std::map<std::string,std::vector<Sequence> > > hashed_sequences;
 
 
@@ -68,6 +68,55 @@ bool ranking_sorter(const std::pair<Submission,float> &a, const std::pair<Submis
 
 // ===================================================================================
 // ===================================================================================
+void insert_others(std::map<Submission,std::set<int> > &others,
+                   const std::map<Submission,std::vector<Sequence> > &matches) {
+  for (std::map<Submission,std::vector<Sequence> >::const_iterator itr = matches.begin(); itr!=matches.end();itr++) {
+    //std::set<int> foo;
+    for (int i = 0; i < itr->second.size(); i++) {
+      others[itr->first].insert(itr->second[i].position);
+    }
+    //.insert(std::make_pair(itr->first,foo));
+  }
+}
+
+void convert(std::map<Submission,std::set<int> > &myset, nlohmann::json &obj) {
+  for (std::map<Submission,std::set<int> >::iterator itr = myset.begin(); itr != myset.end(); itr++) {
+    nlohmann::json me;
+    me["username"] = itr->first.username;
+    me["version"] = itr->first.version;
+
+    std::vector<nlohmann::json> foo;
+    int start = -1;
+    int end = -1;
+    std::set<int>::iterator itr2 = itr->second.begin();
+    std::cout << " -----------" << std::endl;
+    while (true) {
+      int pos = (itr2 == itr->second.end()) ? -1 : *itr2;
+      std::cout << "thing " << start << " " << end << " " << pos << std::endl;
+      if (pos != -1 && start == -1) {
+        start = end = pos;
+      } else if (pos != -1 && end+1 == pos) {
+        end = pos;
+      } else if (start != -1) {
+        nlohmann::json range;
+        range["start"] = start;
+        range["end"] = end;
+        start=end=-1;
+        foo.push_back(range);
+      }
+      if (itr2 == itr->second.end()) {
+        break;
+      }
+      itr2++;
+    }
+
+    me["matchingpositions"] = foo;
+    obj.push_back(me);
+  }
+}
+
+// ===================================================================================
+// ===================================================================================
 int main(int argc, char* argv[]) {
 
   std::cout << "COMPARE HASHES...";
@@ -76,11 +125,13 @@ int main(int argc, char* argv[]) {
 
   // ---------------------------------------------------------------------------
   // deal with command line arguments
-  assert (argc == 4);
+  assert (argc == 6);
   std::string semester = argv[1];
   std::string course = argv[2];
   std::string gradeable = argv[3];
-
+  assert (argv[4] == std::string("--window"));
+  int window = std::stoi(std::string(argv[5]));
+  assert (window >= 1);
 
   // error checking, confirm there are hashes to work with
   std::string tmp = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/hashes/"+gradeable;
@@ -131,7 +182,7 @@ int main(int argc, char* argv[]) {
 
   // label the parts of the file that are common to many
   // user,version -> vector<position>
-  std::map<Submission,std::vector<int> > common;
+  std::map<Submission,std::set<int> > common;
 
   // label the parts of the file that match the provided code
   // user,version -> vector<position>
@@ -152,7 +203,7 @@ int main(int argc, char* argv[]) {
       // common to many/all
       for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
         for (int i = 0; i < itr2->second.size(); i++) {
-          common[itr2->second[i].submission].push_back(itr2->second[i].position);
+          common[itr2->second[i].submission].insert(itr2->second[i].position);
         }
       }
     } else if (count > 1 && count < 20) {
@@ -185,6 +236,7 @@ int main(int argc, char* argv[]) {
   // ---------------------------------------------------------------------------
   // prepare a sorted list of all users sorted by match percent
   std::vector<std::pair<Submission,float> > ranking;
+    
   for (std::map<Submission,std::map<int,std::map<Submission,std::vector<Sequence> > > >::iterator itr = suspicious.begin();
        itr != suspicious.end(); itr++) {
     int total = submission_length[itr->first];
@@ -201,21 +253,27 @@ int main(int argc, char* argv[]) {
     // prepare the ranges of suspicious matching tokens
     int range_start=-1;
     int range_end=-1;
-    //for (std::map<int,std::map<Submission,std::vector<Sequence> > >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
+    std::map<Submission, std::set<int> > others;
     std::map<int,std::map<Submission,std::vector<Sequence> > >::iterator itr2 = itr->second.begin();
     while (true) {
-      int pos = (itr2 == itr->second.end()) ? -1 : itr2->first;
+      int pos = (itr2 == itr->second.end()) ? -1 : itr2->first;      
       if (pos != -1 && range_start==-1) {
         range_start = range_end = pos;
-      } else if (pos != 01 && range_end+1 == pos) {
+        insert_others(others,itr2->second);
+      } else if (pos != -1 && range_end+1 == pos) {
         range_end = pos;
-      } else {
-        std::map<std::string,std::string> info_data;
-        info_data["start"]=std::to_string(range_start);
-        info_data["end"]=std::to_string(range_end);
-        info_data["type"]=std::string("match");
+        insert_others(others,itr2->second);
+      } else if (range_start != -1) {
+        std::map<std::string,nlohmann::json> info_data;
+        info_data["start"]=nlohmann::json(std::to_string(range_start));
+        info_data["end"]=nlohmann::json(std::to_string(range_end));
+        info_data["type"]=nlohmann::json(std::string("match"));
+        nlohmann::json obj;
+        convert(others,obj);
+        info_data["others"]=obj;
         info.push_back(info_data);
         range_start=range_end=-1;
+        others.clear();
       }
       if (itr2 == itr->second.end()) {
         break;
@@ -223,20 +281,36 @@ int main(int argc, char* argv[]) {
       itr2++;
     }
 
-    
-      = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
-
+    std::map<Submission,std::set<int> >::iterator itr3 = common.find(itr->first);
+    if (itr3 != common.end()) {
+      //std::cout << "HAS COMMON CODE" << std::endl;
+      int range_start=-1;
+      int range_end=-1;
+      for (std::set<int>::iterator itr4 = itr3->second.begin(); itr4 != itr3->second.end(); itr4++) {
+        //std::cout << "v=" << *itr4 << std::endl;
+        if (range_start == -1) {
+          range_start = range_end = *itr4;
+        } else if (range_end+1 == *itr4) {
+          range_end = *itr4;
+        } else {
+          std::map<std::string,std::string> info_data;
+          info_data["start"]=std::to_string(range_start);
+          info_data["end"]=std::to_string(range_end);
+          info_data["type"]=std::string("common");
+          info.push_back(info_data);
+          range_start = range_end = -1;
+        }
+      }
+      if (range_start != -1) {
+        std::map<std::string,std::string> info_data;
+        info_data["start"]=std::to_string(range_start);
+        info_data["end"]=std::to_string(range_end);
+        info_data["type"]=std::string("common");
+        info.push_back(info_data);
+        range_start=range_end=-1;
+      }
     }
-    if (range_start != -1) {
-      std::map<std::string,std::string> info_data;
-      info_data["start"]=std::to_string(range_start);
-      info_data["end"]=std::to_string(range_end);
-      info_data["type"]=std::string("match");
-      info.push_back(info_data);
-      range_start=range_end=-1;
-    }
 
-    
     // save the file with matches per user
     nlohmann::json match_data = info;
     std::string matches_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/matches/"+gradeable+"/"+username+"/"+version;
@@ -247,6 +321,8 @@ int main(int argc, char* argv[]) {
     ostr << match_data.dump(4) << std::endl;
   }
 
+  std::set<std::string> users_already_ranked;
+  
   // save the rankings to a file
   std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/";
   std::string ranking_file = ranking_dir+gradeable+".txt";
@@ -254,10 +330,15 @@ int main(int argc, char* argv[]) {
   std::ofstream ranking_ostr(ranking_file);
   std::sort(ranking.begin(),ranking.end(),ranking_sorter);
   for (int i = 0; i < ranking.size(); i++) {
-    ranking_ostr
-      << std::setw(6) << std::setprecision(2) << std::fixed << 100.0*ranking[i].second << "%   "
-      << std::setw(15) << std::left << ranking[i].first.username << " "
-      << std::setw(3) << std::right << ranking[i].first.version << std::endl;
+    std::string username = ranking[i].first.username;
+    if (users_already_ranked.insert(username).second != false) {
+      // print each username at most once, only if insert was
+      // successful (not already in the set)
+      ranking_ostr
+        << std::setw(6) << std::setprecision(2) << std::fixed << 100.0*ranking[i].second << "%   "
+        << std::setw(15) << std::left << ranking[i].first.username << " "
+        << std::setw(3) << std::right << ranking[i].first.version << std::endl;
+    }
   }
 
   

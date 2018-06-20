@@ -36,35 +36,25 @@ def tokenize(args,my_concatenated_file,my_tokenized_file):
         with open(my_concatenated_file,'r') as infile:
             with open (my_tokenized_file,'w') as outfile:
                 subprocess.call([tokenizer,"--ignore_newlines"],stdin=infile,stdout=outfile)
+
     elif args.python:
-        
         tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin","python_tokenizer.py")
         with open(my_concatenated_file,'r') as infile:
             with open (my_tokenized_file,'w') as outfile:
+                command="python3 "+str(tokenizer)+" "+my_concatenated_file+" > "+my_tokenized_file
+                os.system(command)
 
-                print ("here")
-                command="python "+str(tokenizer)+" < "+my_concatenated_file+" > "+my_tokenized_file
-                print ("command ", command)
-                exit(1)
-                #os.system(command)
-                #"python "subprocess.call(["python",tokenizer],stdin=infile,stdout=outfile)
-        
-        print("\n\nERROR: NEED A PYTHON TOKENIZER\n\n")
-        exit(1)
     elif args.cpp:
-
         tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin","c_tokenizer.py")
         with open(my_concatenated_file,'r') as infile:
             with open (my_tokenized_file,'w') as outfile:
-                print ("here")
-                command="python "+str(tokenizer)+" < "+my_concatenated_file+" > "+my_tokenized_file
-                print ("command ", command)
-                #os.system(command)
-                #"python "subprocess.call(["python",tokenizer],stdin=infile,stdout=outfile)
+                command="python "+str(tokenizer)+" "+my_concatenated_file+" > "+my_tokenized_file
+                os.system(command)
 
     else:
         print("\n\nERROR: UNKNOWN TOKENIZER\n\n")
         exit(1)
+
 
 def main():
     args = parse_args()

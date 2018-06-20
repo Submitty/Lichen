@@ -52,12 +52,19 @@ def hasher(args,my_tokenized_file,my_hashes_file):
                 if args.plaintext:
                     for j in range(0,args.window):
                         foo+=str(tokens[i+j].get("value"))
+
                 elif args.python:
-                    print("NEED A PYTHON HASHER")
+                    for j in range(0,args.window):
+                        foo+=str(tokens[i+j].get("type"))
+
                 elif args.cpp:
-                    print("NEED A C++ HASHER")
+                    for j in range(0,args.window):
+                        foo+=str(tokens[i+j].get("type"))
+
                 else:
-                    print("UNKNOWN HASHER")
+                    print("\n\nERROR: UNKNOWN HASHER\n\n")
+                    exit(1)
+
                 hash_object = hashlib.md5(foo.encode())
                 hash_object_string=hash_object.hexdigest()
                 #FIXME: this truncation should be adjusted after more full-scale testing

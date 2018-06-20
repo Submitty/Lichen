@@ -68,14 +68,16 @@ bool ranking_sorter(const std::pair<Submission,float> &a, const std::pair<Submis
 
 // ===================================================================================
 // ===================================================================================
-void insert_others(std::map<Submission,std::set<int> > &others,
+void insert_others(const std::string &this_username,
+                   std::map<Submission,std::set<int> > &others,
                    const std::map<Submission,std::vector<Sequence> > &matches) {
   for (std::map<Submission,std::vector<Sequence> >::const_iterator itr = matches.begin(); itr!=matches.end();itr++) {
-    //std::set<int> foo;
     for (int i = 0; i < itr->second.size(); i++) {
+      // don't include matches to this username
+      if (this_username == itr->first.username)
+        continue;
       others[itr->first].insert(itr->second[i].position);
     }
-    //.insert(std::make_pair(itr->first,foo));
   }
 }
 
@@ -259,10 +261,10 @@ int main(int argc, char* argv[]) {
       int pos = (itr2 == itr->second.end()) ? -1 : itr2->first;      
       if (pos != -1 && range_start==-1) {
         range_start = range_end = pos;
-        insert_others(others,itr2->second);
+        insert_others(username,others,itr2->second);
       } else if (pos != -1 && range_end+1 == pos) {
         range_end = pos;
-        insert_others(others,itr2->second);
+        insert_others(username,others,itr2->second);
       } else if (range_start != -1) {
         std::map<std::string,nlohmann::json> info_data;
         info_data["start"]=nlohmann::json(range_start);

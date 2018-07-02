@@ -1,6 +1,5 @@
 import parso
-from parso.python.tokenize import tokenize
-from parso.python import token 
+from parso.python.tokenize import tokenize 
 import json
 import sys 
 

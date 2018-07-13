@@ -1,0 +1,482 @@
+[
+    {
+        "char": 1,
+        "line": 1,
+        "type": "PUBLIC",
+        "value": "public"
+    },
+    {
+        "char": 8,
+        "line": 1,
+        "type": "CLASS",
+        "value": "class"
+    },
+    {
+        "char": 14,
+        "line": 1,
+        "type": "IDENTIFIER",
+        "value": "FunctionCall"
+    },
+    {
+        "char": 27,
+        "line": 1,
+        "type": "LBRACE",
+        "value": "{"
+    },
+    {
+        "char": 5,
+        "line": 3,
+        "type": "PUBLIC",
+        "value": "public"
+    },
+    {
+        "char": 12,
+        "line": 3,
+        "type": "STATIC",
+        "value": "static"
+    },
+    {
+        "char": 19,
+        "line": 3,
+        "type": "VOID",
+        "value": "void"
+    },
+    {
+        "char": 24,
+        "line": 3,
+        "type": "IDENTIFIER",
+        "value": "funct1"
+    },
+    {
+        "char": 31,
+        "line": 3,
+        "type": "LPAREN",
+        "value": "("
+    },
+    {
+        "char": 32,
+        "line": 3,
+        "type": "RPAREN",
+        "value": ")"
+    },
+    {
+        "char": 34,
+        "line": 3,
+        "type": "LBRACE",
+        "value": "{"
+    },
+    {
+        "char": 2,
+        "line": 4,
+        "type": "IDENTIFIER",
+        "value": "System"
+    },
+    {
+        "char": 8,
+        "line": 4,
+        "type": "DOT",
+        "value": "."
+    },
+    {
+        "char": 9,
+        "line": 4,
+        "type": "IDENTIFIER",
+        "value": "out"
+    },
+    {
+        "char": 12,
+        "line": 4,
+        "type": "DOT",
+        "value": "."
+    },
+    {
+        "char": 13,
+        "line": 4,
+        "type": "IDENTIFIER",
+        "value": "println"
+    },
+    {
+        "char": 21,
+        "line": 4,
+        "type": "LPAREN",
+        "value": "("
+    },
+    {
+        "char": 22,
+        "line": 4,
+        "type": "STRINGLITERAL",
+        "value": "\"Inside funct1\""
+    },
+    {
+        "char": 37,
+        "line": 4,
+        "type": "RPAREN",
+        "value": ")"
+    },
+    {
+        "char": 38,
+        "line": 4,
+        "type": "SEMI",
+        "value": ";"
+    },
+    {
+        "char": 5,
+        "line": 5,
+        "type": "RBRACE",
+        "value": "}"
+    },
+    {
+        "char": 5,
+        "line": 7,
+        "type": "PUBLIC",
+        "value": "public"
+    },
+    {
+        "char": 12,
+        "line": 7,
+        "type": "STATIC",
+        "value": "static"
+    },
+    {
+        "char": 19,
+        "line": 7,
+        "type": "VOID",
+        "value": "void"
+    },
+    {
+        "char": 24,
+        "line": 7,
+        "type": "IDENTIFIER",
+        "value": "main"
+    },
+    {
+        "char": 29,
+        "line": 7,
+        "type": "LPAREN",
+        "value": "("
+    },
+    {
+        "char": 30,
+        "line": 7,
+        "type": "IDENTIFIER",
+        "value": "String"
+    },
+    {
+        "char": 36,
+        "line": 7,
+        "type": "LBRACKET",
+        "value": "["
+    },
+    {
+        "char": 37,
+        "line": 7,
+        "type": "RBRACKET",
+        "value": "]"
+    },
+    {
+        "char": 39,
+        "line": 7,
+        "type": "IDENTIFIER",
+        "value": "args"
+    },
+    {
+        "char": 44,
+        "line": 7,
+        "type": "LBRACE",
+        "value": "{"
+    },
+    {
+        "char": 2,
+        "line": 8,
+        "type": "INT",
+        "value": "int"
+    },
+    {
+        "char": 6,
+        "line": 8,
+        "type": "IDENTIFIER",
+        "value": "val"
+    },
+    {
+        "char": 9,
+        "line": 8,
+        "type": "SEMI",
+        "value": ";"
+    },
+    {
+        "char": 2,
+        "line": 9,
+        "type": "IDENTIFIER",
+        "value": "System"
+    },
+    {
+        "char": 8,
+        "line": 9,
+        "type": "DOT",
+        "value": "."
+    },
+    {
+        "char": 9,
+        "line": 9,
+        "type": "IDENTIFIER",
+        "value": "out"
+    },
+    {
+        "char": 12,
+        "line": 9,
+        "type": "DOT",
+        "value": "."
+    },
+    {
+        "char": 13,
+        "line": 9,
+        "type": "IDENTIFIER",
+        "value": "println"
+    },
+    {
+        "char": 21,
+        "line": 9,
+        "type": "LPAREN",
+        "value": "("
+    },
+    {
+        "char": 22,
+        "line": 9,
+        "type": "STRINGLITERAL",
+        "value": "\"funct2 returned a value of \""
+    },
+    {
+        "char": 52,
+        "line": 9,
+        "type": "PLUS",
+        "value": "+"
+    },
+    {
+        "char": 54,
+        "line": 9,
+        "type": "IDENTIFIER",
+        "value": "val"
+    },
+    {
+        "char": 57,
+        "line": 9,
+        "type": "RPAREN",
+        "value": ")"
+    },
+    {
+        "char": 58,
+        "line": 9,
+        "type": "SEMI",
+        "value": ";"
+    },
+    {
+        "char": 2,
+        "line": 11,
+        "type": "IDENTIFIER",
+        "value": "val"
+    },
+    {
+        "char": 6,
+        "line": 11,
+        "type": "EQ",
+        "value": "="
+    },
+    {
+        "char": 8,
+        "line": 11,
+        "type": "IDENTIFIER",
+        "value": "funct2"
+    },
+    {
+        "char": 14,
+        "line": 11,
+        "type": "LPAREN",
+        "value": "("
+    },
+    {
+        "char": 15,
+        "line": 11,
+        "type": "SUB",
+        "value": "-"
+    },
+    {
+        "char": 16,
+        "line": 11,
+        "type": "INTLITERAL",
+        "value": "3"
+    },
+    {
+        "char": 17,
+        "line": 11,
+        "type": "RPAREN",
+        "value": ")"
+    },
+    {
+        "char": 18,
+        "line": 11,
+        "type": "SEMI",
+        "value": ";"
+    },
+    {
+        "char": 5,
+        "line": 12,
+        "type": "PUBLIC",
+        "value": "public"
+    },
+    {
+        "char": 12,
+        "line": 12,
+        "type": "STATIC",
+        "value": "static"
+    },
+    {
+        "char": 19,
+        "line": 12,
+        "type": "INT",
+        "value": "int"
+    },
+    {
+        "char": 23,
+        "line": 12,
+        "type": "IDENTIFIER",
+        "value": "funct2"
+    },
+    {
+        "char": 30,
+        "line": 12,
+        "type": "LPAREN",
+        "value": "("
+    },
+    {
+        "char": 31,
+        "line": 12,
+        "type": "INT",
+        "value": "int"
+    },
+    {
+        "char": 35,
+        "line": 12,
+        "type": "IDENTIFIER",
+        "value": "param"
+    },
+    {
+        "char": 40,
+        "line": 12,
+        "type": "RPAREN",
+        "value": ")"
+    },
+    {
+        "char": 42,
+        "line": 12,
+        "type": "LBRACE",
+        "value": "{"
+    },
+    {
+        "char": 2,
+        "line": 13,
+        "type": "IDENTIFIER",
+        "value": "System"
+    },
+    {
+        "char": 8,
+        "line": 13,
+        "type": "DOT",
+        "value": "."
+    },
+    {
+        "char": 9,
+        "line": 13,
+        "type": "IDENTIFIER",
+        "value": "out"
+    },
+    {
+        "char": 12,
+        "line": 13,
+        "type": "DOT",
+        "value": "."
+    },
+    {
+        "char": 13,
+        "line": 13,
+        "type": "IDENTIFIER",
+        "value": "println"
+    },
+    {
+        "char": 21,
+        "line": 13,
+        "type": "LPAREN",
+        "value": "("
+    },
+    {
+        "char": 22,
+        "line": 13,
+        "type": "STRINGLITERAL",
+        "value": "\"Inside funct2 with param \""
+    },
+    {
+        "char": 50,
+        "line": 13,
+        "type": "PLUS",
+        "value": "+"
+    },
+    {
+        "char": 52,
+        "line": 13,
+        "type": "IDENTIFIER",
+        "value": "param"
+    },
+    {
+        "char": 57,
+        "line": 13,
+        "type": "RPAREN",
+        "value": ")"
+    },
+    {
+        "char": 58,
+        "line": 13,
+        "type": "SEMI",
+        "value": ";"
+    },
+    {
+        "char": 2,
+        "line": 14,
+        "type": "RETURN",
+        "value": "return"
+    },
+    {
+        "char": 9,
+        "line": 14,
+        "type": "IDENTIFIER",
+        "value": "param"
+    },
+    {
+        "char": 15,
+        "line": 14,
+        "type": "STAR",
+        "value": "*"
+    },
+    {
+        "char": 17,
+        "line": 14,
+        "type": "INTLITERAL",
+        "value": "2"
+    },
+    {
+        "char": 18,
+        "line": 14,
+        "type": "SEMI",
+        "value": ";"
+    },
+    {
+        "char": 5,
+        "line": 15,
+        "type": "RBRACE",
+        "value": "}"
+    },
+    {
+        "char": 1,
+        "line": 16,
+        "type": "RBRACE",
+        "value": "}"
+    }
+]

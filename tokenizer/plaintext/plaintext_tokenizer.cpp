@@ -53,6 +53,11 @@ int main(int argc, char* argv[]) {
   while (std::cin >> std::noskipws >> c) {
     bool is_punctuation = !isspace(c) && !std::isdigit(c) && !std::isalpha(c);
 
+    if ((unsigned int)(c) > 127) {
+      // FIXME: for now, just skip utf-8 characters since nlohmann dump gets stuck
+      continue;
+    }
+
     // ------------------------------
     // decide when to break the current string
     // break on spaces, punctuation (any symbol), or if we switch between letters and numbers

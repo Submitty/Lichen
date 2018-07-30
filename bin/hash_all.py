@@ -68,7 +68,8 @@ def hasher(args,my_tokenized_file,my_hashes_file):
                 hash_object = hashlib.md5(foo.encode())
                 hash_object_string=hash_object.hexdigest()
                 #FIXME: this truncation should be adjusted after more full-scale testing
-                hash_object_string_truncated=hash_object_string[0:4]
+                #hash_object_string_truncated=hash_object_string[0:4]
+                hash_object_string_truncated=hash_object_string[0:8]
                 #my_hf.write(hash_object_string+"\n")
                 my_hf.write(hash_object_string_truncated+"\n")
 

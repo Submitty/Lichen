@@ -172,7 +172,6 @@ int main(int argc, char* argv[]) {
       std::ifstream istr(hash_file.string());
       std::string tmp;
       int count = 0;
-      std::cout << "loading " << hashfile.string() << std::endl;
       while (istr >> tmp) {
         count++;
         hash_counts[tmp][username].push_back(Sequence(username,version,count));

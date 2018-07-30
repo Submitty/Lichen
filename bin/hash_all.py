@@ -43,7 +43,7 @@ def parse_args():
 
 
 def hasher(args,my_tokenized_file,my_hashes_file):
-    with open(my_tokenized_file,'r') as my_tf:
+    with open(my_tokenized_file,'r',encoding='ISO-8859-1') as my_tf:
         with open(my_hashes_file,'w') as my_hf:
             tokens = json.load(my_tf)
             num = len(tokens)
@@ -95,8 +95,8 @@ def main():
 
     # ===========================================================================
     # walk the subdirectories
-    for user in os.listdir(tokenized_dir):
-        for version in os.listdir(os.path.join(tokenized_dir,user)):
+    for user in sorted(os.listdir(tokenized_dir)):
+        for version in sorted(os.listdir(os.path.join(tokenized_dir,user))):
             my_tokenized_file=os.path.join(tokenized_dir,user,version,"tokens.json")
 
             # ===========================================================================
@@ -107,7 +107,6 @@ def main():
 
             my_hashes_file=os.path.join(my_hashes_dir,"hashes.txt")
             hasher(args,my_tokenized_file,my_hashes_file)
-
 
     print("done")
             

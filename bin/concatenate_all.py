@@ -49,10 +49,10 @@ def main():
 
     # ===========================================================================
     # walk the subdirectories
-    for user in os.listdir(submission_dir):
+    for user in sorted(os.listdir(submission_dir)):
         if not os.path.isdir(os.path.join(submission_dir,user)):
             continue
-        for version in os.listdir(os.path.join(submission_dir,user)):
+        for version in sorted(os.listdir(os.path.join(submission_dir,user))):
             if not os.path.isdir(os.path.join(submission_dir,user,version)):
                 continue
 
@@ -82,9 +82,10 @@ def main():
                         # print a separator & filename
                         my_cf.write("----------------------------------------------------\n")
                         my_cf.write("FILE: "+relative_path+"\n\n")
-                        with open(absolute_path) as tmp:
+                        with open(absolute_path, encoding='ISO-8859-1') as tmp:
                             # append the contents of the file
-                            my_cf.write(tmp.read()+"\n")
+                            my_cf.write(tmp.read())
+                        my_cf.write("\n")
 
     print ("done")
                             

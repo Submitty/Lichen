@@ -77,8 +77,8 @@ def main():
 
     # ===========================================================================
     # walk the subdirectories
-    for user in os.listdir(concatenated_dir):
-        for version in os.listdir(os.path.join(concatenated_dir,user)):
+    for user in sorted(os.listdir(concatenated_dir)):
+        for version in sorted(os.listdir(os.path.join(concatenated_dir,user))):
             my_concatenated_file=os.path.join(concatenated_dir,user,version,"submission.concatenated")
 
             # ===========================================================================
@@ -88,6 +88,8 @@ def main():
                 os.makedirs(my_tokenized_dir)
 
             my_tokenized_file=os.path.join(my_tokenized_dir,"tokens.json")
+            print ("tokenizing "+my_tokenized_file)
+            
             tokenize(args,my_concatenated_file,my_tokenized_file)
 
     print ("done")

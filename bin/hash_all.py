@@ -23,42 +23,37 @@ SUBMITTY_INSTALL_DIR = OPEN_JSON['submitty_install_dir']
 
 def parse_args():
     parser = argparse.ArgumentParser(description="")
-    parser.add_argument("semester")
-    parser.add_argument("course")
-    parser.add_argument("gradeable")
-    parser.add_argument("--window",type=int,default=10)
-    parser.add_argument("--hash_size",type=int,default=100000)
-    language = parser.add_mutually_exclusive_group(required=True)
-    language.add_argument ("--plaintext", action='store_true')
-    language.add_argument ("--python", action='store_true')
-    language.add_argument ("--cpp", action='store_true')
-
+    parser.add_argument("config_path")
     args = parser.parse_args()
-
-    if (args.window < 1):
-        print ("ERROR! window must be >= 1")
-        exit(1)
-    
     return args
 
 
 def hasher(args,my_tokenized_file,my_hashes_file):
-    with open(my_tokenized_file,'r') as my_tf:
+    with open(args.config_path) as lichen_config:
+        lichen_config_data = json.load(lichen_config)
+        language = lichen_config_data["language"]
+        sequence_length = int(lichen_config_data["sequence_length"])
+
+    if (sequence_length < 1):
+        print ("ERROR! sequence_length must be >= 1")
+        exit(1)
+
+    with open(my_tokenized_file,'r',encoding='ISO-8859-1') as my_tf:
         with open(my_hashes_file,'w') as my_hf:
             tokens = json.load(my_tf)
             num = len(tokens)
-            for i in range(0,num-args.window):
+            for i in range(0,num-sequence_length):
                 foo=""
-                if args.plaintext:
-                    for j in range(0,args.window):
+                if language == "plaintext":
+                    for j in range(0,sequence_length):
                         foo+=str(tokens[i+j].get("value"))
 
-                elif args.python:
-                    for j in range(0,args.window):
+                elif language == "python":
+                    for j in range(0,sequence_length):
                         foo+=str(tokens[i+j].get("type"))
 
-                elif args.cpp:
-                    for j in range(0,args.window):
+                elif language == "cpp":
+                    for j in range(0,sequence_length):
                         foo+=str(tokens[i+j].get("type"))
 
                 else:
@@ -77,26 +72,32 @@ def hasher(args,my_tokenized_file,my_hashes_file):
 def main():
     args = parse_args()
 
+    with open(args.config_path) as lichen_config:
+        lichen_config_data = json.load(lichen_config)
+        semester = lichen_config_data["semester"]
+        course = lichen_config_data["course"]
+        gradeable = lichen_config_data["gradeable"]
+
     sys.stdout.write("HASH ALL...")
     sys.stdout.flush()
     
     # ===========================================================================
     # error checking
-    course_dir=os.path.join(SUBMITTY_DATA_DIR,"courses",args.semester,args.course)
+    course_dir=os.path.join(SUBMITTY_DATA_DIR,"courses",semester,course)
     if not os.path.isdir(course_dir):
         print("ERROR! ",course_dir," is not a valid course directory")
         exit(1)
-    tokenized_dir=os.path.join(course_dir,"lichen","tokenized",args.gradeable) 
+    tokenized_dir=os.path.join(course_dir,"lichen","tokenized",gradeable)
     if not os.path.isdir(tokenized_dir):
         print("ERROR! ",tokenized_dir," is not a valid gradeable tokenized directory")
         exit(1)
 
-    hashes_dir=os.path.join(course_dir,"lichen","hashes",args.gradeable)
+    hashes_dir=os.path.join(course_dir,"lichen","hashes",gradeable)
 
     # ===========================================================================
     # walk the subdirectories
-    for user in os.listdir(tokenized_dir):
-        for version in os.listdir(os.path.join(tokenized_dir,user)):
+    for user in sorted(os.listdir(tokenized_dir)):
+        for version in sorted(os.listdir(os.path.join(tokenized_dir,user))):
             my_tokenized_file=os.path.join(tokenized_dir,user,version,"tokens.json")
 
             # ===========================================================================
@@ -107,7 +108,6 @@ def main():
 
             my_hashes_file=os.path.join(my_hashes_dir,"hashes.txt")
             hasher(args,my_tokenized_file,my_hashes_file)
-
 
     print("done")
             

@@ -13,6 +13,19 @@ void usage(const std::string &program) {
 }
 
 
+void deal_with_number(std::map<std::string,nlohmann::json>& tmp, const std::string& token) {
+  try {
+    // normal case, convert to integer
+    tmp["type"]="number";
+    tmp["value"]=std::stoi(token);
+  } catch (...) {
+    // if conversion fails (integer too big!)
+    tmp["type"]="string";
+    tmp["value"]=token;
+  }
+}
+
+
 int main(int argc, char* argv[]) {
 
   // ------------------------------
@@ -72,8 +85,7 @@ int main(int argc, char* argv[]) {
         tmp["char"]=start_col;
         if (last_was_digit) {
           assert (!last_was_alpha);
-          tmp["type"]="number";
-          tmp["value"]=std::stoi(token);
+	  deal_with_number(tmp,token);
         } else {
           assert (last_was_alpha);
           tmp["type"]="string";
@@ -171,8 +183,7 @@ int main(int argc, char* argv[]) {
     tmp["char"]=start_col;
     if (last_was_digit) {
       assert (!last_was_alpha);
-      tmp["type"]="number";
-      tmp["value"]=std::stoi(token);
+      deal_with_number(tmp,token);
     } else {
       assert (last_was_alpha);
       tmp["type"]="string";

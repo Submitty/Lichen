@@ -180,6 +180,8 @@ int main(int argc, char* argv[]) {
     }    
   }
 
+  std::cout << "finished loading" << std::endl;
+
   // ---------------------------------------------------------------------------
 
   // label the parts of the file that are common to many
@@ -194,12 +196,17 @@ int main(int argc, char* argv[]) {
   // user,version -> ( position -> ( other user,version -> std::vector<Sequence> ) )
   std::map<Submission,std::map<int,std::map<Submission, std::vector<Sequence> > > > suspicious;
 
+  int my_counter = 0;
 
   // ---------------------------------------------------------------------------
   // walk over the structure containing all of the hashes identifying
   // common to many/all, provided code, suspicious matches, and unique code
   for (hashed_sequences::iterator itr = hash_counts.begin(); itr != hash_counts.end(); itr++) {
     int count = itr->second.size();
+
+    my_counter++;
+
+    std::cout << "hash walk " << hash_counts.size() << " " << my_counter << std::endl;
 
     if (count >= 20) {
       // common to many/all
@@ -234,6 +241,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  std::cout << "finished walking" << std::endl;
 
   // ---------------------------------------------------------------------------
   // prepare a sorted list of all users sorted by match percent

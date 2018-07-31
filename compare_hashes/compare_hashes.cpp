@@ -125,13 +125,23 @@ int main(int argc, char* argv[]) {
 
   // ---------------------------------------------------------------------------
   // deal with command line arguments
-  assert (argc == 6);
-  std::string semester = argv[1];
-  std::string course = argv[2];
-  std::string gradeable = argv[3];
-  assert (argv[4] == std::string("--window"));
-  int window = std::stoi(std::string(argv[5]));
-  assert (window >= 1);
+  assert (argc == 2);
+  std::string config_file = argv[1];
+
+  std::ifstream istr(config_file.c_str());
+  assert (istr.good());
+  nlohmann::json config_file_json = nlohmann::json::parse(istr);
+
+  std::string semester = config_file_json.value("semester","ERROR");
+  std::string course = config_file_json.value("course","ERROR");
+  std::string gradeable = config_file_json.value("gradeable","ERROR");
+  std::string sequence_length_str = config_file_json.value("sequence_length","1");
+  int sequence_length = std::stoi(sequence_length_str);
+  std::string threshold_str = config_file_json.value("threshold","5");
+  int threshold = std::stoi(threshold_str);
+
+  assert (sequence_length >= 1);
+  assert (threshold >= 2);
 
   // error checking, confirm there are hashes to work with
   std::string tmp = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/hashes/"+gradeable;
@@ -208,14 +218,14 @@ int main(int argc, char* argv[]) {
 
     std::cout << "hash walk " << hash_counts.size() << " " << my_counter << std::endl;
 
-    if (count >= 20) {
+    if (count > threshold) {
       // common to many/all
       for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
         for (int i = 0; i < itr2->second.size(); i++) {
           common[itr2->second[i].submission].insert(itr2->second[i].position);
         }
       }
-    } else if (count > 1 && count < 20) {
+    } else if (count > 1 && count <= threshold) {
       // suspicious matches
       for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
         std::string username = itr2->first;

@@ -18,9 +18,7 @@ SUBMITTY_INSTALL_DIR = OPEN_JSON['submitty_install_dir']
 
 def parse_args():
     parser = argparse.ArgumentParser(description="")
-    parser.add_argument("semester")
-    parser.add_argument("course")
-    parser.add_argument("gradeable")
+    parser.add_argument("config_path")
     return parser.parse_args()
 
 
@@ -30,20 +28,26 @@ def main():
     sys.stdout.write("CONCATENATE ALL...")
     sys.stdout.flush()
 
+    with open(args.config_path) as lichen_config:
+        lichen_config_data = json.load(lichen_config)
+        semester = lichen_config_data["semester"]
+        course = lichen_config_data["course"]
+        gradeable = lichen_config_data["gradeable"]
+
     # ===========================================================================
     # error checking
-    course_dir=os.path.join(SUBMITTY_DATA_DIR,"courses",args.semester,args.course)
+    course_dir=os.path.join(SUBMITTY_DATA_DIR,"courses",semester,course)
     if not os.path.isdir(course_dir):
         print("ERROR! ",course_dir," is not a valid course directory")
         exit(1)
-    submission_dir=os.path.join(course_dir,"submissions",args.gradeable)
+    submission_dir=os.path.join(course_dir,"submissions",gradeable)
     if not os.path.isdir(submission_dir):
         print("ERROR! ",submission_dir," is not a valid gradeable submissions directory")
         exit(1)
 
     # ===========================================================================
     # create the directory
-    concatenated_dir=os.path.join(course_dir,"lichen","concatenated",args.gradeable)
+    concatenated_dir=os.path.join(course_dir,"lichen","concatenated",gradeable)
     if not os.path.isdir(concatenated_dir):
          os.makedirs(concatenated_dir)
 
@@ -64,9 +68,9 @@ def main():
             my_concatenated_file=os.path.join(my_concatenated_dir,"submission.concatenated")
             with open(my_concatenated_file,'w') as my_cf:
                 # print a brief header of information
-                my_cf.write("SEMESTER: "+args.semester+"\n")
-                my_cf.write("COURSE: "+args.course+"\n")
-                my_cf.write("GRADEABLE: "+args.gradeable+"\n")
+                my_cf.write("SEMESTER: "+semester+"\n")
+                my_cf.write("COURSE: "+course+"\n")
+                my_cf.write("GRADEABLE: "+gradeable+"\n")
                 my_cf.write("USER: "+user+"\n")
                 my_cf.write("VERSION: "+version+"\n")
                 # loop over all files in all subdirectories

@@ -14,7 +14,10 @@ tmp_cpp_file_handle,tmp_cpp_file_name=tempfile.mkstemp(suffix=".cpp")
 # copy the concatenated file to the temporary file location
 shutil.copy(sys.argv[1],tmp_cpp_file_name)
 
-clang.cindex.Config.set_library_file("/usr/lib/llvm-3.8/lib/libclang-3.8.so.1")
+if (os.path.isfile("/usr/lib/llvm-6.0/lib/libclang.so.1")):
+        clang.cindex.Config.set_library_file("/usr/lib/llvm-6.0/lib/libclang.so.1")
+elif (os.path.isfile("/usr/lib/llvm-3.8/lib/libclang-3.8.so.1")):
+        clang.cindex.Config.set_library_file("/usr/lib/llvm-3.8/lib/libclang-3.8.so.1")
 idx = clang.cindex.Index.create()
 
 # parse the input file

@@ -207,7 +207,8 @@ int main(int argc, char* argv[]) {
   std::map<Submission,std::map<int,std::map<Submission, std::vector<Sequence> > > > suspicious;
 
   int my_counter = 0;
-
+  int my_percent = 0;
+  
   // ---------------------------------------------------------------------------
   // walk over the structure containing all of the hashes identifying
   // common to many/all, provided code, suspicious matches, and unique code
@@ -215,9 +216,10 @@ int main(int argc, char* argv[]) {
     int count = itr->second.size();
 
     my_counter++;
-
-    std::cout << "hash walk " << hash_counts.size() << " " << my_counter << std::endl;
-
+    percent = (int) (100 * (my_counter / float(hash_counts.size())));
+    if (percent > my_percent) {
+      std::cout << "hash walk " << hash_counts.size() << " " << my_counter << std::endl;
+    }
     if (count > threshold) {
       // common to many/all
       for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {

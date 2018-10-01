@@ -216,9 +216,10 @@ int main(int argc, char* argv[]) {
     int count = itr->second.size();
 
     my_counter++;
-    percent = (int) (100 * (my_counter / float(hash_counts.size())));
+    int percent = (int) (100 * (my_counter / float(hash_counts.size())));
     if (percent > my_percent) {
-      std::cout << "hash walk " << hash_counts.size() << " " << my_counter << std::endl;
+      std::cout << "hash walk " << percent << "% complete" << std::endl;
+      my_percent = percent;
     }
     if (count > threshold) {
       // common to many/all

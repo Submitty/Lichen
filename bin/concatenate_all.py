@@ -92,7 +92,6 @@ def main():
                         # skip the timestep
                         if my_file == ".submit.timestamp":
                             continue
-                        # TODO: skip files that should be ignored
                         absolute_path=os.path.join(my_dir,my_file)
                         relative_path=absolute_path[len(base_path):]
                         # print a separator & filename

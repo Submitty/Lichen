@@ -35,9 +35,9 @@ def main():
         course = lichen_config_data["course"]
         gradeable = lichen_config_data["gradeable"]
         expressions = None
-        if("regrex" in lichen_config_data):
+        if("regex" in lichen_config_data):
         	#this assumes regex is seperated by a ','
-        	expressions = lichen_config_data["regrex"].split(',')
+        	expressions = lichen_config_data["regex"].split(',')
 
     # ===========================================================================
     # error checking

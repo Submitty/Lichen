@@ -8,6 +8,7 @@ import argparse
 import os
 import json
 import sys
+import fnmatch
 
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'config')
 with open(os.path.join(CONFIG_PATH, 'submitty.json')) as open_file:
@@ -33,6 +34,10 @@ def main():
         semester = lichen_config_data["semester"]
         course = lichen_config_data["course"]
         gradeable = lichen_config_data["gradeable"]
+        expressions = None
+        if("regex" in lichen_config_data):
+        	#this assumes regex is seperated by a ','
+        	expressions = lichen_config_data["regex"].split(',')
 
     # ===========================================================================
     # error checking
@@ -76,11 +81,17 @@ def main():
                 # loop over all files in all subdirectories
                 base_path = os.path.join(submission_dir,user,version)
                 for my_dir,dirs,my_files in os.walk(base_path):
-                    for my_file in sorted(my_files):
+                    #Determine if regex should be used
+                    files = sorted(my_files)
+                    if(expressions != None):
+                        files_filtered = []
+                        for e in expressions:
+                            files_filtered.extend(fnmatch.filter(files, e.strip()))
+                        files = files_filtered
+                    for my_file in files:
                         # skip the timestep
                         if my_file == ".submit.timestamp":
                             continue
-                        # TODO: skip files that should be ignored
                         absolute_path=os.path.join(my_dir,my_file)
                         relative_path=absolute_path[len(base_path):]
                         # print a separator & filename

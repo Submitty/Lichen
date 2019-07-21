@@ -2,9 +2,9 @@
 #include <map>
 #include <unordered_map>
 #include <cassert>
-#include <string>
 #include <cstdlib>
 #include <fstream>
+#include <string>
 #include <set>
 #include <iomanip>
 
@@ -81,8 +81,7 @@ void insert_others(const std::string &this_username,
   }
 }
 
-void convert(std::map<Submission,std::set<int> > &myset, nlohmann::json &obj) {
-  for (std::map<Submission,std::set<int> >::iterator itr = myset.begin(); itr != myset.end(); itr++) {
+void convert(std::map<Submission,std::set<int> >::const_iterator itr, nlohmann::json &obj) {
     nlohmann::json me;
     me["username"] = itr->first.username;
     me["version"] = itr->first.version;
@@ -112,7 +111,20 @@ void convert(std::map<Submission,std::set<int> > &myset, nlohmann::json &obj) {
 
     me["matchingpositions"] = foo;
     obj.push_back(me);
-  }
+}
+
+void handleMatchSave(const std::map<Submission, std::set<int> >& others, std::map<Submission, std::vector<nlohmann::json> >& info, std::string type,
+                    int range_start, int range_end) {
+    for(std::map<Submission, std::set<int> >::const_iterator i = others.begin(); i != others.end(); i++) {
+        std::map<std::string,nlohmann::json> info_data;
+        info_data["start"]=nlohmann::json(range_start);
+        info_data["end"]=nlohmann::json(range_end);
+        info_data["type"]=nlohmann::json(type);
+        nlohmann::json obj;
+        convert(i,obj);
+        info_data["others"]=obj; 
+        info[i->first].push_back(info_data);
+    }
 }
 
 // ===================================================================================
@@ -266,7 +278,7 @@ int main(int argc, char* argv[]) {
     int overlap = itr->second.size();
     float percent = float(overlap)/float(total);
 
-    std::vector<nlohmann::json> info;
+    std::map<Submission, std::vector<nlohmann::json> > info;
 
     std::string username = itr->first.username;
     int version = itr->first.version;
@@ -287,14 +299,7 @@ int main(int argc, char* argv[]) {
         range_end = pos;
         insert_others(username,others,itr2->second);
       } else if (range_start != -1) {
-        std::map<std::string,nlohmann::json> info_data;
-        info_data["start"]=nlohmann::json(range_start);
-        info_data["end"]=nlohmann::json(range_end);
-        info_data["type"]=nlohmann::json(std::string("match"));
-        nlohmann::json obj;
-        convert(others,obj);
-        info_data["others"]=obj;
-        info.push_back(info_data);
+        handleMatchSave(others, info, "match", range_start, range_end);
         range_start=range_end=-1;
         others.clear();
       }
@@ -305,6 +310,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::map<Submission,std::set<int> >::iterator itr3 = common.find(itr->first);
+    std::vector<nlohmann::json> commonMatches;
     if (itr3 != common.end()) {
       //std::cout << "HAS COMMON CODE" << std::endl;
       int range_start=-1;
@@ -320,7 +326,7 @@ int main(int argc, char* argv[]) {
           info_data["start"]=nlohmann::json(range_start);
           info_data["end"]=nlohmann::json(range_end);
           info_data["type"]=std::string("common");
-          info.push_back(info_data);
+          commonMatches.push_back(info_data);
           range_start = range_end = -1;
         }
       }
@@ -329,19 +335,31 @@ int main(int argc, char* argv[]) {
         info_data["start"]=nlohmann::json(range_start);
         info_data["end"]=nlohmann::json(range_end);
         info_data["type"]=std::string("common");
-        info.push_back(info_data);
+        commonMatches.push_back(info_data);
         range_start=range_end=-1;
       }
     }
 
     // save the file with matches per user
-    nlohmann::json match_data = info;
+
     std::string matches_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/matches/"+gradeable+"/"+username+"/"+std::to_string(version);
     boost::filesystem::create_directories(matches_dir);
-    std::string matches_file = matches_dir+"/matches.json";
-    std::ofstream ostr(matches_file);
+
+    nlohmann::json match_data = commonMatches;
+    std::ofstream ostr(matches_dir + "/common.json");
     assert (ostr.good());
     ostr << match_data.dump(4) << std::endl;
+    
+    for(std::map<Submission, std::vector<nlohmann::json> >::const_iterator i = info.begin(); i != info.end(); i++) {
+        std::string user_matches_path = matches_dir + "/" + i->first.username + "/" + std::to_string(i->first.version);
+        std::string matches_file = user_matches_path + "/matches.json";
+        boost::filesystem::create_directories(user_matches_path);
+        nlohmann::json match_data = i->second;
+        std::ofstream ostr(matches_file);
+        assert (ostr.good());
+        ostr << match_data.dump(4) << std::endl;
+    }
+
   }
 
   std::set<std::string> users_already_ranked;

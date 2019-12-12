@@ -1,0 +1,128 @@
+[
+    {
+        "char": 1,
+        "line": 1,
+        "type": "COMMENT",
+        "value": "# Example Hello World program"
+    },
+    {
+        "char": 2,
+        "line": 3,
+        "type": "DOT_TYPE",
+        "value": ".data"
+    },
+    {
+        "char": 1,
+        "line": 4,
+        "type": "LABEL",
+        "value": "hello_world"
+    },
+    {
+        "char": 14,
+        "line": 4,
+        "type": "DOT_TYPE",
+        "value": ".asciiz"
+    },
+    {
+        "char": 22,
+        "line": 4,
+        "type": "STRING_LITERAL",
+        "value": "\"Hello, World!\""
+    },
+    {
+        "char": 1,
+        "line": 6,
+        "type": "COMMENT",
+        "value": "#############################################################################"
+    },
+    {
+        "char": 2,
+        "line": 8,
+        "type": "DOT_TYPE",
+        "value": ".text"
+    },
+    {
+        "char": 1,
+        "line": 9,
+        "type": "LABEL",
+        "value": "main"
+    },
+    {
+        "char": 2,
+        "line": 10,
+        "type": "INSTRUCTION",
+        "value": "li"
+    },
+    {
+        "char": 5,
+        "line": 10,
+        "type": "REGISTER",
+        "value": "$v0"
+    },
+    {
+        "char": 10,
+        "line": 10,
+        "type": "IMMEDIATE",
+        "value": "4"
+    },
+    {
+        "char": 13,
+        "line": 10,
+        "type": "COMMENT",
+        "value": "# syscall 4 (print_str)"
+    },
+    {
+        "char": 2,
+        "line": 11,
+        "type": "INSTRUCTION",
+        "value": "la"
+    },
+    {
+        "char": 5,
+        "line": 11,
+        "type": "REGISTER",
+        "value": "$a0"
+    },
+    {
+        "char": 10,
+        "line": 11,
+        "type": "ADDRESS",
+        "value": "hello_world"
+    },
+    {
+        "char": 22,
+        "line": 11,
+        "type": "COMMENT",
+        "value": "# argument: string"
+    },
+    {
+        "char": 2,
+        "line": 12,
+        "type": "INSTRUCTION",
+        "value": "syscall"
+    },
+    {
+        "char": 11,
+        "line": 12,
+        "type": "COMMENT",
+        "value": "# print the string"
+    },
+    {
+        "char": 2,
+        "line": 14,
+        "type": "INSTRUCTION",
+        "value": "jr"
+    },
+    {
+        "char": 5,
+        "line": 14,
+        "type": "REGISTER",
+        "value": "$ra"
+    },
+    {
+        "char": 11,
+        "line": 14,
+        "type": "COMMENT",
+        "value": "# return to caller"
+    }
+]

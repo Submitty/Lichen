@@ -48,6 +48,20 @@ def tokenize(args,my_concatenated_file,my_tokenized_file):
                 command="python "+str(tokenizer)+" "+my_concatenated_file+" > "+my_tokenized_file
                 os.system(command)
 
+    elif language == "java":
+        tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin","java_tokenizer.py")
+        with open(my_concatenated_file,'r') as infile:
+            with open (my_tokenized_file,'w') as outfile:
+                command="python "+str(tokenizer)+" "+my_concatenated_file+" > "+my_tokenized_file
+                os.system(command)
+
+    elif language == "mips":
+        tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin","mips_tokenizer.py")
+        with open(my_concatenated_file,'r') as infile:
+            with open (my_tokenized_file,'w') as outfile:
+                command="python3 "+str(tokenizer)+" "+my_concatenated_file+" > "+my_tokenized_file
+                os.system(command)
+
     else:
         print("\n\nERROR: UNKNOWN TOKENIZER\n\n")
         exit(1)

@@ -60,6 +60,8 @@ cp ${lichen_repository_dir}/bin/* ${lichen_installation_dir}/bin/
 
 cp ${lichen_repository_dir}/tokenizer/c/c_tokenizer.py ${lichen_installation_dir}/bin/c_tokenizer.py
 cp ${lichen_repository_dir}/tokenizer/python/python_tokenizer.py ${lichen_installation_dir}/bin/python_tokenizer.py
+cp ${lichen_repository_dir}/tokenizer/java/java_tokenizer.py ${lichen_installation_dir}/bin/java_tokenizer.py
+cp ${lichen_repository_dir}/tokenizer/mips/mips_tokenizer.py ${lichen_installation_dir}/bin/mips_tokenizer.py
 
 
 ########################################################################################################################

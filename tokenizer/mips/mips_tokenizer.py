@@ -49,7 +49,8 @@ for line_num, line in enumerate(file_lines):
         # Attempt to match any token type.  Tokens are ordered by specificity,
         # so the first match is always correct
         for token_type, token_re in token_types:
-            if token_match := token_re.match(line[col_num:]):
+            token_match = token_re.match(line[col_num:])
+            if token_match:
                 if token_type == "INSTRUCTION_ADDRESS" and not found_instruction:
                     token_type = "INSTRUCTION"
                     found_instruction = True

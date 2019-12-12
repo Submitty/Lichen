@@ -56,6 +56,14 @@ def hasher(args,my_tokenized_file,my_hashes_file):
                     for j in range(0,sequence_length):
                         foo+=str(tokens[i+j].get("type"))
 
+                elif language == "java":
+                    for j in range(0,sequence_length):
+                        foo+=str(tokens[i+j].get("type"))
+
+                elif language == "mips":
+                    for j in range(0,sequence_length):
+                        foo+=str(tokens[i+j].get("type"))
+
                 else:
                     print("\n\nERROR: UNKNOWN HASHER\n\n")
                     exit(1)

@@ -68,7 +68,7 @@ def main():
 
     sys.stdout.write("HASH ALL...")
     sys.stdout.flush()
-    
+
     # ===========================================================================
     # error checking
     course_dir=os.path.join(SUBMITTY_DATA_DIR,"courses",semester,course)
@@ -98,6 +98,6 @@ def main():
             hasher(args,my_tokenized_file,my_hashes_file)
 
     print("done")
-            
+
 if __name__ == "__main__":
     main()

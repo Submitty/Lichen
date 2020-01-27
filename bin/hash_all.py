@@ -19,6 +19,13 @@ with open(os.path.join(CONFIG_PATH, 'submitty.json')) as open_file:
     OPEN_JSON = json.load(open_file)
 SUBMITTY_DATA_DIR = OPEN_JSON['submitty_data_dir']
 SUBMITTY_INSTALL_DIR = OPEN_JSON['submitty_install_dir']
+LANGUAGE_MAP = {
+    'plaintext': 'value',
+    'python': 'type',
+    'cpp': 'type',
+    'java': 'type',
+    'mips': 'type',
+}
 
 
 def parse_args():
@@ -32,6 +39,10 @@ def hasher(args,my_tokenized_file,my_hashes_file):
     with open(args.config_path) as lichen_config:
         lichen_config_data = json.load(lichen_config)
         language = lichen_config_data["language"]
+        if not token_key = LANGUAGE_MAP.get(language):
+            print("\n\nERROR: UNKNOWN HASHER\n\n")
+            exit(1)
+
         sequence_length = int(lichen_config_data["sequence_length"])
 
     if (sequence_length < 1):
@@ -42,40 +53,9 @@ def hasher(args,my_tokenized_file,my_hashes_file):
         with open(my_hashes_file,'w') as my_hf:
             tokens = json.load(my_tf)
             num = len(tokens)
-            for i in range(0,num-sequence_length):
-                foo=""
-                if language == "plaintext":
-                    for j in range(0,sequence_length):
-                        foo+=str(tokens[i+j].get("value"))
-
-                elif language == "python":
-                    for j in range(0,sequence_length):
-                        foo+=str(tokens[i+j].get("type"))
-
-                elif language == "cpp":
-                    for j in range(0,sequence_length):
-                        foo+=str(tokens[i+j].get("type"))
-
-                elif language == "java":
-                    for j in range(0,sequence_length):
-                        foo+=str(tokens[i+j].get("type"))
-
-                elif language == "mips":
-                    for j in range(0,sequence_length):
-                        foo+=str(tokens[i+j].get("type"))
-
-                else:
-                    print("\n\nERROR: UNKNOWN HASHER\n\n")
-                    exit(1)
-
-                hash_object = hashlib.md5(foo.encode())
-                hash_object_string=hash_object.hexdigest()
-                #FIXME: this truncation should be adjusted after more full-scale testing
-                #hash_object_string_truncated=hash_object_string[0:4]
-                hash_object_string_truncated=hash_object_string[0:8]
-                #my_hf.write(hash_object_string+"\n")
-                my_hf.write(hash_object_string_truncated+"\n")
-
+            #FIXME: this truncation should be adjusted after more full-scale testing
+            token_hashed_values = [ hashlib.mdf(''.join(tokens[x:x+sequence_length]).encode()).hexdigest[0:8] for x in range(0, num-sequence_length)]
+            my_hf.write('\n'.join(token_hashed_values))
 
 def main():
     args = parse_args()

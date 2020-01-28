@@ -36,10 +36,10 @@ do
 			ignore_submissions+=("$argument")
 		  	;;
 		esac
-	fi		
+	fi
 done
 
-/usr/local/submitty/Lichen/bin/concatenate_all.py  $semester $course $gradeable 
+/usr/local/submitty/Lichen/bin/concatenate_all.py  $semester $course $gradeable
 /usr/local/submitty/Lichen/bin/tokenize_all.py     $semester $course $gradeable  --${language}
 /usr/local/submitty/Lichen/bin/hash_all.py         $semester $course $gradeable  --window $window  --${language}
 

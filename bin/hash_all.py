@@ -31,11 +31,12 @@ def hasher(args,my_tokenized_file,my_hashes_file):
     with open(args.config_path) as lichen_config:
         lichen_config_data = json.load(lichen_config)
         language = lichen_config_data["language"]
-        if not token_key = LANGUAGE_MAP.get(language):
+        sequence_length = int(lichen_config_data["sequence_length"])
+
+    with open("data.jsonPath..") as token_data:
+        if not language in token_data:
             print("\n\nERROR: UNKNOWN HASHER\n\n")
             exit(1)
-
-        sequence_length = int(lichen_config_data["sequence_length"])
 
     if (sequence_length < 1):
         print ("ERROR! sequence_length must be >= 1")
@@ -44,6 +45,7 @@ def hasher(args,my_tokenized_file,my_hashes_file):
     with open(my_tokenized_file,'r',encoding='ISO-8859-1') as my_tf:
         with open(my_hashes_file,'w') as my_hf:
             tokens = json.load(my_tf)
+            token_values = [x.get(token_data["token_value"]) for x in tokens]
             num = len(tokens)
             #FIXME: this truncation should be adjusted after more full-scale testing
             token_hashed_values = [ hashlib.mdf(''.join(tokens[x:x+sequence_length]).encode()).hexdigest[0:8] for x in range(0, num-sequence_length)]

@@ -38,15 +38,12 @@ def tokenize(args,my_concatenated_file,my_tokenized_file):
             language_token_data = token_data[language]
 
     tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin", language_token_data["tokenizer"])
-    if language_token_data.get("is_subprocess"):
-        # TODO: this isn't really necessary... Should probably use os.system for all
-        with open(my_concatenated_file,'r') as infile:
-            with open (my_tokenized_file,'w') as outfile:
-                cli_args = language_token_data["command_args"] if "command_args" in language_token_data else []
+    if language_token_data.get("input_as_argument"):
+        my_concatenated_file = f'< {my_concatenated_file}'
+    cli_args = ' '.join(language_token_data["command_args"]) if "command_args" in language_token_data else []
                 subprocess.call([tokenizer] + cli_args, stdin=infile, stdout=outfile)
-    else:
-        command = f'{language_token_data["command_executable"]} {tokenizer} {my_concatenated_file} > {my_tokenized_file}'
-        os.system(command)
+    command = f'{language_token_data["command_executable"]} {tokenizer} {cli_args} {my_concatenated_file} > {my_tokenized_file}'.strip()
+    os.system(command)
 
 def main():
     args = parse_args()

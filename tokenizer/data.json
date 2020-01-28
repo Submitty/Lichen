@@ -1,7 +1,8 @@
 {
   "plaintext": {
     "tokenizer": "plaintext_tokenizer.out",
-    "is_subprocess": "true",
+    "command_executable": "",
+    "input_as_argument": "false",
     "command_args": [
       "--ignore_newlines"
     ],
@@ -9,26 +10,26 @@
   },
   "python": {
     "tokenizer": "python_tokenizer.py",
-    "is_subprocess": "false",
     "command_executable": "python3",
+    "input_as_argument": "true",
     "token_value": "type"
   },
   "cpp": {
     "tokenizer": "c_tokenizer.py",
-    "is_subprocess": "false",
     "command_executable": "python",
+    "input_as_argument": "true",
     "token_value": "type"
   },
   "java": {
     "tokenizer": "java_tokenizer.py",
-    "is_subprocess": "false",
     "command_executable": "python",
+    "input_as_argument": "true",
     "token_value": "type"
   },
   "mips": {
     "tokenizer": "mips_tokenizer.py",
-    "is_subprocess": "false",
     "command_executable": "python3",
+    "input_as_argument": "true",
     "token_value": "type"
   }
 }

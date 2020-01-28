@@ -50,7 +50,7 @@ def hasher(args,my_tokenized_file,my_hashes_file):
             token_values = [x.get(token_data[language]["token_value"]) for x in tokens]
             num = len(tokens)
             #FIXME: this truncation should be adjusted after more full-scale testing
-            token_hashed_values = [ (hashlib.md5(''.join(tokens[x:x+sequence_length]).encode()).hexdigest())[0:8] for x in range(0, num-sequence_length)]
+            token_hashed_values = [ (hashlib.md5(''.join(token_values[x:x+sequence_length]).encode()).hexdigest())[0:8] for x in range(0, num-sequence_length)]
             my_hf.write('\n'.join(token_hashed_values))
 
 def main():

@@ -33,7 +33,9 @@ def hasher(args,my_tokenized_file,my_hashes_file):
         language = lichen_config_data["language"]
         sequence_length = int(lichen_config_data["sequence_length"])
 
-    with open("data.jsonPath..") as token_data:
+    data_json_path = os.path.join(SUBMITTY_INSTALL_DIR, "Lichen", "bin", "data.json")
+    with open(data_json_path) as token_data_file:
+        token_data = json.load(token_data_file)
         if not language in token_data:
             print("\n\nERROR: UNKNOWN HASHER\n\n")
             exit(1)
@@ -45,10 +47,10 @@ def hasher(args,my_tokenized_file,my_hashes_file):
     with open(my_tokenized_file,'r',encoding='ISO-8859-1') as my_tf:
         with open(my_hashes_file,'w') as my_hf:
             tokens = json.load(my_tf)
-            token_values = [x.get(token_data["token_value"]) for x in tokens]
+            token_values = [x.get(token_data[language]["token_value"]) for x in tokens]
             num = len(tokens)
             #FIXME: this truncation should be adjusted after more full-scale testing
-            token_hashed_values = [ hashlib.mdf(''.join(tokens[x:x+sequence_length]).encode()).hexdigest[0:8] for x in range(0, num-sequence_length)]
+            token_hashed_values = [ (hashlib.md5(''.join(tokens[x:x+sequence_length]).encode()).hexdigest())[0:8] for x in range(0, num-sequence_length)]
             my_hf.write('\n'.join(token_hashed_values))
 
 def main():

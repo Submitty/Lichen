@@ -30,7 +30,9 @@ def tokenize(args,my_concatenated_file,my_tokenized_file):
 
     language_token_data = dict()
 
-    with open("data.jsonPath..") as token_data:
+    data_json_path = os.path.join(SUBMITTY_INSTALL_DIR, "Lichen", "bin", "data.json")
+    with open(data_json_path, 'r') as token_data_file:
+        token_data = json.load(token_data_file)
         if not language in token_data:
             print("\n\nERROR: UNKNOWN TOKENIZER\n\n")
             exit(1)
@@ -38,10 +40,9 @@ def tokenize(args,my_concatenated_file,my_tokenized_file):
             language_token_data = token_data[language]
 
     tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin", language_token_data["tokenizer"])
-    if language_token_data.get("input_as_argument"):
+    if not language_token_data.get("input_as_argument"):
         my_concatenated_file = f'< {my_concatenated_file}'
-    cli_args = ' '.join(language_token_data["command_args"]) if "command_args" in language_token_data else []
-                subprocess.call([tokenizer] + cli_args, stdin=infile, stdout=outfile)
+    cli_args = ' '.join(language_token_data["command_args"]) if "command_args" in language_token_data else ''
     command = f'{language_token_data["command_executable"]} {tokenizer} {cli_args} {my_concatenated_file} > {my_tokenized_file}'.strip()
     os.system(command)
 

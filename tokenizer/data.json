@@ -1,0 +1,35 @@
+{
+  "plaintext": {
+    "tokenizer": "plaintext_tokenizer.out",
+    "command_executable": "",
+    "input_as_argument": false,
+    "command_args": [
+      "--ignore_newlines"
+    ],
+    "token_value": "value"
+  },
+  "python": {
+    "tokenizer": "python_tokenizer.py",
+    "command_executable": "python3",
+    "input_as_argument": true,
+    "token_value": "type"
+  },
+  "cpp": {
+    "tokenizer": "c_tokenizer.py",
+    "command_executable": "python",
+    "input_as_argument": true,
+    "token_value": "type"
+  },
+  "java": {
+    "tokenizer": "java_tokenizer.py",
+    "command_executable": "python",
+    "input_as_argument": true,
+    "token_value": "type"
+  },
+  "mips": {
+    "tokenizer": "mips_tokenizer.py",
+    "command_executable": "python3",
+    "input_as_argument": true,
+    "token_value": "type"
+  }
+}

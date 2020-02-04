@@ -20,7 +20,6 @@ with open(os.path.join(CONFIG_PATH, 'submitty.json')) as open_file:
 SUBMITTY_DATA_DIR = OPEN_JSON['submitty_data_dir']
 SUBMITTY_INSTALL_DIR = OPEN_JSON['submitty_install_dir']
 
-
 def parse_args():
     parser = argparse.ArgumentParser(description="")
     parser.add_argument("config_path")
@@ -34,6 +33,13 @@ def hasher(args,my_tokenized_file,my_hashes_file):
         language = lichen_config_data["language"]
         sequence_length = int(lichen_config_data["sequence_length"])
 
+    data_json_path = os.path.join(SUBMITTY_INSTALL_DIR, "Lichen", "bin", "data.json")
+    with open(data_json_path) as token_data_file:
+        token_data = json.load(token_data_file)
+        if not language in token_data:
+            print("\n\nERROR: UNKNOWN HASHER\n\n")
+            exit(1)
+
     if (sequence_length < 1):
         print ("ERROR! sequence_length must be >= 1")
         exit(1)
@@ -41,41 +47,11 @@ def hasher(args,my_tokenized_file,my_hashes_file):
     with open(my_tokenized_file,'r',encoding='ISO-8859-1') as my_tf:
         with open(my_hashes_file,'w') as my_hf:
             tokens = json.load(my_tf)
+            token_values = [str(x.get(token_data[language]["token_value"])) for x in tokens]
             num = len(tokens)
-            for i in range(0,num-sequence_length):
-                foo=""
-                if language == "plaintext":
-                    for j in range(0,sequence_length):
-                        foo+=str(tokens[i+j].get("value"))
-
-                elif language == "python":
-                    for j in range(0,sequence_length):
-                        foo+=str(tokens[i+j].get("type"))
-
-                elif language == "cpp":
-                    for j in range(0,sequence_length):
-                        foo+=str(tokens[i+j].get("type"))
-
-                elif language == "java":
-                    for j in range(0,sequence_length):
-                        foo+=str(tokens[i+j].get("type"))
-
-                elif language == "mips":
-                    for j in range(0,sequence_length):
-                        foo+=str(tokens[i+j].get("type"))
-
-                else:
-                    print("\n\nERROR: UNKNOWN HASHER\n\n")
-                    exit(1)
-
-                hash_object = hashlib.md5(foo.encode())
-                hash_object_string=hash_object.hexdigest()
-                #FIXME: this truncation should be adjusted after more full-scale testing
-                #hash_object_string_truncated=hash_object_string[0:4]
-                hash_object_string_truncated=hash_object_string[0:8]
-                #my_hf.write(hash_object_string+"\n")
-                my_hf.write(hash_object_string_truncated+"\n")
-
+            #FIXME: this truncation should be adjusted after more full-scale testing
+            token_hashed_values = [ (hashlib.md5(''.join(token_values[x:x+sequence_length]).encode()).hexdigest())[0:8] for x in range(0, num-sequence_length)]
+            my_hf.write('\n'.join(token_hashed_values))
 
 def main():
     args = parse_args()
@@ -88,7 +64,7 @@ def main():
 
     sys.stdout.write("HASH ALL...")
     sys.stdout.flush()
-    
+
     # ===========================================================================
     # error checking
     course_dir=os.path.join(SUBMITTY_DATA_DIR,"courses",semester,course)
@@ -118,6 +94,6 @@ def main():
             hasher(args,my_tokenized_file,my_hashes_file)
 
     print("done")
-            
+
 if __name__ == "__main__":
     main()

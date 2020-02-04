@@ -28,51 +28,30 @@ def tokenize(args,my_concatenated_file,my_tokenized_file):
         lichen_config_data = json.load(lichen_config)
         language = lichen_config_data["language"]
 
-    if language == "plaintext":
-        tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin","plaintext_tokenizer.out")
-        with open(my_concatenated_file,'r') as infile:
-            with open (my_tokenized_file,'w') as outfile:
-                subprocess.call([tokenizer,"--ignore_newlines"],stdin=infile,stdout=outfile)
+    language_token_data = dict()
 
-    elif language == "python":
-        tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin","python_tokenizer.py")
-        with open(my_concatenated_file,'r') as infile:
-            with open (my_tokenized_file,'w') as outfile:
-                command="python3 "+str(tokenizer)+" "+my_concatenated_file+" > "+my_tokenized_file
-                os.system(command)
+    data_json_path = os.path.join(SUBMITTY_INSTALL_DIR, "Lichen", "bin", "data.json")
+    with open(data_json_path, 'r') as token_data_file:
+        token_data = json.load(token_data_file)
+        if not language in token_data:
+            print("\n\nERROR: UNKNOWN TOKENIZER\n\n")
+            exit(1)
+        else:
+            language_token_data = token_data[language]
 
-    elif language == "cpp":
-        tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin","c_tokenizer.py")
-        with open(my_concatenated_file,'r') as infile:
-            with open (my_tokenized_file,'w') as outfile:
-                command="python "+str(tokenizer)+" "+my_concatenated_file+" > "+my_tokenized_file
-                os.system(command)
-
-    elif language == "java":
-        tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin","java_tokenizer.py")
-        with open(my_concatenated_file,'r') as infile:
-            with open (my_tokenized_file,'w') as outfile:
-                command="python "+str(tokenizer)+" "+my_concatenated_file+" > "+my_tokenized_file
-                os.system(command)
-
-    elif language == "mips":
-        tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin","mips_tokenizer.py")
-        with open(my_concatenated_file,'r') as infile:
-            with open (my_tokenized_file,'w') as outfile:
-                command="python3 "+str(tokenizer)+" "+my_concatenated_file+" > "+my_tokenized_file
-                os.system(command)
-
-    else:
-        print("\n\nERROR: UNKNOWN TOKENIZER\n\n")
-        exit(1)
-
+    tokenizer = os.path.join(SUBMITTY_INSTALL_DIR,"Lichen","bin", language_token_data["tokenizer"])
+    if not language_token_data.get("input_as_argument"):
+        my_concatenated_file = f'< {my_concatenated_file}'
+    cli_args = ' '.join(language_token_data["command_args"]) if "command_args" in language_token_data else ''
+    command = f'{language_token_data["command_executable"]} {tokenizer} {cli_args} {my_concatenated_file} > {my_tokenized_file}'.strip()
+    os.system(command)
 
 def main():
     args = parse_args()
 
     sys.stdout.write("TOKENIZE ALL...")
     sys.stdout.flush()
-    
+
     with open(args.config_path) as lichen_config:
         lichen_config_data = json.load(lichen_config)
         semester = lichen_config_data["semester"]
@@ -108,6 +87,5 @@ def main():
 
     print ("done")
 
-    
 if __name__ == "__main__":
     main()

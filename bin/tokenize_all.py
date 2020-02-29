@@ -83,7 +83,9 @@ def main():
             if not os.path.isdir(my_tokenized_dir):
                 os.makedirs(my_tokenized_dir)
             my_tokenized_file=os.path.join(my_tokenized_dir,"tokens.json")
-            tokenize(args,my_concatenated_file,my_tokenized_file)
+            # Check to see if we have already tokenized...
+            if(not os.path.isfile(my_tokenized_file)):
+                tokenize(args,my_concatenated_file,my_tokenized_file)
 
     print ("done")
 

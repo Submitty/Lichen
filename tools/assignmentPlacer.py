@@ -8,21 +8,20 @@ if __name__ == "__main__":
         print('The assignments directory or the gradeable does not exist. Please create these.')
         sys.exit(1)
 
-    num_to_place = min(len(os.listdir(gradeable_path)), len(os.listdir('assignments')))
+    files_in_assign = os.listdir('assignments')
+    num_to_place = min(len(os.listdir(gradeable_path)), len(files_in_assign))
     placed = 0
-    ci = 1000
+    ci = 0
     gradeable_path_count = gradeable_path.count('/')
     for root, dirs, files in os.walk(gradeable_path):
         for name in dirs:
             print(f'{root} {name}')
             if (root.count('/') == gradeable_path_count):
                 res = list(filter(lambda x: not 'json' in x, os.listdir(f'{root}/{name}')))
-                print(res)
-                highest = int(max(res)) + 1 
-                #print(f'{root}/{name}/{highest}')
+                highest = int(max(res)) + 1
                 new_path = f'{root}/{name}/{highest}'
                 os.mkdir(new_path)
-                shutil.copy2(f'assignments/{ci}.txt', f'{new_path}/{ci}.txt') 
+                shutil.copy2(f'assignments/{files_in_assign[ci]}', f'{new_path}/{files_in_assign[ci]}')
                 ci+=1
                 placed += 1
             if(placed == num_to_place):

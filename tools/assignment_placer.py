@@ -27,6 +27,7 @@ if __name__ == "__main__":
     a_ind = 0
 
     hash_prefix = generateHashPrefix()
+    print(f'Assignment prefix is: {hash_prefix} (regex: {hash_prefix}_*)')
     for user_id in users_for_placement:
         current_path = f'{gradeable_path}/{user_id}'
         res = list(filter(lambda x: os.path.isdir(f'{current_path}/{x}'), os.listdir(current_path)))

@@ -16,7 +16,7 @@ def generateHashPrefix(nbytes = 8):
 
 if __name__ == "__main__":
     args = getArgs()
-    gradeable_path = f'/var/local/submitty/courses/s20/{args.course}/submissions/{args.gradeable}'
+    gradeable_path = f'/var/local/submitty/courses/{args.semester}/{args.course}/submissions/{args.gradeable}'
     assignments_path = f'{os.path.dirname(os.path.realpath(__file__))}/assignments'
 
     if not os.path.isdir(assignments_path) or not os.path.isdir(gradeable_path):

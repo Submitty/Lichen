@@ -30,8 +30,7 @@ fi
 # compile & install the tools
 
 mkdir -p ${lichen_installation_dir}/bin
-mkdir -p ${lichen_installation_dir}/tools
-
+mkdir -p ${lichen_installation_dir}/tools/assignments
 
 #--------------------
 # plaintext tool

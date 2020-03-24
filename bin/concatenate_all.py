@@ -71,13 +71,8 @@ def main():
             if not os.path.isdir(my_concatenated_dir):
                 os.makedirs(my_concatenated_dir)
             my_concatenated_file=os.path.join(my_concatenated_dir,"submission.concatenated")
+            total_concat = 0
             with open(my_concatenated_file,'w') as my_cf:
-                # print a brief header of information
-                my_cf.write("SEMESTER: "+semester+"\n")
-                my_cf.write("COURSE: "+course+"\n")
-                my_cf.write("GRADEABLE: "+gradeable+"\n")
-                my_cf.write("USER: "+user+"\n")
-                my_cf.write("VERSION: "+version+"\n")
                 # loop over all files in all subdirectories
                 base_path = os.path.join(submission_dir,user,version)
                 for my_dir,dirs,my_files in os.walk(base_path):
@@ -88,6 +83,7 @@ def main():
                         for e in expressions:
                             files_filtered.extend(fnmatch.filter(files, e.strip()))
                         files = files_filtered
+                    total_concat += len(files)
                     for my_file in files:
                         # skip the timestep
                         if my_file == ".submit.timestamp":
@@ -95,12 +91,12 @@ def main():
                         absolute_path=os.path.join(my_dir,my_file)
                         relative_path=absolute_path[len(base_path):]
                         # print a separator & filename
-                        my_cf.write("----------------------------------------------------\n")
-                        my_cf.write("FILE: "+relative_path+"\n\n")
                         with open(absolute_path, encoding='ISO-8859-1') as tmp:
                             # append the contents of the file
                             my_cf.write(tmp.read())
-                        my_cf.write("\n")
+            # Remove concat file if there no content...
+            if total_concat == 0:
+                os.remove(my_concatenated_file)
 
     print ("done")
 

@@ -5,6 +5,7 @@ import secrets
 
 def getArgs():
     parser = argparse.ArgumentParser()
+    parser.add_argument("semester", help="The semester_id where assignments will be placed (i.e. s20).")
     parser.add_argument("course", help="The course_id where assignments will be placed (i.e. sample).")
     parser.add_argument("gradeable", help="The gradeable_id where assignments will be placed (i.e. grades_released_homework_autohiddenEC).")
     args = parser.parse_args()
@@ -23,7 +24,7 @@ if __name__ == "__main__":
 
     files_in_assign = os.listdir(assignments_path)
     users_for_placement = os.listdir(gradeable_path)
-    num_to_place = min(len(users_for_placement)), len(files_in_assign))
+    num_to_place = min(len(users_for_placement), len(files_in_assign))
     a_ind = 0
 
     hash_prefix = generateHashPrefix()
@@ -31,7 +32,7 @@ if __name__ == "__main__":
     for user_id in users_for_placement:
         current_path = f'{gradeable_path}/{user_id}'
         res = list(filter(lambda x: os.path.isdir(f'{current_path}/{x}'), os.listdir(current_path)))
-        highest = int(max(res)) + 1
+        highest = len(res) + 1
         new_path = f'{current_path}/{highest}'
         os.mkdir(new_path)
         ext = os.path.splitext(files_in_assign[a_ind])[1]

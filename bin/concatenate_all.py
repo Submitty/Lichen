@@ -8,6 +8,7 @@ import argparse
 import os
 import json
 import sys
+import shutil
 import fnmatch
 
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'config')
@@ -94,9 +95,11 @@ def main():
                         with open(absolute_path, encoding='ISO-8859-1') as tmp:
                             # append the contents of the file
                             my_cf.write(tmp.read())
+
             # Remove concat file if there no content...
             if total_concat == 0:
                 os.remove(my_concatenated_file)
+                shutil.rmtree(os.path.join(course_dir, "lichen", "tokenized", gradeable, user, version))
                 os.rmdir(my_concatenated_dir)
 
     print ("done")

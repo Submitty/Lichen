@@ -97,6 +97,7 @@ def main():
             # Remove concat file if there no content...
             if total_concat == 0:
                 os.remove(my_concatenated_file)
+                os.rmdir(my_concatenated_dir)
 
     print ("done")
 

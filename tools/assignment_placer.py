@@ -38,5 +38,5 @@ if __name__ == "__main__":
         ext = os.path.splitext(files_in_assign[a_ind])[1]
         shutil.copy2(f'assignments/{files_in_assign[a_ind]}', f'{new_path}/{hash_prefix}_{a_ind}{ext}')
         a_ind += 1
-        if(a_ind == num_to_place):
-            raise SystemExit
+        if a_ind == num_to_place:
+            break

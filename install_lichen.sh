@@ -30,7 +30,7 @@ fi
 # compile & install the tools
 
 mkdir -p ${lichen_installation_dir}/bin
-
+mkdir -p ${lichen_installation_dir}/tools/assignments
 
 #--------------------
 # plaintext tool
@@ -64,6 +64,7 @@ cp ${lichen_repository_dir}/tokenizer/java/java_tokenizer.py ${lichen_installati
 cp ${lichen_repository_dir}/tokenizer/mips/mips_tokenizer.py ${lichen_installation_dir}/bin/mips_tokenizer.py
 cp ${lichen_repository_dir}/tokenizer/data.json ${lichen_installation_dir}/bin/data.json
 
+cp -rf ${lichen_repository_dir}/tools/* ${lichen_installation_dir}/tools
 
 ########################################################################################################################
 # fix permissions

@@ -12,6 +12,7 @@ import subprocess
 import sys
 import json
 import hashlib
+from shutil import rmtree
 
 
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'config')
@@ -77,6 +78,9 @@ def main():
         exit(1)
 
     hashes_dir=os.path.join(course_dir,"lichen","hashes",gradeable)
+    if os.path.isdir(hashes_dir):
+        rmtree(hashes_dir)
+        os.mkdir(hashes_dir)
 
     # ===========================================================================
     # walk the subdirectories

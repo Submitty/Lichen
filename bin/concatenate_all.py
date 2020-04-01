@@ -95,11 +95,12 @@ def main():
                         with open(absolute_path, encoding='ISO-8859-1') as tmp:
                             # append the contents of the file
                             my_cf.write(tmp.read())
-
             # Remove concat file if there no content...
             if total_concat == 0:
                 os.remove(my_concatenated_file)
-                shutil.rmtree(os.path.join(course_dir, "lichen", "tokenized", gradeable, user, version))
+                p2 = os.path.join(course_dir, "lichen", "tokenized", gradeable, user, version)
+                if os.path.isdir(p2):
+                    shutil.rmtree(p2)
                 os.rmdir(my_concatenated_dir)
 
     print ("done")

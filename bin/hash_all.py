@@ -78,9 +78,6 @@ def main():
         exit(1)
 
     hashes_dir=os.path.join(course_dir,"lichen","hashes",gradeable)
-    if os.path.isdir(hashes_dir):
-        rmtree(hashes_dir)
-        os.mkdir(hashes_dir)
 
     # ===========================================================================
     # walk the subdirectories

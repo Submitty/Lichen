@@ -12,8 +12,6 @@ import subprocess
 import sys
 import json
 import hashlib
-from shutil import rmtree
-
 
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'config')
 with open(os.path.join(CONFIG_PATH, 'submitty.json')) as open_file:

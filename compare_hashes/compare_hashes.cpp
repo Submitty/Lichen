@@ -283,36 +283,6 @@ int main(int argc, char* argv[]) {
     	others.clear();
     }
 
-    // std::map<Submission,std::set<int> >::iterator itr3 = common.find(itr->first);
-    // if (itr3 != common.end()) {
-    //   //std::cout << "HAS COMMON CODE" << std::endl;
-    //   int range_start=-1;
-    //   int range_end=-1;
-    //   for (std::set<int>::iterator itr4 = itr3->second.begin(); itr4 != itr3->second.end(); itr4++) {
-    //     //std::cout << "v=" << *itr4 << std::endl;
-    //     if (range_start == -1) {
-    //       range_start = range_end = *itr4;
-    //     } else if (range_end+1 == *itr4) {
-    //       range_end = *itr4;
-    //     } else {
-    //       std::map<std::string,nlohmann::json> info_data;
-    //       info_data["start"]=nlohmann::json(range_start);
-    //       info_data["end"]=nlohmann::json(range_end);
-    //       info_data["type"]=std::string("common");
-    //       info.push_back(info_data);
-    //       range_start = range_end = -1;
-    //     }
-    //   }
-    //   if (range_start != -1) {
-    //     std::map<std::string,nlohmann::json> info_data;
-    //     info_data["start"]=nlohmann::json(range_start);
-    //     info_data["end"]=nlohmann::json(range_end);
-    //     info_data["type"]=std::string("common");
-    //     info.push_back(info_data);
-    //     range_start=range_end=-1;
-    //   }
-    // }
-
     // save the file with matches per user
     nlohmann::json match_data = info;
     std::string matches_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/matches/"+gradeable+"/"+username+"/"+std::to_string(version);

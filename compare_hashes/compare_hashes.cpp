@@ -81,7 +81,7 @@ void insert_others(const std::string &this_username,
   }
 }
 
-void convert(std::map<Submission,std::set<int> > &myset, nlohmann::json &obj) {
+void convert(std::map<Submission,std::set<int> > &myset, nlohmann::json &obj, int sequence_length) {
   for (std::map<Submission,std::set<int> >::iterator itr = myset.begin(); itr != myset.end(); itr++) {
     nlohmann::json me;
     me["username"] = itr->first.username;
@@ -91,25 +91,14 @@ void convert(std::map<Submission,std::set<int> > &myset, nlohmann::json &obj) {
     int start = -1;
     int end = -1;
     std::set<int>::iterator itr2 = itr->second.begin();
-    while (true) {
-      int pos = (itr2 == itr->second.end()) ? -1 : *itr2;
-      if (pos != -1 && start == -1) {
-        start = end = pos;
-      } else if (pos != -1 && end+1 == pos) {
-        end = pos;
-      } else if (start != -1) {
-        nlohmann::json range;
-        range["start"] = start;
-        range["end"] = end;
-        start=end=-1;
-        foo.push_back(range);
-      }
-      if (itr2 == itr->second.end()) {
-        break;
-      }
-      itr2++;
+    for (; itr2 != itr->second.end(); itr2++) {
+		start = *itr2;
+		end = start + sequence_length;
+		nlohmann::json range;
+		range["start"] = start;
+		range["end"] = end;
+		foo.push_back(range);
     }
-
     me["matchingpositions"] = foo;
     obj.push_back(me);
   }
@@ -278,60 +267,20 @@ int main(int argc, char* argv[]) {
     int range_end=-1;
     std::map<Submission, std::set<int> > others;
     std::map<int,std::map<Submission,std::vector<Sequence> > >::iterator itr2 = itr->second.begin();
-    while (true) {
-      int pos = (itr2 == itr->second.end()) ? -1 : itr2->first;      
-      if (pos != -1 && range_start==-1) {
-        range_start = range_end = pos;
-        insert_others(username,others,itr2->second);
-      } else if (pos != -1 && range_end+1 == pos) {
-        range_end = pos;
-        insert_others(username,others,itr2->second);
-      } else if (range_start != -1) {
-        std::map<std::string,nlohmann::json> info_data;
-        info_data["start"]=nlohmann::json(range_start);
-        info_data["end"]=nlohmann::json(range_end);
-        info_data["type"]=nlohmann::json(std::string("match"));
-        nlohmann::json obj;
-        convert(others,obj);
-        info_data["others"]=obj;
-        info.push_back(info_data);
-        range_start=range_end=-1;
-        others.clear();
-      }
-      if (itr2 == itr->second.end()) {
-        break;
-      }
-      itr2++;
-    }
 
-    std::map<Submission,std::set<int> >::iterator itr3 = common.find(itr->first);
-    if (itr3 != common.end()) {
-      //std::cout << "HAS COMMON CODE" << std::endl;
-      int range_start=-1;
-      int range_end=-1;
-      for (std::set<int>::iterator itr4 = itr3->second.begin(); itr4 != itr3->second.end(); itr4++) {
-        //std::cout << "v=" << *itr4 << std::endl;
-        if (range_start == -1) {
-          range_start = range_end = *itr4;
-        } else if (range_end+1 == *itr4) {
-          range_end = *itr4;
-        } else {
-          std::map<std::string,nlohmann::json> info_data;
-          info_data["start"]=nlohmann::json(range_start);
-          info_data["end"]=nlohmann::json(range_end);
-          info_data["type"]=std::string("common");
-          info.push_back(info_data);
-          range_start = range_end = -1;
-        }
-      }
-      if (range_start != -1) {
-        std::map<std::string,nlohmann::json> info_data;
-        info_data["start"]=nlohmann::json(range_start);
-        info_data["end"]=nlohmann::json(range_end);
-        info_data["type"]=std::string("common");
-        info.push_back(info_data);
-        range_start=range_end=-1;
-      }
+    for (; itr2 != itr->second.end(); itr2++) {
+    	range_start = itr2->first;
+    	range_end = range_start + sequence_length;
+    	insert_others(username,others,itr2->second);
+    	std::map<std::string,nlohmann::json> info_data;
+    	info_data["start"]=nlohmann::json(range_start);
+    	info_data["end"]=nlohmann::json(range_end);
+    	info_data["type"]=nlohmann::json(std::string("match"));
+    	nlohmann::json obj;
+    	convert(others,obj, sequence_length);
+    	info_data["others"]=obj;
+    	info.push_back(info_data);
+    	others.clear();
     }
 
     // save the file with matches per user

@@ -72,7 +72,7 @@ void insert_others(const std::string &this_username,
                    std::map<Submission,std::set<int> > &others,
                    const std::map<Submission,std::vector<Sequence> > &matches) {
   for (std::map<Submission,std::vector<Sequence> >::const_iterator itr = matches.begin(); itr!=matches.end();itr++) {
-    for (int i = 0; i < itr->second.size(); i++) {
+    for (unsigned int i = 0; i < itr->second.size(); i++) {
       // don't include matches to this username
       if (this_username == itr->first.username)
         continue;
@@ -92,12 +92,12 @@ void convert(std::map<Submission,std::set<int> > &myset, nlohmann::json &obj, in
     int end = -1;
     std::set<int>::iterator itr2 = itr->second.begin();
     for (; itr2 != itr->second.end(); itr2++) {
-		start = *itr2;
-		end = start + sequence_length;
-		nlohmann::json range;
-		range["start"] = start;
-		range["end"] = end;
-		foo.push_back(range);
+  		start = *itr2;
+  		end = start + sequence_length;
+  		nlohmann::json range;
+  		range["start"] = start;
+  		range["end"] = end;
+  		foo.push_back(range);
     }
     me["matchingpositions"] = foo;
     obj.push_back(me);
@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
         hash_counts[tmp][username].push_back(Sequence(username,version,count));
       }
       submission_length[Submission(username,version)]=count;
-    }    
+    }
   }
 
   std::cout << "finished loading" << std::endl;
@@ -190,14 +190,14 @@ int main(int argc, char* argv[]) {
   // label the parts of the file that match the provided code
   // user,version -> vector<position>
   std::map<Submission,std::vector<int> > provided;
-  
+
   // document the suspicious parts of this file,
   // user,version -> ( position -> ( other user,version -> std::vector<Sequence> ) )
   std::map<Submission,std::map<int,std::map<Submission, std::vector<Sequence> > > > suspicious;
 
   int my_counter = 0;
   int my_percent = 0;
-  
+
   // ---------------------------------------------------------------------------
   // walk over the structure containing all of the hashes identifying
   // common to many/all, provided code, suspicious matches, and unique code
@@ -213,7 +213,7 @@ int main(int argc, char* argv[]) {
     if (count > threshold) {
       // common to many/all
       for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
-        for (int i = 0; i < itr2->second.size(); i++) {
+        for (unsigned int i = 0; i < itr2->second.size(); i++) {
           common[itr2->second[i].submission].insert(itr2->second[i].position);
         }
       }
@@ -221,16 +221,16 @@ int main(int argc, char* argv[]) {
       // suspicious matches
       for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
         std::string username = itr2->first;
-        for (int i = 0; i < itr2->second.size(); i++) {
+        for (unsigned int i = 0; i < itr2->second.size(); i++) {
           assert (itr2->second[i].submission.username == username);
           int version = itr2->second[i].submission.version;
           int position = itr2->second[i].position;
 
           std::map<Submission, std::vector<Sequence> > matches;
-          
+
           for (std::map<std::string,std::vector<Sequence> >::iterator itr3 = itr->second.begin(); itr3 != itr->second.end(); itr3++) {
             std::string match_username = itr3->first;
-            for (int j = 0; j < itr3->second.size(); j++) {
+            for (unsigned int j = 0; j < itr3->second.size(); j++) {
               int match_version = itr3->second[j].submission.version;
               Submission ms(match_username,match_version);
               matches[ms].push_back(itr3->second[j]);
@@ -248,7 +248,7 @@ int main(int argc, char* argv[]) {
   // ---------------------------------------------------------------------------
   // prepare a sorted list of all users sorted by match percent
   std::vector<std::pair<Submission,float> > ranking;
-    
+
   for (std::map<Submission,std::map<int,std::map<Submission,std::vector<Sequence> > > >::iterator itr = suspicious.begin();
        itr != suspicious.end(); itr++) {
     int total = submission_length[itr->first];
@@ -263,22 +263,22 @@ int main(int argc, char* argv[]) {
     ranking.push_back(std::make_pair(itr->first,percent));
 
     // prepare the ranges of suspicious matching tokens
-    int range_start=-1;
-    int range_end=-1;
+    int range_start = -1;
+    int range_end = -1;
     std::map<Submission, std::set<int> > others;
-    std::map<int,std::map<Submission,std::vector<Sequence> > >::iterator itr2 = itr->second.begin();
+    std::map<int, std::map<Submission, std::vector<Sequence> > >::iterator itr2 = itr->second.begin();
 
     for (; itr2 != itr->second.end(); itr2++) {
     	range_start = itr2->first;
     	range_end = range_start + sequence_length;
-    	insert_others(username,others,itr2->second);
-    	std::map<std::string,nlohmann::json> info_data;
-    	info_data["start"]=nlohmann::json(range_start);
-    	info_data["end"]=nlohmann::json(range_end);
-    	info_data["type"]=nlohmann::json(std::string("match"));
+    	insert_others(username, others, itr2->second);
+    	std::map<std::string, nlohmann::json> info_data;
+    	info_data["start"] = nlohmann::json(range_start);
+    	info_data["end"] = nlohmann::json(range_end);
+    	info_data["type"] = nlohmann::json(std::string("match"));
     	nlohmann::json obj;
-    	convert(others,obj, sequence_length);
-    	info_data["others"]=obj;
+    	convert(others, obj, sequence_length);
+    	info_data["others"] = obj;
     	info.push_back(info_data);
     	others.clear();
     }
@@ -289,19 +289,19 @@ int main(int argc, char* argv[]) {
     boost::filesystem::create_directories(matches_dir);
     std::string matches_file = matches_dir+"/matches.json";
     std::ofstream ostr(matches_file);
-    assert (ostr.good());
+    assert(ostr.good());
     ostr << match_data.dump(4) << std::endl;
   }
 
   std::set<std::string> users_already_ranked;
-  
+
   // save the rankings to a file
   std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/";
   std::string ranking_file = ranking_dir+gradeable+".txt";
   boost::filesystem::create_directories(ranking_dir);
   std::ofstream ranking_ostr(ranking_file);
   std::sort(ranking.begin(),ranking.end(),ranking_sorter);
-  for (int i = 0; i < ranking.size(); i++) {
+  for (unsigned int i = 0; i < ranking.size(); i++) {
     std::string username = ranking[i].first.username;
     if (users_already_ranked.insert(username).second != false) {
       // print each username at most once, only if insert was
@@ -313,7 +313,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  
+
   // ---------------------------------------------------------------------------
   std::cout << "done" << std::endl;
 }

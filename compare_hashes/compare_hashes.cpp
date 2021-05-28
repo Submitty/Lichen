@@ -104,6 +104,47 @@ void convert(std::map<Submission,std::set<int> > &myset, nlohmann::json &obj, in
   }
 }
 
+
+// ensures that all of the regions in the two parameters are adjacent
+bool matchingPositionsAreAdjacent(const nlohmann::json &first, const nlohmann::json &second) {
+  // they can't all be adjacent if there are an unequal number between the two lists
+  if (first.size() != second.size()) {
+    return false;
+  }
+
+  nlohmann::json::const_iterator itr1 = first.begin();
+  nlohmann::json::const_iterator itr2 = second.begin();
+  // iterate over each matching submission
+  for (; itr1 != first.end() && itr2 != second.end(); itr1++, itr2++) {
+    // the number of matches must be the same
+    if ((*itr1)["matchingpositions"].size() != (*itr2)["matchingpositions"].size()) {
+      return false;
+    }
+
+    nlohmann::json::const_iterator itr3 = (*itr1)["matchingpositions"].begin();
+    nlohmann::json::const_iterator itr4 = (*itr2)["matchingpositions"].begin();
+    // iterate over each matching position in the submission
+    for (; itr3 != (*itr1)["matchingpositions"].end() && itr4 != (*itr2)["matchingpositions"].end(); itr3++, itr4++) {
+      if ((*itr3)["end"].get<int>() + 1 != (*itr4)["end"].get<int>()) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+// increments the end position for each of the matches in the json provided
+void incrementEndPositionsForMatches(nlohmann::json &matches) {
+  nlohmann::json::iterator itr = matches.begin();
+  for (; itr != matches.end(); itr++) {
+    nlohmann::json::iterator itr2 = (*itr)["matchingpositions"].begin();
+    for (; itr2 != (*itr)["matchingpositions"].end(); itr2++) {
+      (*itr2)["end"] = (*itr2)["end"].get<int>() + 1;
+    }
+  }
+}
+
+
 // ===================================================================================
 // ===================================================================================
 int main(int argc, char* argv[]) {
@@ -147,10 +188,10 @@ int main(int argc, char* argv[]) {
 
 
   // ---------------------------------------------------------------------------
-  // loop over all submissions and populate the hash_counts structure
+  // loop over all submissions and populate the all_hashes structure
 
   // the main data structure that looks for matches between submissions
-  hashed_sequences hash_counts;
+  hashed_sequences all_hashes;
 
   // loop over all users
   boost::filesystem::directory_iterator end_iter;
@@ -169,11 +210,11 @@ int main(int argc, char* argv[]) {
       boost::filesystem::path hash_file = version_path;
       hash_file /= "hashes.txt";
       std::ifstream istr(hash_file.string());
-      std::string tmp;
+      std::string hash;
       int count = 0;
-      while (istr >> tmp) {
+      while (istr >> hash) {
         count++;
-        hash_counts[tmp][username].push_back(Sequence(username,version,count));
+        all_hashes[hash][username].push_back(Sequence(username,version,count));
       }
       submission_length[Submission(username,version)]=count;
     }
@@ -189,40 +230,44 @@ int main(int argc, char* argv[]) {
 
   // label the parts of the file that match the provided code
   // user,version -> vector<position>
+  // TODO: Currently unused.  Probably supposed to be used for provided code checking.
   std::map<Submission,std::vector<int> > provided;
 
   // document the suspicious parts of this file,
   // user,version -> ( position -> ( other user,version -> std::vector<Sequence> ) )
   std::map<Submission,std::map<int,std::map<Submission, std::vector<Sequence> > > > suspicious;
 
+  // Used to calculate current progress (printed to the log)
   int my_counter = 0;
   int my_percent = 0;
 
   // ---------------------------------------------------------------------------
   // walk over the structure containing all of the hashes identifying
   // common to many/all, provided code, suspicious matches, and unique code
-  for (hashed_sequences::iterator itr = hash_counts.begin(); itr != hash_counts.end(); itr++) {
-    int count = itr->second.size();
-
+  for (hashed_sequences::iterator itr = all_hashes.begin(); itr != all_hashes.end(); itr++) {
+    // print current progress
     my_counter++;
-    int percent = (int) (100 * (my_counter / float(hash_counts.size())));
+    int percent = (int) (100 * (my_counter / float(all_hashes.size())));
     if (percent > my_percent) {
       std::cout << "hash walk " << percent << "% complete" << std::endl;
       my_percent = percent;
     }
-    if (count > threshold) {
-      // common to many/all
+
+    // main algorithm
+    int count = itr->second.size(); // number of students with this hash
+    if (count > threshold) { // common to many/all
       for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
         for (unsigned int i = 0; i < itr2->second.size(); i++) {
           common[itr2->second[i].submission].insert(itr2->second[i].position);
         }
       }
-    } else if (count > 1 && count <= threshold) {
-      // suspicious matches
+    } else if (count > 1 && count <= threshold) { // suspicious matches
+      // loop over every user with a given hash
       for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
         std::string username = itr2->first;
+        //
         for (unsigned int i = 0; i < itr2->second.size(); i++) {
-          assert (itr2->second[i].submission.username == username);
+          assert(itr2->second[i].submission.username == username);
           int version = itr2->second[i].submission.version;
           int position = itr2->second[i].position;
 
@@ -249,6 +294,9 @@ int main(int argc, char* argv[]) {
   // prepare a sorted list of all users sorted by match percent
   std::vector<std::pair<Submission,float> > ranking;
 
+  my_counter = 0;
+  my_percent = 0;
+  std::cout << "merging regions and writing matches files..." << std::endl;
   for (std::map<Submission,std::map<int,std::map<Submission,std::vector<Sequence> > > >::iterator itr = suspicious.begin();
        itr != suspicious.end(); itr++) {
     int total = submission_length[itr->first];
@@ -266,9 +314,9 @@ int main(int argc, char* argv[]) {
     int range_start = -1;
     int range_end = -1;
     std::map<Submission, std::set<int> > others;
-    std::map<int, std::map<Submission, std::vector<Sequence> > >::iterator itr2 = itr->second.begin();
 
-    for (; itr2 != itr->second.end(); itr2++) {
+    for (std::map<int, std::map<Submission, std::vector<Sequence> > >::iterator itr2 = itr->second.begin();
+         itr2 != itr->second.end(); itr2++) {
     	range_start = itr2->first;
     	range_end = range_start + sequence_length;
     	insert_others(username, others, itr2->second);
@@ -283,6 +331,44 @@ int main(int argc, char* argv[]) {
     	others.clear();
     }
 
+    // Merge matching regions:
+    if (info.size() > 0) { // check to make sure that there are more than 1 positions (if it's 1, we can't merge anyway)
+      // loop through all positions
+      for (unsigned int position = 1; position < info.size(); position++) {
+        nlohmann::json* prevPosition = &info[position - 1];
+        nlohmann::json* currPosition = &info[position];
+        if ((*currPosition)["end"].get<int>() == (*prevPosition)["end"].get<int>() + 1) { // check whether they are next to each other
+          bool canBeMerged = true;
+          nlohmann::json::iterator prevPosItr = (*prevPosition)["others"].begin();
+          nlohmann::json::iterator currPosItr = (*currPosition)["others"].begin();
+          if ((*prevPosition)["others"].size() != (*currPosition)["others"].size()) {
+            canBeMerged = false;
+          }
+          else {
+            for (; prevPosItr != (*prevPosition)["others"].end() && currPosItr != (*currPosition)["others"].end(); prevPosItr++, currPosItr++) {
+              // we can't merge the two positions if they are different in any way, except for the ending positions
+              if ((*prevPosItr)["username"] != (*currPosItr)["username"] ||
+                  (*prevPosItr)["version"] != (*currPosItr)["version"] ||
+                  !matchingPositionsAreAdjacent((*prevPosItr)["others"], (*currPosItr)["others"])) {
+                canBeMerged = false;
+                break;
+              }
+            }
+          }
+          //if it's possible to do the merging, do it here by adjusting the end of the previous position and erasing the current position
+          if (canBeMerged) {
+            (*prevPosition)["end"] = (*currPosition)["end"].get<int>(); // (should be the equivalent of prevPosition["end"]++)
+
+            // increment end positions for each element
+            incrementEndPositionsForMatches((*prevPosition)["others"]);
+
+            info.erase(info.begin() + position);
+            position--;
+          }
+        }
+      }
+    }
+
     // save the file with matches per user
     nlohmann::json match_data = info;
     std::string matches_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/matches/"+gradeable+"/"+username+"/"+std::to_string(version);
@@ -291,7 +377,14 @@ int main(int argc, char* argv[]) {
     std::ofstream ostr(matches_file);
     assert(ostr.good());
     ostr << match_data.dump(4) << std::endl;
+
+    my_counter++;
+    if (int((my_counter / float(suspicious.size())) * 100) > my_percent) {
+      my_percent = int((my_counter / float(suspicious.size())) * 100);
+      std::cout << "merging: " << my_percent << "% complete" << std::endl;
+    }
   }
+  std::cout << "done merging and writing matches files" << std::endl;
 
   std::set<std::string> users_already_ranked;
 

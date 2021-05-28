@@ -77,7 +77,7 @@ def main():
         for version in sorted(os.listdir(os.path.join(concatenated_dir,user))):
             my_concatenated_file=os.path.join(concatenated_dir,user,version,"submission.concatenated")
 
-            # ===========================================================================
+            # ==================================================================
             # create the directory
             my_tokenized_dir=os.path.join(tokenized_dir,user,version)
             if not os.path.isdir(my_tokenized_dir):

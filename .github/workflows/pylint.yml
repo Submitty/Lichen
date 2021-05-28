@@ -22,4 +22,4 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install flake8 flake8-bugbear
       - name: Run python linting
-        run : python3 -m flake8
+        run : python3 -m flake8 --max-line-length=100

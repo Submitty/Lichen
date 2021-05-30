@@ -36,12 +36,24 @@ public:
   int version() const { return version_; }
   void addHash(const hash &h, location_in_submission l) { hashed.push_back(make_pair(h, l)); }
   const vector<pair<hash, location_in_submission>> & getHashes() const { return hashes; }
+  void addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location) {
+    map<location_in_submission, vector<HashLocation>>::iterator itr =  suspicious_matches.find(location);
+    if (itr != suspicious_matches.end()) {
+      // location already exists in the map, so we just append the location to the vector
+      suspicious_matches[location].push_back(matching_location);
+    } else {
+      // intialize the vector and add the location
+      vector<HashLocation> v();
+      v.push_back(matching_location);
+      suspicious_matches[location] = v;
+    }
+  }
 
 private:
   string student_;
   int version_;
   vector<pair<hash, location_in_submission>> hashes;
-  map<location_in_submission, vector<hash_location>> suspicious_matches;
+  map<location_in_submission, vector<HashLocation>> suspicious_matches;
 };
 
 
@@ -56,6 +68,8 @@ typedef string hash;
 // helper functions
 
 
+// TODO: remake functions
+/*
 // Orders all Submissions by percentage of tokens in that match tokens
 // in a small number of other files (but not most or all).
 bool ranking_sorter(const std::pair<Submission,float> &a, const std::pair<Submission,float> &b) {
@@ -143,7 +157,7 @@ void incrementEndPositionsForMatches(nlohmann::json &matches) {
     }
   }
 }
-
+*/
 
 // ===================================================================================
 // ===================================================================================
@@ -252,58 +266,12 @@ int main(int argc, char* argv[]) {
       for (; occurences_itr != occurences.end(); ++occurences_itr) {
         if (occurences_itr->name != submission_itr->student()) {
           // SUS MATCH. 
+          submission_itr->addSuspiciousMatch(hash_itr->second, *occurences_itr);
         }
       }
     }
   }
 
-/*
-  // walk over the structure containing all of the hashes identifying
-  // common to many/all, provided code, suspicious matches, and unique code
-  for (hashed_sequences::iterator itr = all_hashes.begin(); itr != all_hashes.end(); itr++) {
-    // print current progress
-    my_counter++;
-    int percent = (int) (100 * (my_counter / float(all_hashes.size())));
-    if (percent > my_percent) {
-      std::cout << "hash walk " << percent << "% complete" << std::endl;
-      my_percent = percent;
-    }
-
-    // main algorithm
-    int count = itr->second.size(); // number of students with this hash
-    if (count > threshold) { // common to many/all
-      for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
-        for (unsigned int i = 0; i < itr2->second.size(); i++) {
-          common[itr2->second[i].submission].insert(itr2->second[i].position);
-        }
-      }
-    } else if (count > 1 && count <= threshold) { // suspicious matches
-      // loop over every user with a given hash
-      for (std::map<std::string,std::vector<Sequence> >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++) {
-        std::string username = itr2->first;
-        //
-        for (unsigned int i = 0; i < itr2->second.size(); i++) {
-          assert(itr2->second[i].submission.username == username);
-          int version = itr2->second[i].submission.version;
-          int position = itr2->second[i].position;
-
-          std::map<Submission, std::vector<Sequence> > matches;
-
-          for (std::map<std::string,std::vector<Sequence> >::iterator itr3 = itr->second.begin(); itr3 != itr->second.end(); itr3++) {
-            std::string match_username = itr3->first;
-            for (unsigned int j = 0; j < itr3->second.size(); j++) {
-              int match_version = itr3->second[j].submission.version;
-              Submission ms(match_username,match_version);
-              matches[ms].push_back(itr3->second[j]);
-            }
-          }
-          Submission s(username,version);
-          suspicious[s][position]=matches;
-        }
-      }
-    }
-  }
-*/
   std::cout << "finished walking" << std::endl;
 
   // ---------------------------------------------------------------------------

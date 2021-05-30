@@ -43,7 +43,8 @@ public:
   void addHash(const hash &h, location_in_submission l) { hashes.push_back(make_pair(h, l)); }
   const std::vector<std::pair<hash, location_in_submission>> & getHashes() const { return hashes; }
   void addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location) {
-    std::map<location_in_submission, std::set<HashLocation>>::iterator itr =  suspicious_matches.find(location);
+    std::map<location_in_submission, std::set<HashLocation>>::iterator itr = suspicious_matches.find(location);
+
     if (itr != suspicious_matches.end()) {
       // location already exists in the map, so we just append the location to the vector
       suspicious_matches[location].insert(matching_location);
@@ -270,7 +271,6 @@ int main(int argc, char* argv[]) {
 
       // create a submission object and load to the main submission structure
       Submission submission(username, version);
-      all_submissions.push_back(submission);
 
       // load the hashes sequences from this submission
       boost::filesystem::path hash_file = version_path;
@@ -283,6 +283,8 @@ int main(int argc, char* argv[]) {
         all_hashes[input_hash].push_back(HashLocation(username, version, location));
         submission.addHash(input_hash, location);
       }
+
+      all_submissions.push_back(submission);
     }
   }
 
@@ -313,6 +315,11 @@ int main(int argc, char* argv[]) {
           submission_itr->addSuspiciousMatch(hash_itr->second, *occurences_itr);
         }
       }
+    }
+    my_counter++;
+    if (int((my_counter / float(all_submissions.size())) * 100) > my_percent) {
+      my_percent = int((my_counter / float(all_submissions.size())) * 100);
+      std::cout << "hash walk: " << my_percent << "% complete" << std::endl;
     }
   }
 
@@ -390,7 +397,7 @@ int main(int argc, char* argv[]) {
 
 
     // prepare a sorted list of all users sorted by match percent
-    std::vector<std::pair<Submission,float> > ranking;
+    // std::vector<std::pair<Submission,float> > ranking;
 
     // Merge matching regions:
     if (result.size() > 0) { // check to make sure that there are more than 1 positions (if it's 1, we can't merge anyway)

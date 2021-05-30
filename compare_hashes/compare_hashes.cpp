@@ -13,43 +13,43 @@
 
 #include "nlohmann/json.hpp"
 
+using namespace std;
+
 // ===================================================================================
 // helper classes
 
-
-// A submission is the concatenated files for one submission version
-// for a user.
-class Submission {
-public:
-  Submission(std::string u, int v) : username(u),version(v) {}
-  std::string username;
+// represents the location of a hash within 
+// a unique student and version pair
+struct HashLocation {
+  HashLocation(const string &s, int v, location_in_submission l) : student(s), version(v), location(l) {}
+  string student;
   int version;
+  location_in_submission location;
 };
 
-// to allow sorting
-bool operator<(const Submission &a, const Submission &b) {
-  return a.username < b.username ||
-                      (a.username == b.username && a.version < b.version);
-}
-
-
-// A sequence is represented by the start location (integer index of
-// the token) within in a specific concatenated file (the Submission).
-class Sequence {
+// represents a unique student-version pair, all its 
+// hashes, and other submissions with those hashes
+class Submission {
 public:
-  Sequence(std::string username, int version, int p) : submission(username,version),position(p) {}
-  Submission submission;
-  int position;
+  Submission(const string &s, int v) : student_(s), version_(v) {}
+  const string & student() const { return student_; }
+  int version() const { return version_; }
+  void addHash(const hash &h, location_in_submission l) { hashed.push_back(make_pair(h, l)); }
+  const vector<pair<hash, location_in_submission>> & getHashes() const { return hashes; }
+
+private:
+  string student_;
+  int version_;
+  vector<pair<hash, location_in_submission>> hashes;
+  map<location_in_submission, vector<hash_location>> suspicious_matches;
 };
 
 
 // ===================================================================================
 // helper typedefs
 
-
-// matching sequence hash -> ( each user -> all match locations by that user across all versions )
-typedef std::map<std::string,std::map<std::string,std::vector<Sequence> > > hashed_sequences;
-
+typedef int location_in_submission;
+typedef string hash;
 
 
 // ===================================================================================
@@ -183,15 +183,13 @@ int main(int argc, char* argv[]) {
   }
 
 
-  // store the total size (# of tokens) in each submission
-  std::map<Submission,int> submission_length;
-
-
   // ---------------------------------------------------------------------------
-  // loop over all submissions and populate the all_hashes structure
+  // loop over all submissions and populate the all_hashes and all_submissions structures
 
-  // the main data structure that looks for matches between submissions
-  hashed_sequences all_hashes;
+  // Stores all the hashes and their locations across all submissions
+  unordered_map<hash, vector<HashLocation>> all_hashes;
+  // Stores all submissions
+  vector<Submission> all_submissions;
 
   // loop over all users
   boost::filesystem::directory_iterator end_iter;
@@ -199,6 +197,7 @@ int main(int argc, char* argv[]) {
     boost::filesystem::path username_path = dir_itr->path();
     assert (is_directory(username_path));
     std::string username = dir_itr->path().filename().string();
+    
     // loop over all versions
     for (boost::filesystem::directory_iterator username_itr( username_path ); username_itr != end_iter; ++username_itr) {
       boost::filesystem::path version_path = username_itr->path();
@@ -206,42 +205,59 @@ int main(int argc, char* argv[]) {
       std::string str_version = username_itr->path().filename().string();
       int version = std::stoi(str_version);
       assert (version > 0);
+
+      // create a submission object and load to the main submission structure
+      Submission submission(username, version);
+      all_submissions.push_back(submission);
+
       // load the hashes sequences from this submission
       boost::filesystem::path hash_file = version_path;
       hash_file /= "hashes.txt";
       std::ifstream istr(hash_file.string());
-      std::string hash;
-      int count = 0;
-      while (istr >> hash) {
-        count++;
-        all_hashes[hash][username].push_back(Sequence(username,version,count));
+      hash input_hash;
+      int location = 0;
+      while (istr >> input_hash) {
+        location++;
+        all_hashes[input_hash].push_back(HashLocation(username, version, location));
+        submission.addHash(input_hash, location);
       }
-      submission_length[Submission(username,version)]=count;
     }
   }
 
   std::cout << "finished loading" << std::endl;
 
   // ---------------------------------------------------------------------------
-
-  // label the parts of the file that are common to many
-  // user,version -> vector<position>
-  std::map<Submission,std::set<int> > common;
-
-  // label the parts of the file that match the provided code
-  // user,version -> vector<position>
-  // TODO: Currently unused.  Probably supposed to be used for provided code checking.
-  std::map<Submission,std::vector<int> > provided;
-
-  // document the suspicious parts of this file,
-  // user,version -> ( position -> ( other user,version -> std::vector<Sequence> ) )
-  std::map<Submission,std::map<int,std::map<Submission, std::vector<Sequence> > > > suspicious;
+  // THIS IS THE MAIN PLAGIARISM DETECTION ALGORITHM
 
   // Used to calculate current progress (printed to the log)
   int my_counter = 0;
   int my_percent = 0;
 
   // ---------------------------------------------------------------------------
+  
+  //unordered_map<hash, vector<HashLocation>> all_hashes;
+  //vector<Submission> all_submissions;
+
+  // walk over every Submission 
+  for (vector<Submission>::iterator submission_itr = all_submissions.begin(); 
+       submission_itr != all_submissions.end(); ++submission_itr) {
+    
+    // walk over every hash in that submission
+    vector<pair<hash, location_in_submission>>::const_iterator hash_itr = submission_itr->getHashes().begin();
+    for (; hash_itr != submission_itr->getHashes().end(); ++hash_itr) {
+      
+      // look up that hash in the all_hashes table, and see which other occurences of that hash in other submisions
+      vector<HashLocation> occurences = all_hashes[hash_itr->first]->second; // TODO: Optimize?
+      vector<HashLocation>::iterator occurences_itr = occurences.begin();
+      for (; occurences_itr != occurences.end(); ++occurences_itr) {
+        if (occurences_itr->name != submission_itr->student()) {
+          // SUS MATCH. 
+        }
+      }
+    }
+  }
+
+/*
   // walk over the structure containing all of the hashes identifying
   // common to many/all, provided code, suspicious matches, and unique code
   for (hashed_sequences::iterator itr = all_hashes.begin(); itr != all_hashes.end(); itr++) {
@@ -287,7 +303,7 @@ int main(int argc, char* argv[]) {
       }
     }
   }
-
+*/
   std::cout << "finished walking" << std::endl;
 
   // ---------------------------------------------------------------------------

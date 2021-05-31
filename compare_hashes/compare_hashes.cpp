@@ -33,6 +33,15 @@ struct HashLocation {
   location_in_submission location;
 };
 
+
+// represents an element in a ranking of students by percent match
+struct StudentRanking {
+  StudentRanking(const std::string &s, int v, float p) : student(s), version(v), percent(p) {}
+  std::string student;
+  int version;
+  float percent;
+};
+
 // represents a unique student-version pair, all its
 // hashes, and other submissions with those hashes
 class Submission {
@@ -117,96 +126,12 @@ void incrementEndPositionsForMatches(nlohmann::json &matches) {
 }
 
 
-// TODO: remake functions
-/*
 // Orders all Submissions by percentage of tokens in that match tokens
 // in a small number of other files (but not most or all).
-bool ranking_sorter(const std::pair<Submission,float> &a, const std::pair<Submission,float> &b) {
-  return
-    a.second > b.second ||
-    (a.second == b.second && a.first.username < b.first.username) ||
-    (a.second == b.second && a.first.username == b.first.username && a.first.version < b.first.version);
+bool ranking_sorter(const StudentRanking &a, const StudentRanking &b) {
+  return a.percent > b.percent ||
+        (a.percent == b.percent && a.student > b.student);
 }
-
-
-// ===================================================================================
-// ===================================================================================
-void insert_others(const std::string &this_username,
-                   std::map<Submission,std::set<int> > &others,
-                   const std::map<Submission,std::vector<Sequence> > &matches) {
-  for (std::map<Submission,std::vector<Sequence> >::const_iterator itr = matches.begin(); itr!=matches.end();itr++) {
-    for (unsigned int i = 0; i < itr->second.size(); i++) {
-      // don't include matches to this username
-      if (this_username == itr->first.username)
-        continue;
-      others[itr->first].insert(itr->second[i].position);
-    }
-  }
-}
-
-void convert(std::map<Submission,std::set<int> > &myset, nlohmann::json &obj, int sequence_length) {
-  for (std::map<Submission,std::set<int> >::iterator itr = myset.begin(); itr != myset.end(); itr++) {
-    nlohmann::json me;
-    me["username"] = itr->first.username;
-    me["version"] = itr->first.version;
-
-    std::vector<nlohmann::json> foo;
-    int start = -1;
-    int end = -1;
-    std::set<int>::iterator itr2 = itr->second.begin();
-    for (; itr2 != itr->second.end(); itr2++) {
-  		start = *itr2;
-  		end = start + sequence_length;
-  		nlohmann::json range;
-  		range["start"] = start;
-  		range["end"] = end;
-  		foo.push_back(range);
-    }
-    me["matchingpositions"] = foo;
-    obj.push_back(me);
-  }
-}
-
-
-// ensures that all of the regions in the two parameters are adjacent
-bool matchingPositionsAreAdjacent(const nlohmann::json &first, const nlohmann::json &second) {
-  // they can't all be adjacent if there are an unequal number between the two lists
-  if (first.size() != second.size()) {
-    return false;
-  }
-
-  nlohmann::json::const_iterator itr1 = first.begin();
-  nlohmann::json::const_iterator itr2 = second.begin();
-  // iterate over each matching submission
-  for (; itr1 != first.end() && itr2 != second.end(); itr1++, itr2++) {
-    // the number of matches must be the same
-    if ((*itr1)["matchingpositions"].size() != (*itr2)["matchingpositions"].size()) {
-      return false;
-    }
-
-    nlohmann::json::const_iterator itr3 = (*itr1)["matchingpositions"].begin();
-    nlohmann::json::const_iterator itr4 = (*itr2)["matchingpositions"].begin();
-    // iterate over each matching position in the submission
-    for (; itr3 != (*itr1)["matchingpositions"].end() && itr4 != (*itr2)["matchingpositions"].end(); itr3++, itr4++) {
-      if ((*itr3)["end"].get<int>() + 1 != (*itr4)["end"].get<int>()) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-// increments the end position for each of the matches in the json provided
-void incrementEndPositionsForMatches(nlohmann::json &matches) {
-  nlohmann::json::iterator itr = matches.begin();
-  for (; itr != matches.end(); itr++) {
-    nlohmann::json::iterator itr2 = (*itr)["matchingpositions"].begin();
-    for (; itr2 != (*itr)["matchingpositions"].end(); itr2++) {
-      (*itr2)["end"] = (*itr2)["end"].get<int>() + 1;
-    }
-  }
-}
-*/
 
 // ===================================================================================
 // ===================================================================================
@@ -458,27 +383,47 @@ int main(int argc, char* argv[]) {
 
 
 
+  // Create a rankings of users by percentage match
+  std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/";
+  std::string ranking_file = ranking_dir+gradeable+".txt";
+  boost::filesystem::create_directories(ranking_dir);
+  std::ofstream ranking_ostr(ranking_file);
 
-  // std::set<std::string> users_already_ranked;
-  //
-  // // save the rankings to a file
-  // std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/";
-  // std::string ranking_file = ranking_dir+gradeable+".txt";
-  // boost::filesystem::create_directories(ranking_dir);
-  // std::ofstream ranking_ostr(ranking_file);
-  // std::sort(ranking.begin(),ranking.end(),ranking_sorter);
-  // for (unsigned int i = 0; i < ranking.size(); i++) {
-  //   std::string username = ranking[i].first.username;
-  //   if (users_already_ranked.insert(username).second != false) {
-  //     // print each username at most once, only if insert was
-  //     // successful (not already in the set)
-  //     ranking_ostr
-  //       << std::setw(6) << std::setprecision(2) << std::fixed << 100.0*ranking[i].second << "%   "
-  //       << std::setw(15) << std::left << ranking[i].first.username << " "
-  //       << std::setw(3) << std::right << ranking[i].first.version << std::endl;
-  //   }
-  // }
+  // a map of students to a pair of the version and highest percent match for each student
+  std::unordered_map<std::string, std::pair<int, float> > highest_matches;
+  for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
+       submission_itr != all_submissions.end(); ++submission_itr) {
 
+    float percentMatch = (100.0 * submission_itr->getSuspiciousMatches().size()) / all_hashes.size();
+
+    std::unordered_map<std::string, std::pair<int, float> >::iterator highest_matches_itr
+        = highest_matches.find(submission_itr->student());
+    if (highest_matches_itr == highest_matches.end()) {
+      highest_matches[submission_itr->student()].first = submission_itr->version();
+      highest_matches[submission_itr->student()].second = percentMatch;
+    }
+    else if (percentMatch > highest_matches_itr->second.second) {
+      highest_matches_itr->second.first = submission_itr->version();
+      highest_matches_itr->second.second = percentMatch;
+    }
+  }
+
+  // take the map of highest matches and convert it to a vector so we can sort it
+  // by percent match and then save it to a file
+  std::vector<StudentRanking> ranking;
+  for (std::unordered_map<std::string, std::pair<int, float> >::iterator itr
+        = highest_matches.begin(); itr != highest_matches.end(); ++itr) {
+    ranking.push_back(StudentRanking(itr->first, itr->second.first, itr->second.second));
+  }
+
+  std::sort(ranking.begin(), ranking.end(), ranking_sorter);
+
+  for (unsigned int i = 0; i < ranking.size(); i++) {
+    ranking_ostr
+      << std::setw(6) << std::setprecision(2) << std::fixed << ranking[i].percent << "%   "
+      << std::setw(15) << std::left << ranking[i].student << " "
+      << std::setw(3) << std::right << ranking[i].version << std::endl;
+  }
 
   // ---------------------------------------------------------------------------
   std::cout << "done" << std::endl;

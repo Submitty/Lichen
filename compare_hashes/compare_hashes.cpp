@@ -130,7 +130,7 @@ void incrementEndPositionsForMatches(nlohmann::json &matches) {
 // in a small number of other files (but not most or all).
 bool ranking_sorter(const StudentRanking &a, const StudentRanking &b) {
   return a.percent > b.percent ||
-        (a.percent == b.percent && a.student > b.student);
+        (a.percent == b.percent && a.student < b.student);
 }
 
 // ===================================================================================
@@ -394,7 +394,7 @@ int main(int argc, char* argv[]) {
   for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
        submission_itr != all_submissions.end(); ++submission_itr) {
 
-    float percentMatch = (100.0 * submission_itr->getSuspiciousMatches().size()) / all_hashes.size();
+    float percentMatch = (100.0 * submission_itr->getSuspiciousMatches().size()) / submission_itr->getHashes().size();
 
     std::unordered_map<std::string, std::pair<int, float> >::iterator highest_matches_itr
         = highest_matches.find(submission_itr->student());

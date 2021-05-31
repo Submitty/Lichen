@@ -42,6 +42,7 @@ struct StudentRanking {
   float percent;
 };
 
+
 // represents a unique student-version pair, all its
 // hashes, and other submissions with those hashes
 class Submission {
@@ -74,6 +75,7 @@ private:
   std::vector<std::pair<hash, location_in_submission> > hashes;
   std::map<location_in_submission, std::set<HashLocation> > suspicious_matches;
 };
+
 
 // ===================================================================================
 // helper functions
@@ -126,12 +128,11 @@ void incrementEndPositionsForMatches(nlohmann::json &matches) {
 }
 
 
-// Orders all Submissions by percentage of tokens in that match tokens
-// in a small number of other files (but not most or all).
 bool ranking_sorter(const StudentRanking &a, const StudentRanking &b) {
   return a.percent > b.percent ||
         (a.percent == b.percent && a.student < b.student);
 }
+
 
 // ===================================================================================
 // ===================================================================================
@@ -140,9 +141,9 @@ int main(int argc, char* argv[]) {
   std::cout << "COMPARE HASHES...";
   fflush(stdout);
 
-
   // ---------------------------------------------------------------------------
   // deal with command line arguments
+
   assert (argc == 2);
   std::string config_file = argv[1];
 
@@ -170,7 +171,6 @@ int main(int argc, char* argv[]) {
     exit(0);
   }
 
-
   // ---------------------------------------------------------------------------
   // loop over all submissions and populate the all_hashes and all_submissions structures
 
@@ -194,10 +194,10 @@ int main(int argc, char* argv[]) {
       int version = std::stoi(str_version);
       assert (version > 0);
 
-      // create a submission object and load to the main submission structure
+      // create a submission object and load to the main submissions structure
       Submission submission(username, version);
 
-      // load the hashes sequences from this submission
+      // load the hashes from this submission
       boost::filesystem::path hash_file = version_path;
       hash_file /= "hashes.txt";
       std::ifstream istr(hash_file.string());
@@ -222,8 +222,6 @@ int main(int argc, char* argv[]) {
   int my_counter = 0;
   int my_percent = 0;
 
-  // ---------------------------------------------------------------------------
-
   // walk over every Submission
   for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
        submission_itr != all_submissions.end(); ++submission_itr) {
@@ -232,8 +230,8 @@ int main(int argc, char* argv[]) {
     std::vector<std::pair<hash, location_in_submission>>::const_iterator hash_itr = submission_itr->getHashes().begin();
     for (; hash_itr != submission_itr->getHashes().end(); ++hash_itr) {
 
-      // look up that hash in the all_hashes table, and see which other occurences of that hash in other submisions
-      std::vector<HashLocation> occurences = all_hashes[hash_itr->first]; // TODO: Optimize?
+      // look up that hash in the all_hashes table, and look for occurences of that hash in other submisions
+      std::vector<HashLocation> occurences = all_hashes[hash_itr->first];
       std::vector<HashLocation>::iterator occurences_itr = occurences.begin();
       for (; occurences_itr != occurences.end(); ++occurences_itr) {
         if (occurences_itr->student != submission_itr->student()) {
@@ -241,6 +239,8 @@ int main(int argc, char* argv[]) {
         }
       }
     }
+
+    // print current progress
     my_counter++;
     if (int((my_counter / float(all_submissions.size())) * 100) > my_percent) {
       my_percent = int((my_counter / float(all_submissions.size())) * 100);
@@ -251,6 +251,7 @@ int main(int argc, char* argv[]) {
   std::cout << "finished walking" << std::endl;
 
   // ---------------------------------------------------------------------------
+  // Writing the output files and merging the results
 
   my_counter = 0;
   my_percent = 0;
@@ -276,7 +277,8 @@ int main(int argc, char* argv[]) {
       // stores matches of hash locations across other submssions in the class
       std::vector<nlohmann::json> others;
 
-      { // generate a specific element of the "others" vector
+      { 
+        // generate a specific element of the "others" vector
         // set the variables to their initial values
         std::set<HashLocation>::const_iterator matching_positions_itr = location_itr->second.begin();
         nlohmann::json other;
@@ -288,13 +290,15 @@ int main(int argc, char* argv[]) {
         position["end"] = matching_positions_itr->location + sequence_length;
         matchingpositions.push_back(position);
         other["matchingpositions"] = matchingpositions;
-        // if there's more than one matching location, we should add more
+        
+        // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
           ++matching_positions_itr;
           // loop over all of the other matching positions
           for (; matching_positions_itr != location_itr->second.end(); ++matching_positions_itr) {
+            // keep iterating and editing the same object until a we get to a different submission
             if (matching_positions_itr->student != other["username"] || matching_positions_itr->version != other["version"]) {
-              // we move onto the next user so the matching positions for this user are complete
+              // found a different one, we push the old one and start over
               others.push_back(other);
 
               matchingpositions.clear();
@@ -320,9 +324,8 @@ int main(int argc, char* argv[]) {
       result.push_back(info);
     }
 
-
-    // prepare a sorted list of all users sorted by match percent
-    // std::vector<std::pair<Submission,float> > ranking;
+    // ---------------------------------------------------------------------------
+    // Done creating the JSON file/objects, now we merge them to shrink them in size
 
     // Merge matching regions:
     if (result.size() > 0) { // check to make sure that there are more than 1 positions (if it's 1, we can't merge anyway)
@@ -348,6 +351,7 @@ int main(int argc, char* argv[]) {
               }
             }
           }
+
           //if it's possible to do the merging, do it here by adjusting the end of the previous position and erasing the current position
           if (canBeMerged) {
             (*prevPosition)["end"] = (*currPosition)["end"].get<int>(); // (should be the equivalent of prevPosition["end"]++)
@@ -372,6 +376,7 @@ int main(int argc, char* argv[]) {
     assert(ostr.good());
     ostr << match_data.dump(4) << std::endl;
 
+    // printing out the progress
     my_counter++;
     if (int((my_counter / float(all_submissions.size())) * 100) > my_percent) {
       my_percent = int((my_counter / float(all_submissions.size())) * 100);
@@ -380,10 +385,9 @@ int main(int argc, char* argv[]) {
   }
   std::cout << "done merging and writing matches files" << std::endl;
 
-
-
-
+  // ---------------------------------------------------------------------------
   // Create a rankings of users by percentage match
+
   std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/";
   std::string ranking_file = ranking_dir+gradeable+".txt";
   boost::filesystem::create_directories(ranking_dir);
@@ -391,6 +395,8 @@ int main(int argc, char* argv[]) {
 
   // a map of students to a pair of the version and highest percent match for each student
   std::unordered_map<std::string, std::pair<int, float> > highest_matches;
+
+  // loop over all the submissions, and find every student's version with the highest percentage
   for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
        submission_itr != all_submissions.end(); ++submission_itr) {
 
@@ -427,4 +433,5 @@ int main(int argc, char* argv[]) {
 
   // ---------------------------------------------------------------------------
   std::cout << "done" << std::endl;
+  
 }

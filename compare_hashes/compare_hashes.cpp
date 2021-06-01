@@ -136,13 +136,23 @@ bool matchingPositionsAreAdjacent(const nlohmann::json &first, const nlohmann::j
 }
 
 
-// increments the end position for each of the matches in the json provided
+// increments the end position for each of the matches in the json provided,
+// merging overlapping regions where necessary
 void incrementEndPositionsForMatches(nlohmann::json &matches) {
   nlohmann::json::iterator itr = matches.begin();
   for (; itr != matches.end(); itr++) {
     nlohmann::json::iterator itr2 = (*itr)["matchingpositions"].begin();
-    for (; itr2 != (*itr)["matchingpositions"].end(); itr2++) {
-      (*itr2)["end"] = (*itr2)["end"].get<int>() + 1;
+    nlohmann::json::iterator itr3 = ++((*itr)["matchingpositions"].begin());
+    for (; itr3 != (*itr)["matchingpositions"].end();) {
+      if ((*itr2)["end"].get<int>() + 1 > (*itr3)["start"]) {
+        (*itr2)["end"] = (*itr3)["end"].get<int>();
+        itr3 = (*itr)["matchingpositions"].erase(itr3);
+      }
+      else {
+        (*itr2)["end"] = (*itr2)["end"].get<int>() + 1;
+        itr2++;
+        itr3++;
+      }
     }
   }
 }
@@ -254,7 +264,7 @@ int main(int argc, char* argv[]) {
       std::unordered_map<std::string, std::vector<HashLocation>> occurences = all_hashes[hash_itr->first];
       std::unordered_map<std::string, std::vector<HashLocation>>::iterator occurences_itr = occurences.begin();
       for (; occurences_itr != occurences.end(); ++occurences_itr) {
-        
+
         // don't look for matches across submissions of the same student
         if (occurences_itr->first == submission_itr->student()) {
           continue;
@@ -263,9 +273,9 @@ int main(int argc, char* argv[]) {
         // save the locations of all other occurences of the matching hash in other students' submissions
         std::vector<HashLocation>::iterator itr = occurences_itr->second.begin();
         for (; itr != occurences_itr->second.end(); ++itr) {
-          
+
           if (occurences.size() > (unsigned int)threshold) {
-            // if the number of students with matching code is more 
+            // if the number of students with matching code is more
             // than the threshold, it is considered common code
             submission_itr->addCommonMatch(hash_itr->second, *itr);
           } else {
@@ -304,7 +314,7 @@ int main(int argc, char* argv[]) {
     // holds the JSON file to be written
     std::vector<nlohmann::json> result;
 
-    
+
     // ********  WRITE THE SUSPICIOUS MATCHES  ********
     // all of the suspicious matches for this submission
     std::map<location_in_submission, std::set<HashLocation> > suspicious_matches = submission_itr->getSuspiciousMatches();
@@ -316,7 +326,7 @@ int main(int argc, char* argv[]) {
       // stores matches of hash locations across other submssions in the class
       std::vector<nlohmann::json> others;
 
-      { 
+      {
         // generate a specific element of the "others" vector
         // set the variables to their initial values
         std::set<HashLocation>::const_iterator matching_positions_itr = location_itr->second.begin();
@@ -328,7 +338,7 @@ int main(int argc, char* argv[]) {
         position["start"] = matching_positions_itr->location;
         position["end"] = matching_positions_itr->location + sequence_length - 1;
         matchingpositions.push_back(position);
-        
+
         // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
           ++matching_positions_itr;
@@ -350,7 +360,7 @@ int main(int argc, char* argv[]) {
             matchingpositions.push_back(position);
           }
         }
-        
+
         other["matchingpositions"] = matchingpositions;
         others.push_back(other);
       }
@@ -376,7 +386,7 @@ int main(int argc, char* argv[]) {
       // stores matches of hash locations across other submssions in the class
       std::vector<nlohmann::json> others;
 
-      { 
+      {
         // generate a specific element of the "others" vector
         // set the variables to their initial values
         std::set<HashLocation>::const_iterator matching_positions_itr = location_itr->second.begin();
@@ -388,7 +398,7 @@ int main(int argc, char* argv[]) {
         position["start"] = matching_positions_itr->location;
         position["end"] = matching_positions_itr->location + sequence_length - 1;
         matchingpositions.push_back(position);
-        
+
         // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
           ++matching_positions_itr;
@@ -534,5 +544,5 @@ int main(int argc, char* argv[]) {
 
   // ---------------------------------------------------------------------------
   std::cout << "done" << std::endl;
-  
+
 }

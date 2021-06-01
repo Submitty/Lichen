@@ -39,7 +39,7 @@ def hasher(args, my_tokenized_file, my_hashes_file):
             exit(1)
 
     if (sequence_length < 1):
-        print ("ERROR! sequence_length must be >= 1")
+        print("ERROR! sequence_length must be >= 1")
         exit(1)
 
     with open(my_tokenized_file, 'r', encoding='ISO-8859-1') as my_tf:

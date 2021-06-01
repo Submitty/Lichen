@@ -102,7 +102,7 @@ def main():
                     shutil.rmtree(p2)
                 os.rmdir(my_concatenated_dir)
 
-    print ("done")
+    print("done")
 
 
 if __name__ == "__main__":

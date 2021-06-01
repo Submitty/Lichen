@@ -264,7 +264,7 @@ int main(int argc, char* argv[]) {
         std::vector<HashLocation>::iterator itr = occurences_itr->second.begin();
         for (; itr != occurences_itr->second.end(); ++itr) {
           
-          if (occurences.size() > threshold) {
+          if (occurences.size() > (unsigned int)threshold) {
             // if the number of students with matching code is more 
             // than the threshold, it is considered common code
             submission_itr->addCommonMatch(hash_itr->second, *itr);
@@ -326,9 +326,8 @@ int main(int argc, char* argv[]) {
         std::vector<nlohmann::json> matchingpositions;
         nlohmann::json position;
         position["start"] = matching_positions_itr->location;
-        position["end"] = matching_positions_itr->location + sequence_length;
+        position["end"] = matching_positions_itr->location + sequence_length - 1;
         matchingpositions.push_back(position);
-        other["matchingpositions"] = matchingpositions;
         
         // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
@@ -337,26 +336,28 @@ int main(int argc, char* argv[]) {
           for (; matching_positions_itr != location_itr->second.end(); ++matching_positions_itr) {
             // keep iterating and editing the same object until a we get to a different submission
             if (matching_positions_itr->student != other["username"] || matching_positions_itr->version != other["version"]) {
+              std::cout << "We are in the inner if statement!" << std::endl;
               // found a different one, we push the old one and start over
               others.push_back(other);
 
               matchingpositions.clear();
               other["username"] = matching_positions_itr->student;
               other["version"] = matching_positions_itr->version;
-              position["start"] = matching_positions_itr->location;
-              position["end"] = matching_positions_itr->location + sequence_length;
+              other["matchingpositions"] = matchingpositions;
             }
             position["start"] = matching_positions_itr->location;
-            position["end"] = matching_positions_itr->location + sequence_length;
+            position["end"] = matching_positions_itr->location + sequence_length - 1;
             matchingpositions.push_back(position);
           }
         }
+        
+        other["matchingpositions"] = matchingpositions;
         others.push_back(other);
       }
 
       nlohmann::json info;
       info["start"] = location_itr->first;
-      info["end"] = location_itr->first + sequence_length;
+      info["end"] = location_itr->first + sequence_length - 1;
       info["type"] = "match";
       info["others"] = others;
 
@@ -385,9 +386,8 @@ int main(int argc, char* argv[]) {
         std::vector<nlohmann::json> matchingpositions;
         nlohmann::json position;
         position["start"] = matching_positions_itr->location;
-        position["end"] = matching_positions_itr->location + sequence_length;
+        position["end"] = matching_positions_itr->location + sequence_length - 1;
         matchingpositions.push_back(position);
-        other["matchingpositions"] = matchingpositions;
         
         // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
@@ -402,20 +402,20 @@ int main(int argc, char* argv[]) {
               matchingpositions.clear();
               other["username"] = matching_positions_itr->student;
               other["version"] = matching_positions_itr->version;
-              position["start"] = matching_positions_itr->location;
-              position["end"] = matching_positions_itr->location + sequence_length;
+              other["matchingpositions"] = matchingpositions;
             }
             position["start"] = matching_positions_itr->location;
-            position["end"] = matching_positions_itr->location + sequence_length;
+            position["end"] = matching_positions_itr->location + sequence_length - 1;
             matchingpositions.push_back(position);
           }
         }
+        other["matchingpositions"] = matchingpositions;
         others.push_back(other);
       }
 
       nlohmann::json info;
       info["start"] = location_itr->first;
-      info["end"] = location_itr->first + sequence_length;
+      info["end"] = location_itr->first + sequence_length - 1;
       info["type"] = "common";
       info["others"] = others;
 
@@ -482,6 +482,7 @@ int main(int argc, char* argv[]) {
       my_percent = int((my_counter / float(all_submissions.size())) * 100);
       std::cout << "merging: " << my_percent << "% complete" << std::endl;
     }
+
   }
   std::cout << "done merging and writing matches files" << std::endl;
 

@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 100
+exclude=
+    bin/concatenate_all.py
+    bin/hash_all.py
+    bin/tokenize_all.py
+    tokenizer/c/c_tokenizer.py
+    tokenizer/java/java_tokenizer.py
+    tokenizer/mips/mips_tokenizer.py
+    tokenizer/python/input.py
+    tokenizer/python/python_tokenizer.py
+    tools/assignment_placer.py
+
+per-file-ignores =

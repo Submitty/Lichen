@@ -76,7 +76,7 @@ def main():
             with open(my_concatenated_file, 'w') as my_cf:
                 # loop over all files in all subdirectories
                 base_path = os.path.join(submission_dir, user, version)
-                for my_dir, dirs, my_files in os.walk(base_path):
+                for my_dir, _dirs, my_files in os.walk(base_path):
                     # Determine if regex should be used
                     files = sorted(my_files)
                     if expressions is not None:

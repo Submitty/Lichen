@@ -70,12 +70,12 @@ public:
 
     if (itr != common_matches.end()) {
       // location already exists in the map, so we just append the location to the set
-      suspicious_matches[location].insert(matching_location);
+      common_matches[location].insert(matching_location);
     } else {
       // intialize the set and add the location
       std::set<HashLocation> s;
       s.insert(matching_location);
-      suspicious_matches[location] = s;
+      common_matches[location] = s;
     }
   }
   const std::map<location_in_submission, std::set<HashLocation> >& getSuspiciousMatches() const {
@@ -144,7 +144,7 @@ void incrementEndPositionsForMatches(nlohmann::json &matches) {
     nlohmann::json::iterator itr2 = (*itr)["matchingpositions"].begin();
     nlohmann::json::iterator itr3 = ++((*itr)["matchingpositions"].begin());
     for (; itr3 != (*itr)["matchingpositions"].end();) {
-      if ((*itr2)["end"].get<int>() + 1 > (*itr3)["start"]) {
+      if ((*itr2)["end"].get<int>() >= (*itr3)["start"]) {
         (*itr2)["end"] = (*itr3)["end"].get<int>();
         itr3 = (*itr)["matchingpositions"].erase(itr3);
       }
@@ -342,18 +342,19 @@ int main(int argc, char* argv[]) {
         // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
           ++matching_positions_itr;
+          
           // loop over all of the other matching positions
           for (; matching_positions_itr != location_itr->second.end(); ++matching_positions_itr) {
+            
             // keep iterating and editing the same object until a we get to a different submission
             if (matching_positions_itr->student != other["username"] || matching_positions_itr->version != other["version"]) {
-              std::cout << "We are in the inner if statement!" << std::endl;
               // found a different one, we push the old one and start over
+              other["matchingpositions"] = matchingpositions;
               others.push_back(other);
 
               matchingpositions.clear();
               other["username"] = matching_positions_itr->student;
               other["version"] = matching_positions_itr->version;
-              other["matchingpositions"] = matchingpositions;
             }
             position["start"] = matching_positions_itr->location;
             position["end"] = matching_positions_itr->location + sequence_length - 1;
@@ -402,23 +403,26 @@ int main(int argc, char* argv[]) {
         // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
           ++matching_positions_itr;
+          
           // loop over all of the other matching positions
           for (; matching_positions_itr != location_itr->second.end(); ++matching_positions_itr) {
+            
             // keep iterating and editing the same object until a we get to a different submission
             if (matching_positions_itr->student != other["username"] || matching_positions_itr->version != other["version"]) {
               // found a different one, we push the old one and start over
+              other["matchingpositions"] = matchingpositions;
               others.push_back(other);
 
               matchingpositions.clear();
               other["username"] = matching_positions_itr->student;
               other["version"] = matching_positions_itr->version;
-              other["matchingpositions"] = matchingpositions;
             }
             position["start"] = matching_positions_itr->location;
             position["end"] = matching_positions_itr->location + sequence_length - 1;
             matchingpositions.push_back(position);
           }
         }
+
         other["matchingpositions"] = matchingpositions;
         others.push_back(other);
       }
@@ -437,6 +441,7 @@ int main(int argc, char* argv[]) {
     // ---------------------------------------------------------------------------
     // Done creating the JSON file/objects, now we merge them to shrink them in size
 
+    /*
     // Merge matching regions:
     if (result.size() > 0) { // check to make sure that there are more than 1 positions (if it's 1, we can't merge anyway)
       // loop through all positions
@@ -474,7 +479,7 @@ int main(int argc, char* argv[]) {
           }
         }
       }
-    }
+    }*/
 
     // save the file with matches per user
     nlohmann::json match_data = result;

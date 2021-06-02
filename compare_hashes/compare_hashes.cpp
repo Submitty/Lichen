@@ -54,7 +54,7 @@ public:
   const std::vector<std::pair<hash, location_in_submission>> & getHashes() const { return hashes; }
   void addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location) {
     std::map<location_in_submission, std::set<HashLocation>>::iterator itr = suspicious_matches.find(location);
-
+    // TODO: is this if-else necessary? would this not work if we just did?: suspicious_matches[location].insert(matching_location);
     if (itr != suspicious_matches.end()) {
       // location already exists in the map, so we just append the location to the set
       suspicious_matches[location].insert(matching_location);
@@ -64,6 +64,8 @@ public:
       s.insert(matching_location);
       suspicious_matches[location] = s;
     }
+    // update the students_matched container
+    students_matched[matching_location.student][matching_location.version]++;
   }
   void addCommonMatch(location_in_submission location, const HashLocation &matching_location) {
     std::map<location_in_submission, std::set<HashLocation>>::iterator itr = common_matches.find(location);
@@ -84,6 +86,10 @@ public:
   const std::map<location_in_submission, std::set<HashLocation> >& getCommonMatches() const {
     return common_matches;
   }
+  const std::unordered_map<std::string, std::unoredered_map<int, int> >& getStudentsMatched() const {
+    return students_matched;
+  }
+  unsigned int getNumHashes() const { return hashes.size(); }
   float getPercentage() const {
     return (100.0 * (suspicious_matches.size() + common_matches.size())) / hashes.size();
   }
@@ -94,6 +100,10 @@ private:
   std::vector<std::pair<hash, location_in_submission> > hashes;
   std::map<location_in_submission, std::set<HashLocation> > suspicious_matches;
   std::map<location_in_submission, std::set<HashLocation> > common_matches;
+
+  // a container to keep track of all the students this submission 
+  // matched and the number of matching hashes per submission
+  std::unordered_map<std::string, std::unoredered_map<int, int> > students_matched;
 };
 
 
@@ -502,8 +512,9 @@ int main(int argc, char* argv[]) {
   std::cout << "done merging and writing matches files" << std::endl;
 
   // ---------------------------------------------------------------------------
-  // Create a rankings of users by percentage match
+  // Create a general summary of rankings of users by percentage match
 
+  // create a single file of students ranked by highest percentage of code plagiarised
   std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/";
   std::string ranking_file = ranking_dir+gradeable+".txt";
   boost::filesystem::create_directories(ranking_dir);
@@ -546,6 +557,49 @@ int main(int argc, char* argv[]) {
       << std::setw(15) << std::left << ranking[i].student << " "
       << std::setw(3) << std::right << ranking[i].version << std::endl;
   }
+
+
+  // ---------------------------------------------------------------------------
+  // create a rankings file for every submission. the file contains all the other 
+  // students share matches, sorted by decreasing order of the percent match
+  
+  for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
+       submission_itr != all_submissions.end(); ++submission_itr) {
+    
+    // create the directory and a file to write into
+    std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"+submission_itr->student()+"/"+submission_itr->version()+"/";
+    std::string ranking_student_file = ranking_student_dir+submission_itr->student()+"_"+submission_itr->version+".txt";
+    boost::filesystem::create_directories(ranking_student_dir);
+    std::ofstream ranking_student_ostr(ranking_student_file);
+
+    // find and sort the other submissions it matches with
+    std::vector<StudentRanking> student_ranking;
+    std::unordered_map<std::string, std::unoredered_map<int, int> > matches = submission_itr->getStudentsMatched();
+    for (std::unordered_map<std::string, std::unoredered_map<int, int> >::const_iterator matches_itr; 
+         matches_itr = matches.begin(); matches_itr != matches.end(); ++matches_itr) {
+      
+      for (std::unoredered_map<int, int>::const_iterator version_itr = matches_itr->second.begin();
+           version_itr != matches_itr->second.end(); ++version_itr) {
+
+        // the percent match is currently calculated using the number of hashes that match between this
+        // submission and the other submission, over the total number of hashes this submission has.
+        // In other words, the percentage is how much of this submission's code was plgairised from the other.
+        float percent = float(version_itr->second) / submission_itr->getNumHashes();
+        student_ranking.push_back(StudentRanking(matches_itr->first, version_itr->first, percent));
+      }
+    }
+
+    std::sort(student_ranking.begin(), student_ranking.end(), ranking_sorter);
+
+    // finally, write the file of ranking for this submission
+    for (unsigned int i = 0; i < student_ranking.size(); i++) {
+      ranking_student_ostr
+        << std::setw(6) << std::setprecision(2) << std::fixed << student_ranking[i].percent << "%   "
+        << std::setw(15) << std::left << student_ranking[i].student << " "
+        << std::setw(3) << std::right << student_ranking[i].version << std::endl;
+    }
+  }
+
 
   // ---------------------------------------------------------------------------
   std::cout << "done" << std::endl;

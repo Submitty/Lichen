@@ -515,8 +515,8 @@ int main(int argc, char* argv[]) {
   // Create a general summary of rankings of users by percentage match
 
   // create a single file of students ranked by highest percentage of code plagiarised
-  std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/";
-  std::string ranking_file = ranking_dir+gradeable+".txt";
+  std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"+gradeable;
+  std::string ranking_file = ranking_dir+"overall_ranking.txt";
   boost::filesystem::create_directories(ranking_dir);
   std::ofstream ranking_ostr(ranking_file);
 
@@ -568,7 +568,7 @@ int main(int argc, char* argv[]) {
     
     // create the directory and a file to write into
     std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"
-                                      +submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
+                                      +gradeable+submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
     std::string ranking_student_file = ranking_student_dir+submission_itr->student()+"_"+std::to_string(submission_itr->version())+".txt";
     boost::filesystem::create_directories(ranking_student_dir);
     std::ofstream ranking_student_ostr(ranking_student_file);
@@ -585,7 +585,7 @@ int main(int argc, char* argv[]) {
         // the percent match is currently calculated using the number of hashes that match between this
         // submission and the other submission, over the total number of hashes this submission has.
         // In other words, the percentage is how much of this submission's code was plgairised from the other.
-        float percent = float(version_itr->second) / submission_itr->getNumHashes();
+        float percent = 100.0 * float(version_itr->second) / submission_itr->getNumHashes();
         student_ranking.push_back(StudentRanking(matches_itr->first, version_itr->first, percent));
       }
     }

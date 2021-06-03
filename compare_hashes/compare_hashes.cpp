@@ -86,7 +86,7 @@ public:
   const std::map<location_in_submission, std::set<HashLocation> >& getCommonMatches() const {
     return common_matches;
   }
-  const std::unordered_map<std::string, std::unoredered_map<int, int> >& getStudentsMatched() const {
+  const std::unordered_map<std::string, std::unordered_map<int, int> >& getStudentsMatched() const {
     return students_matched;
   }
   unsigned int getNumHashes() const { return hashes.size(); }
@@ -103,7 +103,7 @@ private:
 
   // a container to keep track of all the students this submission 
   // matched and the number of matching hashes per submission
-  std::unordered_map<std::string, std::unoredered_map<int, int> > students_matched;
+  std::unordered_map<std::string, std::unordered_map<int, int> > students_matched;
 };
 
 
@@ -567,18 +567,19 @@ int main(int argc, char* argv[]) {
        submission_itr != all_submissions.end(); ++submission_itr) {
     
     // create the directory and a file to write into
-    std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"+submission_itr->student()+"/"+submission_itr->version()+"/";
-    std::string ranking_student_file = ranking_student_dir+submission_itr->student()+"_"+submission_itr->version+".txt";
+    std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"
+                                      +submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
+    std::string ranking_student_file = ranking_student_dir+submission_itr->student()+"_"+std::to_string(submission_itr->version())+".txt";
     boost::filesystem::create_directories(ranking_student_dir);
     std::ofstream ranking_student_ostr(ranking_student_file);
 
     // find and sort the other submissions it matches with
     std::vector<StudentRanking> student_ranking;
-    std::unordered_map<std::string, std::unoredered_map<int, int> > matches = submission_itr->getStudentsMatched();
-    for (std::unordered_map<std::string, std::unoredered_map<int, int> >::const_iterator matches_itr; 
-         matches_itr = matches.begin(); matches_itr != matches.end(); ++matches_itr) {
+    std::unordered_map<std::string, std::unordered_map<int, int> > matches = submission_itr->getStudentsMatched();
+    for (std::unordered_map<std::string, std::unordered_map<int, int> >::const_iterator matches_itr = matches.begin(); 
+         matches_itr != matches.end(); ++matches_itr) {
       
-      for (std::unoredered_map<int, int>::const_iterator version_itr = matches_itr->second.begin();
+      for (std::unordered_map<int, int>::const_iterator version_itr = matches_itr->second.begin();
            version_itr != matches_itr->second.end(); ++version_itr) {
 
         // the percent match is currently calculated using the number of hashes that match between this

@@ -515,7 +515,7 @@ int main(int argc, char* argv[]) {
   // Create a general summary of rankings of users by percentage match
 
   // create a single file of students ranked by highest percentage of code plagiarised
-  std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"+gradeable;
+  std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"+gradeable+"/";
   std::string ranking_file = ranking_dir+"overall_ranking.txt";
   boost::filesystem::create_directories(ranking_dir);
   std::ofstream ranking_ostr(ranking_file);

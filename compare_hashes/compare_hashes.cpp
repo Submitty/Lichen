@@ -568,7 +568,7 @@ int main(int argc, char* argv[]) {
     
     // create the directory and a file to write into
     std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"
-                                      +gradeable+submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
+                                      +gradeable+"/"+submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
     std::string ranking_student_file = ranking_student_dir+submission_itr->student()+"_"+std::to_string(submission_itr->version())+".txt";
     boost::filesystem::create_directories(ranking_student_dir);
     std::ofstream ranking_student_ostr(ranking_student_file);

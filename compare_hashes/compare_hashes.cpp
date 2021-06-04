@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 #include <cassert>
 #include <string>
 #include <cstdlib>
@@ -475,14 +476,13 @@ int main(int argc, char* argv[]) {
 
     // ********  WRITE THE PROVIDED MATCHES  ********
     // all of the provided code matches for this submission
-    
-    std::unordered_set<location_in_submission> provided_matches = submission_itr->getProvidedMatches();
-    for (std::unordered_set<location_in_submission>::const_iterator location_itr = provided_matches.begin();
+    std::set<location_in_submission> provided_matches = submission_itr->getProvidedMatches();
+    for (std::set<location_in_submission>::const_iterator location_itr = provided_matches.begin();
          location_itr != provided_matches.end(); ++location_itr) {
 
       nlohmann::json info;
-      info["start"] = location_itr->first;
-      info["end"] = location_itr->first + sequence_length - 1;
+      info["start"] = *location_itr;
+      info["end"] = *location_itr + sequence_length - 1;
       info["type"] = "provided";
       info["others"] = {}; 
 

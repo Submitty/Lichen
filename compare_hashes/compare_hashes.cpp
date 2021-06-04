@@ -101,7 +101,7 @@ private:
   std::map<location_in_submission, std::set<HashLocation> > suspicious_matches;
   std::map<location_in_submission, std::set<HashLocation> > common_matches;
 
-  // a container to keep track of all the students this submission 
+  // a container to keep track of all the students this submission
   // matched and the number of matching hashes per submission
   std::unordered_map<std::string, std::unordered_map<int, int> > students_matched;
 };
@@ -120,26 +120,16 @@ bool operator < (const HashLocation &hl1, const HashLocation &hl2) {
 // ensures that all of the regions in the two parameters are adjacent
 bool matchingPositionsAreAdjacent(const nlohmann::json &first, const nlohmann::json &second) {
   // they can't all be adjacent if there are an unequal number between the two lists
-  if (first.size() != second.size()) {
+  if (first["matchingpositions"].size() != second["matchingpositions"].size()) {
     return false;
   }
 
-  nlohmann::json::const_iterator itr1 = first.begin();
-  nlohmann::json::const_iterator itr2 = second.begin();
-  // iterate over each matching submission
-  for (; itr1 != first.end() && itr2 != second.end(); itr1++, itr2++) {
-    // the number of matches must be the same
-    if ((*itr1)["matchingpositions"].size() != (*itr2)["matchingpositions"].size()) {
+  nlohmann::json::const_iterator itr1 = first["matchingpositions"].begin();
+  nlohmann::json::const_iterator itr2 = second["matchingpositions"].begin();
+  // iterate over each matching submission (first and second are the same length so we don't have to check for the end of second)
+  for (; itr1 != first["matchingpositions"].end(); itr1++, itr2++) {
+    if ((*itr1)["end"].get<int>() + 1 != (*itr2)["end"].get<int>()) {
       return false;
-    }
-
-    nlohmann::json::const_iterator itr3 = (*itr1)["matchingpositions"].begin();
-    nlohmann::json::const_iterator itr4 = (*itr2)["matchingpositions"].begin();
-    // iterate over each matching position in the submission
-    for (; itr3 != (*itr1)["matchingpositions"].end() && itr4 != (*itr2)["matchingpositions"].end(); itr3++, itr4++) {
-      if ((*itr3)["end"].get<int>() + 1 != (*itr4)["end"].get<int>()) {
-        return false;
-      }
     }
   }
   return true;
@@ -148,9 +138,9 @@ bool matchingPositionsAreAdjacent(const nlohmann::json &first, const nlohmann::j
 
 // increments the end position for each of the matches in the json provided,
 // merging overlapping regions where necessary
-void incrementEndPositionsForMatches(nlohmann::json &matches) {
-  nlohmann::json::iterator itr = matches.begin();
-  for (; itr != matches.end(); itr++) {
+void incrementEndPositionsForMatches(nlohmann::json &others) {
+  nlohmann::json::iterator itr = others.begin();
+  for (; itr != others.end(); itr++) {
     nlohmann::json::iterator itr2 = (*itr)["matchingpositions"].begin();
     nlohmann::json::iterator itr3 = ++((*itr)["matchingpositions"].begin());
     for (; itr3 != (*itr)["matchingpositions"].end();) {
@@ -164,6 +154,7 @@ void incrementEndPositionsForMatches(nlohmann::json &matches) {
         itr3++;
       }
     }
+    (*itr2)["end"] = (*itr2)["end"].get<int>() + 1;
   }
 }
 
@@ -352,10 +343,10 @@ int main(int argc, char* argv[]) {
         // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
           ++matching_positions_itr;
-          
+
           // loop over all of the other matching positions
           for (; matching_positions_itr != location_itr->second.end(); ++matching_positions_itr) {
-            
+
             // keep iterating and editing the same object until a we get to a different submission
             if (matching_positions_itr->student != other["username"] || matching_positions_itr->version != other["version"]) {
               // found a different one, we push the old one and start over
@@ -413,10 +404,10 @@ int main(int argc, char* argv[]) {
         // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
           ++matching_positions_itr;
-          
+
           // loop over all of the other matching positions
           for (; matching_positions_itr != location_itr->second.end(); ++matching_positions_itr) {
-            
+
             // keep iterating and editing the same object until a we get to a different submission
             if (matching_positions_itr->student != other["username"] || matching_positions_itr->version != other["version"]) {
               // found a different one, we push the old one and start over
@@ -451,26 +442,27 @@ int main(int argc, char* argv[]) {
     // ---------------------------------------------------------------------------
     // Done creating the JSON file/objects, now we merge them to shrink them in size
 
-    /*
     // Merge matching regions:
     if (result.size() > 0) { // check to make sure that there are more than 1 positions (if it's 1, we can't merge anyway)
       // loop through all positions
       for (unsigned int position = 1; position < result.size(); position++) {
         nlohmann::json* prevPosition = &result[position - 1];
         nlohmann::json* currPosition = &result[position];
-        if ((*currPosition)["end"].get<int>() == (*prevPosition)["end"].get<int>() + 1) { // check whether they are next to each other
+        // check whether they are next to each other and have the same type
+        if ((*currPosition)["end"].get<int>() == (*prevPosition)["end"].get<int>() + 1 && (*currPosition)["type"] == (*prevPosition)["type"]) {
           bool canBeMerged = true;
-          nlohmann::json::iterator prevPosItr = (*prevPosition)["others"].begin();
-          nlohmann::json::iterator currPosItr = (*currPosition)["others"].begin();
+          // easy check to see if they can't be merged for certain
           if ((*prevPosition)["others"].size() != (*currPosition)["others"].size()) {
             canBeMerged = false;
           }
           else {
+            nlohmann::json::iterator prevPosItr = (*prevPosition)["others"].begin();
+            nlohmann::json::iterator currPosItr = (*currPosition)["others"].begin();
             for (; prevPosItr != (*prevPosition)["others"].end() && currPosItr != (*currPosition)["others"].end(); prevPosItr++, currPosItr++) {
               // we can't merge the two positions if they are different in any way, except for the ending positions
               if ((*prevPosItr)["username"] != (*currPosItr)["username"] ||
                   (*prevPosItr)["version"] != (*currPosItr)["version"] ||
-                  !matchingPositionsAreAdjacent((*prevPosItr)["others"], (*currPosItr)["others"])) {
+                  !matchingPositionsAreAdjacent((*prevPosItr), (*currPosItr))) {
                 canBeMerged = false;
                 break;
               }
@@ -489,7 +481,7 @@ int main(int argc, char* argv[]) {
           }
         }
       }
-    }*/
+    }
 
     // save the file with matches per user
     nlohmann::json match_data = result;
@@ -560,12 +552,12 @@ int main(int argc, char* argv[]) {
 
 
   // ---------------------------------------------------------------------------
-  // create a rankings file for every submission. the file contains all the other 
+  // create a rankings file for every submission. the file contains all the other
   // students share matches, sorted by decreasing order of the percent match
-  
+
   for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
        submission_itr != all_submissions.end(); ++submission_itr) {
-    
+
     // create the directory and a file to write into
     std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"
                                       +gradeable+"/"+submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
@@ -576,9 +568,9 @@ int main(int argc, char* argv[]) {
     // find and sort the other submissions it matches with
     std::vector<StudentRanking> student_ranking;
     std::unordered_map<std::string, std::unordered_map<int, int> > matches = submission_itr->getStudentsMatched();
-    for (std::unordered_map<std::string, std::unordered_map<int, int> >::const_iterator matches_itr = matches.begin(); 
+    for (std::unordered_map<std::string, std::unordered_map<int, int> >::const_iterator matches_itr = matches.begin();
          matches_itr != matches.end(); ++matches_itr) {
-      
+
       for (std::unordered_map<int, int>::const_iterator version_itr = matches_itr->second.begin();
            version_itr != matches_itr->second.end(); ++version_itr) {
 

@@ -11,6 +11,6 @@ jobs:
   title-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: submitty/action-pr-title@main
+      - uses: naveenk1223/action-pr-title@master
         with:
           regex: '(\[(Bugfix|Feature|Refactor|Testing|Documentation)\] .{2,40}$|\[(DevDependency|Dependency)\] .{2,70})$'

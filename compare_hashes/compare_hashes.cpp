@@ -53,7 +53,7 @@ public:
   int version() const { return version_; }
   void addHash(const hash &h, location_in_submission l) { hashes.push_back(make_pair(h, l)); }
   const std::vector<std::pair<hash, location_in_submission>> & getHashes() const { return hashes; }
-  void addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location) {
+  void addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location, hash matched_hash) {
     std::map<location_in_submission, std::set<HashLocation>>::iterator itr = suspicious_matches.find(location);
     // TODO: is this if-else necessary? would this not work if we just did?: suspicious_matches[location].insert(matching_location);
     if (itr != suspicious_matches.end()) {
@@ -66,33 +66,18 @@ public:
       suspicious_matches[location] = s;
     }
     // update the students_matched container
-    students_matched[matching_location.student][matching_location.version]++;
+    students_matched[matching_location.student][matching_location.version].insert(matched_hash);
   }
-  void addCommonMatch(location_in_submission location, const HashLocation &matching_location) {
-    std::map<location_in_submission, std::set<HashLocation>>::iterator itr = common_matches.find(location);
-
-    if (itr != common_matches.end()) {
-      // location already exists in the map, so we just append the location to the set
-      common_matches[location].insert(matching_location);
-    } else {
-      // intialize the set and add the location
-      std::set<HashLocation> s;
-      s.insert(matching_location);
-      common_matches[location] = s;
-    }
-  }
+  void addCommonMatch(location_in_submission location) { common_matches.insert(location); }
   void addProvidedMatch(location_in_submission location) { provided_matches.insert(location); }
   const std::map<location_in_submission, std::set<HashLocation> >& getSuspiciousMatches() const {
     return suspicious_matches;
   }
-  const std::map<location_in_submission, std::set<HashLocation> >& getCommonMatches() const {
-    return common_matches;
-  }
-  const std::unordered_map<std::string, std::unordered_map<int, int> >& getStudentsMatched() const {
+  const std::set<location_in_submission>& getCommonMatches() const { return common_matches; }
+  const std::set<location_in_submission>& getProvidedMatches() const { return provided_matches; }
+  const std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>& getStudentsMatched() const {
     return students_matched;
   }
-  const std::set<location_in_submission>& getProvidedMatches() const { return provided_matches; }
-  unsigned int getNumHashes() const { return hashes.size(); }
   float getPercentage() const {
     return (100.0 * (suspicious_matches.size())) / hashes.size();
   }
@@ -102,12 +87,12 @@ private:
   int version_;
   std::vector<std::pair<hash, location_in_submission> > hashes;
   std::map<location_in_submission, std::set<HashLocation> > suspicious_matches;
-  std::map<location_in_submission, std::set<HashLocation> > common_matches;
+  std::set<location_in_submission> common_matches;
   std::set<location_in_submission> provided_matches;
 
   // a container to keep track of all the students this submission
   // matched and the number of matching hashes per submission
-  std::unordered_map<std::string, std::unordered_map<int, int> > students_matched;
+  std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>> students_matched;
 };
 
 
@@ -313,10 +298,10 @@ int main(int argc, char* argv[]) {
             if (occurences.size() > (unsigned int)threshold) {
               // if the number of students with matching code is more
               // than the threshold, it is considered common code
-              submission_itr->addCommonMatch(hash_itr->second, *itr);
+              submission_itr->addCommonMatch(hash_itr->second);
             } else {
               // save the match as a suspicous match
-              submission_itr->addSuspiciousMatch(hash_itr->second, *itr);
+              submission_itr->addSuspiciousMatch(hash_itr->second, *itr, hash_itr->first);
             }
           }
         }
@@ -412,62 +397,17 @@ int main(int argc, char* argv[]) {
     }
     // ********************************************
 
+
     // ********  WRITE THE COMMON MATCHES  ********
     // all of the common matches for this submission
-    std::map<location_in_submission, std::set<HashLocation> > common_matches = submission_itr->getCommonMatches();
-
-    // loop over each of the common locations in the current submission
-    for (std::map<location_in_submission, std::set<HashLocation> >::const_iterator location_itr
-         =common_matches.begin(); location_itr != common_matches.end(); ++location_itr) {
-
-      // stores matches of hash locations across other submssions in the class
-      std::vector<nlohmann::json> others;
-
-      {
-        // generate a specific element of the "others" vector
-        // set the variables to their initial values
-        std::set<HashLocation>::const_iterator matching_positions_itr = location_itr->second.begin();
-        nlohmann::json other;
-        other["username"] = matching_positions_itr->student;
-        other["version"] = matching_positions_itr->version;
-        std::vector<nlohmann::json> matchingpositions;
-        nlohmann::json position;
-        position["start"] = matching_positions_itr->location;
-        position["end"] = matching_positions_itr->location + sequence_length - 1;
-        matchingpositions.push_back(position);
-
-        // search for all matching positions of the suspicious match in other submissions
-        if (location_itr->second.size() > 1) {
-          ++matching_positions_itr;
-
-          // loop over all of the other matching positions
-          for (; matching_positions_itr != location_itr->second.end(); ++matching_positions_itr) {
-
-            // keep iterating and editing the same object until a we get to a different submission
-            if (matching_positions_itr->student != other["username"] || matching_positions_itr->version != other["version"]) {
-              // found a different one, we push the old one and start over
-              other["matchingpositions"] = matchingpositions;
-              others.push_back(other);
-
-              matchingpositions.clear();
-              other["username"] = matching_positions_itr->student;
-              other["version"] = matching_positions_itr->version;
-            }
-            position["start"] = matching_positions_itr->location;
-            position["end"] = matching_positions_itr->location + sequence_length - 1;
-            matchingpositions.push_back(position);
-          }
-        }
-
-        other["matchingpositions"] = matchingpositions;
-        others.push_back(other);
-      }
+    std::set<location_in_submission> common_matches = submission_itr->getCommonMatches();
+    for (std::set<location_in_submission>::const_iterator location_itr = common_matches.begin();
+         location_itr != common_matches.end(); ++location_itr) {
 
       nlohmann::json info;
-      info["start"] = location_itr->first;
-      info["end"] = location_itr->first + sequence_length - 1;
+      info["start"] = *location_itr;
+      info["end"] = *location_itr + sequence_length - 1;
       info["type"] = "common";
-      info["others"] = others;
 
       result.push_back(info);
     }
@@ -484,7 +424,6 @@ int main(int argc, char* argv[]) {
       info["start"] = *location_itr;
       info["end"] = *location_itr + sequence_length - 1;
       info["type"] = "provided";
-      info["others"] = {}; 
 
       result.push_back(info);
     }
@@ -619,17 +558,28 @@ int main(int argc, char* argv[]) {
 
     // find and sort the other submissions it matches with
     std::vector<StudentRanking> student_ranking;
-    std::unordered_map<std::string, std::unordered_map<int, int> > matches = submission_itr->getStudentsMatched();
-    for (std::unordered_map<std::string, std::unordered_map<int, int> >::const_iterator matches_itr = matches.begin();
+    std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>> matches = submission_itr->getStudentsMatched();
+    for (std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>::const_iterator matches_itr = matches.begin();
          matches_itr != matches.end(); ++matches_itr) {
 
-      for (std::unordered_map<int, int>::const_iterator version_itr = matches_itr->second.begin();
+      for (std::unordered_map<int, std::unordered_set<hash>>::const_iterator version_itr = matches_itr->second.begin();
            version_itr != matches_itr->second.end(); ++version_itr) {
+
+        // ***** Calculate the Percent Match *****
+
+        // count the number of unique hashes for the percent match calculation
+        std::vector<std::pair<hash, location_in_submission>> submission_hashes = submission_itr->getHashes();
+        std::unordered_set<hash> unique_hashes;
+        for (std::vector<std::pair<hash, location_in_submission>>::const_iterator itr = submission_hashes.begin();
+             itr != submission_hashes.end(); ++itr) {
+          unique_hashes.insert(itr->first);
+        }
 
         // the percent match is currently calculated using the number of hashes that match between this
         // submission and the other submission, over the total number of hashes this submission has.
         // In other words, the percentage is how much of this submission's code was plgairised from the other.
-        float percent = 100.0 * float(version_itr->second) / submission_itr->getNumHashes();
+        std::cout << "version_itr->second.size() = " << version_itr->second.size() << ", and unique_hashes.size() = " << unique_hashes.size() << std::endl;
+        float percent = (100.0 * version_itr->second.size()) / unique_hashes.size();
         student_ranking.push_back(StudentRanking(matches_itr->first, version_itr->first, percent));
       }
     }

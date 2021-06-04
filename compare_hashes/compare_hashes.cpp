@@ -80,6 +80,7 @@ public:
       common_matches[location] = s;
     }
   }
+  void addProvidedMatch(location_in_submission location) { provided_matches.insert(location); }
   const std::map<location_in_submission, std::set<HashLocation> >& getSuspiciousMatches() const {
     return suspicious_matches;
   }
@@ -89,9 +90,10 @@ public:
   const std::unordered_map<std::string, std::unordered_map<int, int> >& getStudentsMatched() const {
     return students_matched;
   }
+  const std::set<location_in_submission>& getProvidedMatches() const { return provided_matches; }
   unsigned int getNumHashes() const { return hashes.size(); }
   float getPercentage() const {
-    return (100.0 * (suspicious_matches.size() + common_matches.size())) / hashes.size();
+    return (100.0 * (suspicious_matches.size())) / hashes.size();
   }
 
 private:
@@ -100,6 +102,7 @@ private:
   std::vector<std::pair<hash, location_in_submission> > hashes;
   std::map<location_in_submission, std::set<HashLocation> > suspicious_matches;
   std::map<location_in_submission, std::set<HashLocation> > common_matches;
+  std::set<location_in_submission> provided_matches;
 
   // a container to keep track of all the students this submission
   // matched and the number of matching hashes per submission
@@ -202,6 +205,12 @@ int main(int argc, char* argv[]) {
     exit(0);
   }
 
+  // the file path where we expect to find the hashed instructor provided code file
+  std::string tmp2 = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/hashes/"+gradeable+"/provided_code.txt";
+  boost::filesystem::path provided_code_file = boost::filesystem::system_complete(tmp2);
+  // if file exists in that location, the provided code mode is enabled.
+  bool provided_code_enabled = boost::filesystem::exists(provided_code_file);
+
   // ---------------------------------------------------------------------------
   // loop over all submissions and populate the all_hashes and all_submissions structures
 
@@ -209,6 +218,8 @@ int main(int argc, char* argv[]) {
   std::unordered_map<hash, std::unordered_map<std::string, std::vector<HashLocation>>> all_hashes;
   // Stores all submissions
   std::vector<Submission> all_submissions;
+  // Stores all hashes from the instructor provided code
+  std::unordered_set<hash> provided_code;
 
   // loop over all users
   boost::filesystem::directory_iterator end_iter;
@@ -244,6 +255,16 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  if (provided_code_enabled) {
+    // load the instructor provided code's hashes
+    std::ifstream istr(provided_code_file.string());
+    hash instructor_hash;
+    while (istr >> instructor_hash) {
+      provided_code.insert(instructor_hash); 
+    }
+  }  
+
+
   std::cout << "finished loading" << std::endl;
 
   // ---------------------------------------------------------------------------
@@ -261,29 +282,42 @@ int main(int argc, char* argv[]) {
     std::vector<std::pair<hash, location_in_submission>>::const_iterator hash_itr = submission_itr->getHashes().begin();
     for (; hash_itr != submission_itr->getHashes().end(); ++hash_itr) {
 
-      // look up that hash in the all_hashes table, loop over all other students that have the same hash
-      std::unordered_map<std::string, std::vector<HashLocation>> occurences = all_hashes[hash_itr->first];
-      std::unordered_map<std::string, std::vector<HashLocation>>::iterator occurences_itr = occurences.begin();
-      for (; occurences_itr != occurences.end(); ++occurences_itr) {
-
-        // don't look for matches across submissions of the same student
-        if (occurences_itr->first == submission_itr->student()) {
-          continue;
+      // if provided code was enabled, look for the submission hash in the provided code's hashes
+      bool provided_match_found = false;
+      if (provided_code_enabled) {
+        std::unordered_set<hash>::iterator provided_match_itr = provided_code.find(hash_itr->first);
+        if (provided_match_itr != provided_code.end()) {
+          provided_match_found = true;
+          // add provded match
+          submission_itr->addProvidedMatch(hash_itr->second);
         }
+      } 
 
-        // save the locations of all other occurences of the matching hash in other students' submissions
-        std::vector<HashLocation>::iterator itr = occurences_itr->second.begin();
-        for (; itr != occurences_itr->second.end(); ++itr) {
+      // if the hash doesn't match any of the provided code's hashes, try to find matched between other students 
+      if (!provided_match_found) {
+        // look up that hash in the all_hashes table, loop over all other students that have the same hash
+        std::unordered_map<std::string, std::vector<HashLocation>> occurences = all_hashes[hash_itr->first];
+        std::unordered_map<std::string, std::vector<HashLocation>>::iterator occurences_itr = occurences.begin();
+        for (; occurences_itr != occurences.end(); ++occurences_itr) {
 
-          if (occurences.size() > (unsigned int)threshold) {
-            // if the number of students with matching code is more
-            // than the threshold, it is considered common code
-            submission_itr->addCommonMatch(hash_itr->second, *itr);
-          } else {
-            // save the match as a suspicous match
-            submission_itr->addSuspiciousMatch(hash_itr->second, *itr);
+          // don't look for matches across submissions of the same student
+          if (occurences_itr->first == submission_itr->student()) {
+            continue;
           }
-          // TODO: insert provided match here
+
+          // save the locations of all other occurences of the matching hash in other students' submissions
+          std::vector<HashLocation>::iterator itr = occurences_itr->second.begin();
+          for (; itr != occurences_itr->second.end(); ++itr) {
+
+            if (occurences.size() > (unsigned int)threshold) {
+              // if the number of students with matching code is more
+              // than the threshold, it is considered common code
+              submission_itr->addCommonMatch(hash_itr->second, *itr);
+            } else {
+              // save the match as a suspicous match
+              submission_itr->addSuspiciousMatch(hash_itr->second, *itr);
+            }
+          }
         }
       }
     }
@@ -436,7 +470,25 @@ int main(int argc, char* argv[]) {
 
       result.push_back(info);
     }
-    // ********************************************
+    // ************************************************
+
+
+    // ********  WRITE THE PROVIDED MATCHES  ********
+    // all of the provided code matches for this submission
+    
+    std::unordered_set<location_in_submission> provided_matches = submission_itr->getProvidedMatches();
+    for (std::unordered_set<location_in_submission>::const_iterator location_itr = provided_matches.begin();
+         location_itr != provided_matches.end(); ++location_itr) {
+
+      nlohmann::json info;
+      info["start"] = location_itr->first;
+      info["end"] = location_itr->first + sequence_length - 1;
+      info["type"] = "provided";
+      info["others"] = {}; 
+
+      result.push_back(info);
+    }
+    // ************************************************
 
 
     // ---------------------------------------------------------------------------

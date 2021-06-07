@@ -578,7 +578,6 @@ int main(int argc, char* argv[]) {
         // the percent match is currently calculated using the number of hashes that match between this
         // submission and the other submission, over the total number of hashes this submission has.
         // In other words, the percentage is how much of this submission's code was plgairised from the other.
-        std::cout << "version_itr->second.size() = " << version_itr->second.size() << ", and unique_hashes.size() = " << unique_hashes.size() << std::endl;
         float percent = (100.0 * version_itr->second.size()) / unique_hashes.size();
         student_ranking.push_back(StudentRanking(matches_itr->first, version_itr->first, percent));
       }

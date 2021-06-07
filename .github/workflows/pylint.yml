@@ -1,0 +1,25 @@
+name: Python Linting
+
+on: [push]
+
+jobs:
+  python-lint:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+      - name: Cache Pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ github.job }}-pip-${{ github.sha }}
+          restore-keys: |
+              ${{ runner.os }}-${{ github.job }}-pip-
+      - name: Install python libraries
+        run : |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install flake8 flake8-bugbear
+      - name: Run python linting
+        run : python3 -m flake8

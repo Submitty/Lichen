@@ -37,49 +37,49 @@ def main():
         gradeable = lichen_config_data["gradeable"]
         expressions = None
         if("regex" in lichen_config_data):
-        	#this assumes regex is seperated by a ','
-        	expressions = lichen_config_data["regex"].split(',')
+            # this assumes regex is seperated by a ','
+            expressions = lichen_config_data["regex"].split(',')
 
-    # ===========================================================================
+    # =========================================================================
     # error checking
-    course_dir=os.path.join(SUBMITTY_DATA_DIR,"courses",semester,course)
+    course_dir = os.path.join(SUBMITTY_DATA_DIR, "courses", semester, course)
     if not os.path.isdir(course_dir):
-        print("ERROR! ",course_dir," is not a valid course directory")
+        print("ERROR! ", course_dir, " is not a valid course directory")
         exit(1)
-    submission_dir=os.path.join(course_dir,"submissions",gradeable)
+    submission_dir = os.path.join(course_dir, "submissions", gradeable)
     if not os.path.isdir(submission_dir):
-        print("ERROR! ",submission_dir," is not a valid gradeable submissions directory")
+        print("ERROR! ", submission_dir, " is not a valid gradeable submissions directory")
         exit(1)
 
-    # ===========================================================================
+    # =========================================================================
     # create the directory
-    concatenated_dir=os.path.join(course_dir,"lichen","concatenated",gradeable)
+    concatenated_dir = os.path.join(course_dir, "lichen", "concatenated", gradeable)
     if not os.path.isdir(concatenated_dir):
-         os.makedirs(concatenated_dir)
+        os.makedirs(concatenated_dir)
 
-    # ===========================================================================
+    # =========================================================================
     # walk the subdirectories
     for user in sorted(os.listdir(submission_dir)):
-        if not os.path.isdir(os.path.join(submission_dir,user)):
+        if not os.path.isdir(os.path.join(submission_dir, user)):
             continue
-        for version in sorted(os.listdir(os.path.join(submission_dir,user))):
-            if not os.path.isdir(os.path.join(submission_dir,user,version)):
+        for version in sorted(os.listdir(os.path.join(submission_dir, user))):
+            if not os.path.isdir(os.path.join(submission_dir, user, version)):
                 continue
 
-            # ---------------------------------------------------------------------
-            # concatenate all files for this gradeable/user/version into a single file
-            my_concatenated_dir=os.path.join(concatenated_dir,user,version)
+            # -----------------------------------------------------------------
+            # concatenate all files for this submisison into a single file
+            my_concatenated_dir = os.path.join(concatenated_dir, user, version)
             if not os.path.isdir(my_concatenated_dir):
                 os.makedirs(my_concatenated_dir)
-            my_concatenated_file=os.path.join(my_concatenated_dir,"submission.concatenated")
+            my_concatenated_file = os.path.join(my_concatenated_dir, "submission.concatenated")
             total_concat = 0
-            with open(my_concatenated_file,'w') as my_cf:
+            with open(my_concatenated_file, 'w') as my_cf:
                 # loop over all files in all subdirectories
-                base_path = os.path.join(submission_dir,user,version)
-                for my_dir,dirs,my_files in os.walk(base_path):
-                    #Determine if regex should be used
+                base_path = os.path.join(submission_dir, user, version)
+                for my_dir, _dirs, my_files in os.walk(base_path):
+                    # Determine if regex should be used
                     files = sorted(my_files)
-                    if(expressions != None):
+                    if expressions is not None:
                         files_filtered = []
                         for e in expressions:
                             files_filtered.extend(fnmatch.filter(files, e.strip()))
@@ -89,8 +89,7 @@ def main():
                         # skip the timestep
                         if my_file == ".submit.timestamp":
                             continue
-                        absolute_path=os.path.join(my_dir,my_file)
-                        relative_path=absolute_path[len(base_path):]
+                        absolute_path = os.path.join(my_dir, my_file)
                         # print a separator & filename
                         with open(absolute_path, encoding='ISO-8859-1') as tmp:
                             # append the contents of the file
@@ -103,7 +102,8 @@ def main():
                     shutil.rmtree(p2)
                 os.rmdir(my_concatenated_dir)
 
-    print ("done")
+    print("done")
+
 
 if __name__ == "__main__":
     main()

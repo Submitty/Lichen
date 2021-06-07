@@ -106,8 +106,9 @@ def main():
     # =========================================================================
     # concatenate any files in the provided_code directory
     provided_code_path = os.path.join(course_dir, "lichen", "provided_code", gradeable)
-    output_dir = os.path.join(course_dir, "lichen", "concatenated", gradeable, "provided_code")
-    output_file = os.path.join(output_dir, "provided_code.concatenated")
+    output_dir = os.path.join(course_dir, "lichen", "concatenated",
+                              gradeable, "provided_code", "provided_code")
+    output_file = os.path.join(output_dir, "submission.concatenated")
 
     if os.path.isdir(provided_code_path) and len(os.listdir(provided_code_path)) != 0:
         # If the directory already exists, delete it and make a new one

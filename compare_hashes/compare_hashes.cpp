@@ -192,7 +192,7 @@ int main(int argc, char* argv[]) {
   }
 
   // the file path where we expect to find the hashed instructor provided code file
-  std::string tmp2 = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/hashes/"+gradeable+"/provided_code.txt";
+  std::string tmp2 = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/hashes/"+gradeable+"/provided_code/provided_code/hashes.txt";
   boost::filesystem::path provided_code_file = boost::filesystem::system_complete(tmp2);
   // if file exists in that location, the provided code mode is enabled.
   bool provided_code_enabled = boost::filesystem::exists(provided_code_file);
@@ -213,6 +213,18 @@ int main(int argc, char* argv[]) {
     boost::filesystem::path username_path = dir_itr->path();
     assert (is_directory(username_path));
     std::string username = dir_itr->path().filename().string();
+
+    if (username == "provided_code") {
+      assert(provided_code_enabled);
+
+      // load the instructor provided code's hashes
+      std::ifstream istr(provided_code_file.string());
+      hash instructor_hash;
+      while (istr >> instructor_hash) {
+        provided_code.insert(instructor_hash);
+      }
+      continue;
+    }
 
     // loop over all versions
     for (boost::filesystem::directory_iterator username_itr( username_path ); username_itr != end_iter; ++username_itr) {
@@ -241,15 +253,6 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  if (provided_code_enabled) {
-    // load the instructor provided code's hashes
-    std::ifstream istr(provided_code_file.string());
-    hash instructor_hash;
-    while (istr >> instructor_hash) {
-      provided_code.insert(instructor_hash); 
-    }
-  }  
-
 
   std::cout << "finished loading" << std::endl;
 
@@ -277,9 +280,9 @@ int main(int argc, char* argv[]) {
           // add provded match
           submission_itr->addProvidedMatch(hash_itr->second);
         }
-      } 
+      }
 
-      // if the hash doesn't match any of the provided code's hashes, try to find matched between other students 
+      // if the hash doesn't match any of the provided code's hashes, try to find matched between other students
       if (!provided_match_found) {
         // look up that hash in the all_hashes table, loop over all other students that have the same hash
         std::unordered_map<std::string, std::vector<HashLocation>> occurences = all_hashes[hash_itr->first];
@@ -442,30 +445,40 @@ int main(int argc, char* argv[]) {
         // check whether they are next to each other and have the same type
         if ((*currPosition)["end"].get<int>() == (*prevPosition)["end"].get<int>() + 1 && (*currPosition)["type"] == (*prevPosition)["type"]) {
           bool canBeMerged = true;
-          // easy check to see if they can't be merged for certain
-          if ((*prevPosition)["others"].size() != (*currPosition)["others"].size()) {
-            canBeMerged = false;
-          }
-          else {
-            nlohmann::json::iterator prevPosItr = (*prevPosition)["others"].begin();
-            nlohmann::json::iterator currPosItr = (*currPosition)["others"].begin();
-            for (; prevPosItr != (*prevPosition)["others"].end() && currPosItr != (*currPosition)["others"].end(); prevPosItr++, currPosItr++) {
-              // we can't merge the two positions if they are different in any way, except for the ending positions
-              if ((*prevPosItr)["username"] != (*currPosItr)["username"] ||
-                  (*prevPosItr)["version"] != (*currPosItr)["version"] ||
-                  !matchingPositionsAreAdjacent((*prevPosItr), (*currPosItr))) {
-                canBeMerged = false;
-                break;
+
+          // if they are both of type match, we have to do extra steps to make sure they are mergeable
+          if ((*prevPosition)["type"] == "match") {
+            // easy check to see if they can't be merged for certain
+            if ((*prevPosition)["others"].size() != (*currPosition)["others"].size()) {
+              canBeMerged = false;
+            }
+            else {
+              nlohmann::json::iterator prevPosItr = (*prevPosition)["others"].begin();
+              nlohmann::json::iterator currPosItr = (*currPosition)["others"].begin();
+              for (; prevPosItr != (*prevPosition)["others"].end() && currPosItr != (*currPosition)["others"].end(); prevPosItr++, currPosItr++) {
+                // we can't merge the two positions if they are different in any way, except for the ending positions
+                if ((*prevPosItr)["username"] != (*currPosItr)["username"] ||
+                    (*prevPosItr)["version"] != (*currPosItr)["version"] ||
+                    !matchingPositionsAreAdjacent((*prevPosItr), (*currPosItr))) {
+                  canBeMerged = false;
+                  break;
+                }
               }
             }
           }
 
           //if it's possible to do the merging, do it here by adjusting the end of the previous position and erasing the current position
-          if (canBeMerged) {
+          if (canBeMerged && (*prevPosition)["type"] == "match") {
             (*prevPosition)["end"] = (*currPosition)["end"].get<int>(); // (should be the equivalent of prevPosition["end"]++)
 
             // increment end positions for each element
             incrementEndPositionsForMatches((*prevPosition)["others"]);
+
+            result.erase(result.begin() + position);
+            position--;
+          }
+          else if (canBeMerged) { // common code or provided code that can be matched
+            (*prevPosition)["end"] = (*currPosition)["end"].get<int>();
 
             result.erase(result.begin() + position);
             position--;

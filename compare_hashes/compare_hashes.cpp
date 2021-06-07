@@ -101,7 +101,7 @@ private:
   std::map<location_in_submission, std::set<HashLocation> > suspicious_matches;
   std::map<location_in_submission, std::set<HashLocation> > common_matches;
 
-  // a container to keep track of all the students this submission 
+  // a container to keep track of all the students this submission
   // matched and the number of matching hashes per submission
   std::unordered_map<std::string, std::unordered_map<int, int> > students_matched;
 };
@@ -352,10 +352,10 @@ int main(int argc, char* argv[]) {
         // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
           ++matching_positions_itr;
-          
+
           // loop over all of the other matching positions
           for (; matching_positions_itr != location_itr->second.end(); ++matching_positions_itr) {
-            
+
             // keep iterating and editing the same object until a we get to a different submission
             if (matching_positions_itr->student != other["username"] || matching_positions_itr->version != other["version"]) {
               // found a different one, we push the old one and start over
@@ -413,10 +413,10 @@ int main(int argc, char* argv[]) {
         // search for all matching positions of the suspicious match in other submissions
         if (location_itr->second.size() > 1) {
           ++matching_positions_itr;
-          
+
           // loop over all of the other matching positions
           for (; matching_positions_itr != location_itr->second.end(); ++matching_positions_itr) {
-            
+
             // keep iterating and editing the same object until a we get to a different submission
             if (matching_positions_itr->student != other["username"] || matching_positions_itr->version != other["version"]) {
               // found a different one, we push the old one and start over
@@ -560,12 +560,12 @@ int main(int argc, char* argv[]) {
 
 
   // ---------------------------------------------------------------------------
-  // create a rankings file for every submission. the file contains all the other 
+  // create a rankings file for every submission. the file contains all the other
   // students share matches, sorted by decreasing order of the percent match
-  
+
   for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
        submission_itr != all_submissions.end(); ++submission_itr) {
-    
+
     // create the directory and a file to write into
     std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"
                                       +gradeable+"/"+submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
@@ -576,9 +576,9 @@ int main(int argc, char* argv[]) {
     // find and sort the other submissions it matches with
     std::vector<StudentRanking> student_ranking;
     std::unordered_map<std::string, std::unordered_map<int, int> > matches = submission_itr->getStudentsMatched();
-    for (std::unordered_map<std::string, std::unordered_map<int, int> >::const_iterator matches_itr = matches.begin(); 
+    for (std::unordered_map<std::string, std::unordered_map<int, int> >::const_iterator matches_itr = matches.begin();
          matches_itr != matches.end(); ++matches_itr) {
-      
+
       for (std::unordered_map<int, int>::const_iterator version_itr = matches_itr->second.begin();
            version_itr != matches_itr->second.end(); ++version_itr) {
 

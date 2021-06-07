@@ -120,26 +120,16 @@ bool operator < (const HashLocation &hl1, const HashLocation &hl2) {
 // ensures that all of the regions in the two parameters are adjacent
 bool matchingPositionsAreAdjacent(const nlohmann::json &first, const nlohmann::json &second) {
   // they can't all be adjacent if there are an unequal number between the two lists
-  if (first.size() != second.size()) {
+  if (first["matchingpositions"].size() != second["matchingpositions"].size()) {
     return false;
   }
 
-  nlohmann::json::const_iterator itr1 = first.begin();
-  nlohmann::json::const_iterator itr2 = second.begin();
-  // iterate over each matching submission
-  for (; itr1 != first.end() && itr2 != second.end(); itr1++, itr2++) {
-    // the number of matches must be the same
-    if ((*itr1)["matchingpositions"].size() != (*itr2)["matchingpositions"].size()) {
+  nlohmann::json::const_iterator itr1 = first["matchingpositions"].begin();
+  nlohmann::json::const_iterator itr2 = second["matchingpositions"].begin();
+  // iterate over each matching submission (first and second are the same length so we don't have to check for the end of second)
+  for (; itr1 != first["matchingpositions"].end(); itr1++, itr2++) {
+    if ((*itr1)["end"].get<int>() + 1 != (*itr2)["end"].get<int>()) {
       return false;
-    }
-
-    nlohmann::json::const_iterator itr3 = (*itr1)["matchingpositions"].begin();
-    nlohmann::json::const_iterator itr4 = (*itr2)["matchingpositions"].begin();
-    // iterate over each matching position in the submission
-    for (; itr3 != (*itr1)["matchingpositions"].end() && itr4 != (*itr2)["matchingpositions"].end(); itr3++, itr4++) {
-      if ((*itr3)["end"].get<int>() + 1 != (*itr4)["end"].get<int>()) {
-        return false;
-      }
     }
   }
   return true;
@@ -148,9 +138,9 @@ bool matchingPositionsAreAdjacent(const nlohmann::json &first, const nlohmann::j
 
 // increments the end position for each of the matches in the json provided,
 // merging overlapping regions where necessary
-void incrementEndPositionsForMatches(nlohmann::json &matches) {
-  nlohmann::json::iterator itr = matches.begin();
-  for (; itr != matches.end(); itr++) {
+void incrementEndPositionsForMatches(nlohmann::json &others) {
+  nlohmann::json::iterator itr = others.begin();
+  for (; itr != others.end(); itr++) {
     nlohmann::json::iterator itr2 = (*itr)["matchingpositions"].begin();
     nlohmann::json::iterator itr3 = ++((*itr)["matchingpositions"].begin());
     for (; itr3 != (*itr)["matchingpositions"].end();) {
@@ -164,6 +154,7 @@ void incrementEndPositionsForMatches(nlohmann::json &matches) {
         itr3++;
       }
     }
+    (*itr2)["end"] = (*itr2)["end"].get<int>() + 1;
   }
 }
 
@@ -458,19 +449,21 @@ int main(int argc, char* argv[]) {
       for (unsigned int position = 1; position < result.size(); position++) {
         nlohmann::json* prevPosition = &result[position - 1];
         nlohmann::json* currPosition = &result[position];
-        if ((*currPosition)["end"].get<int>() == (*prevPosition)["end"].get<int>() + 1) { // check whether they are next to each other
+        // check whether they are next to each other and have the same type
+        if ((*currPosition)["end"].get<int>() == (*prevPosition)["end"].get<int>() + 1 && (*currPosition)["type"] == (*prevPosition)["type"]) {
           bool canBeMerged = true;
-          nlohmann::json::iterator prevPosItr = (*prevPosition)["others"].begin();
-          nlohmann::json::iterator currPosItr = (*currPosition)["others"].begin();
+          // easy check to see if they can't be merged for certain
           if ((*prevPosition)["others"].size() != (*currPosition)["others"].size()) {
             canBeMerged = false;
           }
           else {
+            nlohmann::json::iterator prevPosItr = (*prevPosition)["others"].begin();
+            nlohmann::json::iterator currPosItr = (*currPosition)["others"].begin();
             for (; prevPosItr != (*prevPosition)["others"].end() && currPosItr != (*currPosition)["others"].end(); prevPosItr++, currPosItr++) {
               // we can't merge the two positions if they are different in any way, except for the ending positions
               if ((*prevPosItr)["username"] != (*currPosItr)["username"] ||
                   (*prevPosItr)["version"] != (*currPosItr)["version"] ||
-                  !matchingPositionsAreAdjacent((*prevPosItr)["others"], (*currPosItr)["others"])) {
+                  !matchingPositionsAreAdjacent((*prevPosItr), (*currPosItr))) {
                 canBeMerged = false;
                 break;
               }

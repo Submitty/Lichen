@@ -442,6 +442,7 @@ int main(int argc, char* argv[]) {
     // ---------------------------------------------------------------------------
     // Done creating the JSON file/objects, now we merge them to shrink them in size
 
+    /*
     // Merge matching regions:
     if (result.size() > 0) { // check to make sure that there are more than 1 positions (if it's 1, we can't merge anyway)
       // loop through all positions
@@ -481,7 +482,7 @@ int main(int argc, char* argv[]) {
           }
         }
       }
-    }
+    }*/
 
     // save the file with matches per user
     nlohmann::json match_data = result;

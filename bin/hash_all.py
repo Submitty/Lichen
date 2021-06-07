@@ -8,9 +8,7 @@ the tokenized files.
 import argparse
 import os
 import json
-import subprocess
 import sys
-import json
 import hashlib
 
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'config')

@@ -97,10 +97,31 @@ def main():
             # Remove concat file if there no content...
             if total_concat == 0:
                 os.remove(my_concatenated_file)
+                # FIXME: is this the correct path?
                 p2 = os.path.join(course_dir, "lichen", "tokenized", gradeable, user, version)
                 if os.path.isdir(p2):
                     shutil.rmtree(p2)
                 os.rmdir(my_concatenated_dir)
+
+    # =========================================================================
+    # concatenate any files in the provided_code directory
+    provided_code_path = os.path.join(course_dir, "lichen", "provided_code", gradeable)
+    output_dir = os.path.join(course_dir, "lichen", "concatenated",
+                              gradeable, "provided_code", "provided_code")
+    output_file = os.path.join(output_dir, "submission.concatenated")
+
+    if os.path.isdir(provided_code_path) and len(os.listdir(provided_code_path)) != 0:
+        # If the directory already exists, delete it and make a new one
+        if os.path.isdir(output_dir):
+            shutil.rmtree(output_dir)
+        os.makedirs(output_dir)
+
+        with open(output_file, 'w') as of:
+            # Loop over all of the provided files and concatenate them
+            for file in sorted(os.listdir(provided_code_path)):
+                with open(os.path.join(provided_code_path, file), encoding='ISO-8859-1') as tmp:
+                    # append the contents of the file
+                    of.write(tmp.read())
 
     print("done")
 

@@ -93,6 +93,7 @@ int main(int argc, char* argv[]) {
           tmp["value"]=token;
         }
         tmp["num"]=count;
+        count++;
         tokens.push_back(tmp);
         token="";
         last_was_alpha = false;
@@ -119,6 +120,7 @@ int main(int argc, char* argv[]) {
         tmp["type"]="punctuation";
         tmp["value"]=std::string(1,c);
         tmp["num"]=count;
+        count++;
         tokens.push_back(tmp);
       }
     }
@@ -169,6 +171,7 @@ int main(int argc, char* argv[]) {
         tmp["type"]="newline";
         tmp["value"]="\n";
         tmp["num"]=count;
+        count++;
         tokens.push_back(tmp);
       }
       row++;
@@ -177,8 +180,6 @@ int main(int argc, char* argv[]) {
       // advance to the next column/character
       col++;
     }
-
-    count++;
   } 
 
   // ------------------------------

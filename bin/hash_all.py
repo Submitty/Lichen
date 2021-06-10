@@ -51,7 +51,7 @@ def hasher(args, my_tokenized_file, my_hashes_file):
             # FIXME: this truncation should be adjusted after testing
             token_hashed_values = [(hashlib.md5(''.join(
                 token_values[x:x+sequence_length]).encode())
-                .hexdigest())[0:8] for x in range(0, num-sequence_length)]
+                .hexdigest())[0:8] for x in range(0, num-sequence_length+1)]
 
             my_hf.write('\n'.join(token_hashed_values))
 

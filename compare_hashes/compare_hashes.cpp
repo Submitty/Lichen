@@ -538,87 +538,81 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  if (highest_matches.size() == 0) {
-    ranking_ostr << "No matches found" << std::endl;
-  } 
+  // take the map of highest matches and convert it to a vector so we can sort it
+  // by percent match and then save it to a file
+  std::vector<StudentRanking> ranking;
+  for (std::unordered_map<std::string, std::pair<int, float> >::iterator itr
+        = highest_matches.begin(); itr != highest_matches.end(); ++itr) {
+    ranking.push_back(StudentRanking(itr->first, itr->second.first, itr->second.second));
+  }
 
-  else {
+  std::sort(ranking.begin(), ranking.end(), ranking_sorter);
 
-    // take the map of highest matches and convert it to a vector so we can sort it
-    // by percent match and then save it to a file
-    std::vector<StudentRanking> ranking;
-    for (std::unordered_map<std::string, std::pair<int, float> >::iterator itr
-          = highest_matches.begin(); itr != highest_matches.end(); ++itr) {
-      ranking.push_back(StudentRanking(itr->first, itr->second.first, itr->second.second));
+  for (unsigned int i = 0; i < ranking.size(); i++) {
+    ranking_ostr
+      << std::setw(6) << std::setprecision(2) << std::fixed << ranking[i].percent << "%   "
+      << std::setw(15) << std::left << ranking[i].student << " "
+      << std::setw(3) << std::right << ranking[i].version << std::endl;
+  }
+
+  // ---------------------------------------------------------------------------
+  // create a rankings file for every submission. the file contains all the other
+  // students share matches, sorted by decreasing order of the percent match
+
+  for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
+       submission_itr != all_submissions.end(); ++submission_itr) {
+
+    // find and sort the other submissions it matches with
+    std::vector<StudentRanking> student_ranking;
+    std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>> matches = submission_itr->getStudentsMatched();
+
+    // no need to create a file for students with no matches
+    if (matches.size() == 0) {
+      continue;
     }
 
-    std::sort(ranking.begin(), ranking.end(), ranking_sorter);
+    for (std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>::const_iterator matches_itr = matches.begin();
+         matches_itr != matches.end(); ++matches_itr) {
 
-    for (unsigned int i = 0; i < ranking.size(); i++) {
-      ranking_ostr
-        << std::setw(6) << std::setprecision(2) << std::fixed << ranking[i].percent << "%   "
-        << std::setw(15) << std::left << ranking[i].student << " "
-        << std::setw(3) << std::right << ranking[i].version << std::endl;
-    }
+      for (std::unordered_map<int, std::unordered_set<hash>>::const_iterator version_itr = matches_itr->second.begin();
+           version_itr != matches_itr->second.end(); ++version_itr) {
 
-    // ---------------------------------------------------------------------------
-    // create a rankings file for every submission. the file contains all the other
-    // students share matches, sorted by decreasing order of the percent match
+        // ***** Calculate the Percent Match *****
 
-    for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
-         submission_itr != all_submissions.end(); ++submission_itr) {
-
-      // find and sort the other submissions it matches with
-      std::vector<StudentRanking> student_ranking;
-      std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>> matches = submission_itr->getStudentsMatched();
-
-      // no need to create a file for students with no matches
-      if (matches.size() == 0) {
-        continue;
-      }
-
-      for (std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>::const_iterator matches_itr = matches.begin();
-           matches_itr != matches.end(); ++matches_itr) {
-
-        for (std::unordered_map<int, std::unordered_set<hash>>::const_iterator version_itr = matches_itr->second.begin();
-             version_itr != matches_itr->second.end(); ++version_itr) {
-
-          // ***** Calculate the Percent Match *****
-
-          // count the number of unique hashes for the percent match calculation
-          std::vector<std::pair<hash, location_in_submission>> submission_hashes = submission_itr->getHashes();
-          std::unordered_set<hash> unique_hashes;
-          for (std::vector<std::pair<hash, location_in_submission>>::const_iterator itr = submission_hashes.begin();
-               itr != submission_hashes.end(); ++itr) {
-            unique_hashes.insert(itr->first);
-          }
-
-          // the percent match is currently calculated using the number of hashes that match between this
-          // submission and the other submission, over the total number of hashes this submission has.
-          // In other words, the percentage is how much of this submission's code was plgairised from the other.
-          float percent = (100.0 * version_itr->second.size()) / unique_hashes.size();
-          student_ranking.push_back(StudentRanking(matches_itr->first, version_itr->first, percent));
+        // count the number of unique hashes for the percent match calculation
+        std::vector<std::pair<hash, location_in_submission>> submission_hashes = submission_itr->getHashes();
+        std::unordered_set<hash> unique_hashes;
+        for (std::vector<std::pair<hash, location_in_submission>>::const_iterator itr = submission_hashes.begin();
+             itr != submission_hashes.end(); ++itr) {
+          unique_hashes.insert(itr->first);
         }
+
+        // the percent match is currently calculated using the number of hashes that match between this
+        // submission and the other submission, over the total number of hashes this submission has.
+        // In other words, the percentage is how much of this submission's code was plgairised from the other.
+        float percent = (100.0 * version_itr->second.size()) / unique_hashes.size();
+        student_ranking.push_back(StudentRanking(matches_itr->first, version_itr->first, percent));
       }
+    }
 
-      std::sort(student_ranking.begin(), student_ranking.end(), ranking_sorter);
+    std::sort(student_ranking.begin(), student_ranking.end(), ranking_sorter);
 
-      // create the directory and a file to write into
-      std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"
-                                        +gradeable+"/"+submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
-      std::string ranking_student_file = ranking_student_dir+submission_itr->student()+"_"+std::to_string(submission_itr->version())+".txt";
-      boost::filesystem::create_directories(ranking_student_dir);
-      std::ofstream ranking_student_ostr(ranking_student_file);
+    // create the directory and a file to write into
+    std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"
+                                      +gradeable+"/"+submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
+    std::string ranking_student_file = ranking_student_dir+submission_itr->student()+"_"+std::to_string(submission_itr->version())+".txt";
+    boost::filesystem::create_directories(ranking_student_dir);
+    std::ofstream ranking_student_ostr(ranking_student_file);
 
-      // finally, write the file of ranking for this submission
-      for (unsigned int i = 0; i < student_ranking.size(); i++) {
-        ranking_student_ostr
-          << std::setw(6) << std::setprecision(2) << std::fixed << student_ranking[i].percent << "%   "
-          << std::setw(15) << std::left << student_ranking[i].student << " "
-          << std::setw(3) << std::right << student_ranking[i].version << std::endl;
-      }
+    // finally, write the file of ranking for this submission
+    for (unsigned int i = 0; i < student_ranking.size(); i++) {
+      ranking_student_ostr
+        << std::setw(6) << std::setprecision(2) << std::fixed << student_ranking[i].percent << "%   "
+        << std::setw(15) << std::left << student_ranking[i].student << " "
+        << std::setw(3) << std::right << student_ranking[i].version << std::endl;
     }
   }
+  
 
 
   // ---------------------------------------------------------------------------

@@ -62,7 +62,7 @@ def main():
 
         # more error checking
         if not os.path.isdir(submission_dir):
-            print("ERROR! ", submission_dir, f" is not a valid gradeable ", dir, " directory")
+            print("ERROR! ", submission_dir, " is not a valid gradeable ", dir, " directory")
             exit(1)
 
         # =========================================================================

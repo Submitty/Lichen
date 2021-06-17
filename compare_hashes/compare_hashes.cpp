@@ -174,10 +174,8 @@ int main(int argc, char* argv[]) {
   std::string semester = config_file_json.value("semester","ERROR");
   std::string course = config_file_json.value("course","ERROR");
   std::string gradeable = config_file_json.value("gradeable","ERROR");
-  std::string sequence_length_str = config_file_json.value("sequence_length","1");
-  int sequence_length = std::stoi(sequence_length_str);
-  std::string threshold_str = config_file_json.value("threshold","5");
-  int threshold = std::stoi(threshold_str);
+  int sequence_length = config_file_json.value("sequence_length",1);
+  int threshold = config_file_json.value("threshold",5);
 
   assert (sequence_length >= 1);
   assert (threshold >= 2);

@@ -41,7 +41,7 @@ def main():
         gradeable = lichen_config_data["gradeable"]
 
         # this assumes regex is seperated by a ','
-        expressions = lichen_config_data["regex"].split(',')
+        regex_expressions = lichen_config_data["regex"].split(',')
         regex_dirs = lichen_config_data["regex_dirs"]
 
     # =========================================================================
@@ -58,6 +58,10 @@ def main():
         os.makedirs(concatenated_dir)
 
     for dir in regex_dirs:
+        if dir not in ["submissions", "results", "checkout"]:
+            print("ERROR! ", dir, " is not a valid input directory for Lichen")
+            exit(1)
+
         submission_dir = os.path.join(course_dir, dir, gradeable)
 
         # more error checking
@@ -90,9 +94,9 @@ def main():
                         # Determine if regex should be used (no regex provided
                         # is equivalent to selecting all files)
                         files = sorted(my_files)
-                        if expressions[0] != "":
+                        if regex_expressions[0] != "":
                             files_filtered = []
-                            for e in expressions:
+                            for e in regex_expressions:
                                 files_filtered.extend(fnmatch.filter(files, e.strip()))
                             files = files_filtered
 

@@ -525,15 +525,16 @@ int main(int argc, char* argv[]) {
 
     float percentMatch = submission_itr->getPercentage();
 
-    std::unordered_map<std::string, std::pair<int, float> >::iterator highest_matches_itr
-        = highest_matches.find(submission_itr->student());
-    if (highest_matches_itr == highest_matches.end()) {
-      highest_matches[submission_itr->student()].first = submission_itr->version();
-      highest_matches[submission_itr->student()].second = percentMatch;
-    }
-    else if (percentMatch > highest_matches_itr->second.second) {
-      highest_matches_itr->second.first = submission_itr->version();
-      highest_matches_itr->second.second = percentMatch;
+    if (percentMatch > 0.0) {
+      std::unordered_map<std::string, std::pair<int, float> >::iterator highest_matches_itr = highest_matches.find(submission_itr->student());
+      if (highest_matches_itr == highest_matches.end()) {
+        highest_matches[submission_itr->student()].first = submission_itr->version();
+        highest_matches[submission_itr->student()].second = percentMatch;
+      }
+      else if (percentMatch > highest_matches_itr->second.second) {
+        highest_matches_itr->second.first = submission_itr->version();
+        highest_matches_itr->second.second = percentMatch;
+      }
     }
   }
 
@@ -554,7 +555,6 @@ int main(int argc, char* argv[]) {
       << std::setw(3) << std::right << ranking[i].version << std::endl;
   }
 
-
   // ---------------------------------------------------------------------------
   // create a rankings file for every submission. the file contains all the other
   // students share matches, sorted by decreasing order of the percent match
@@ -562,16 +562,15 @@ int main(int argc, char* argv[]) {
   for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
        submission_itr != all_submissions.end(); ++submission_itr) {
 
-    // create the directory and a file to write into
-    std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"
-                                      +gradeable+"/"+submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
-    std::string ranking_student_file = ranking_student_dir+submission_itr->student()+"_"+std::to_string(submission_itr->version())+".txt";
-    boost::filesystem::create_directories(ranking_student_dir);
-    std::ofstream ranking_student_ostr(ranking_student_file);
-
     // find and sort the other submissions it matches with
     std::vector<StudentRanking> student_ranking;
     std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>> matches = submission_itr->getStudentsMatched();
+
+    // no need to create a file for students with no matches
+    if (matches.size() == 0) {
+      continue;
+    }
+
     for (std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>::const_iterator matches_itr = matches.begin();
          matches_itr != matches.end(); ++matches_itr) {
 
@@ -598,6 +597,13 @@ int main(int argc, char* argv[]) {
 
     std::sort(student_ranking.begin(), student_ranking.end(), ranking_sorter);
 
+    // create the directory and a file to write into
+    std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"
+                                      +gradeable+"/"+submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
+    std::string ranking_student_file = ranking_student_dir+submission_itr->student()+"_"+std::to_string(submission_itr->version())+".txt";
+    boost::filesystem::create_directories(ranking_student_dir);
+    std::ofstream ranking_student_ostr(ranking_student_file);
+
     // finally, write the file of ranking for this submission
     for (unsigned int i = 0; i < student_ranking.size(); i++) {
       ranking_student_ostr
@@ -606,6 +612,7 @@ int main(int argc, char* argv[]) {
         << std::setw(3) << std::right << student_ranking[i].version << std::endl;
     }
   }
+  
 
 
   // ---------------------------------------------------------------------------

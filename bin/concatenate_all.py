@@ -97,6 +97,11 @@ def main():
                         if regex_expressions[0] != "":
                             files_filtered = []
                             for e in regex_expressions:
+                                # Check for backwards crawling
+                                if ".." in e:
+                                    print('ERROR! Invalid path component ".." in regex')
+                                    exit(1)
+
                                 files_filtered.extend(fnmatch.filter(files, e.strip()))
                             files = files_filtered
 

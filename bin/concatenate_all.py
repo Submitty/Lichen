@@ -44,6 +44,12 @@ def main():
         regex_expressions = lichen_config_data["regex"].split(',')
         regex_dirs = lichen_config_data["regex_dirs"]
 
+    for e in regex_expressions:
+        # Check for backwards crawling
+        if ".." in e:
+            print('ERROR! Invalid path component ".." in regex')
+            exit(1)
+
     # =========================================================================
     # error checking
     course_dir = os.path.join(SUBMITTY_DATA_DIR, "courses", semester, course)
@@ -97,11 +103,6 @@ def main():
                         if regex_expressions[0] != "":
                             files_filtered = []
                             for e in regex_expressions:
-                                # Check for backwards crawling
-                                if ".." in e:
-                                    print('ERROR! Invalid path component ".." in regex')
-                                    exit(1)
-
                                 files_filtered.extend(fnmatch.filter(files, e.strip()))
                             files = files_filtered
 

@@ -155,5 +155,6 @@ def main():
     print("done")
     print(f"{count_total_files} files concatenated")
 
+
 if __name__ == "__main__":
     main()

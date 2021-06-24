@@ -39,6 +39,7 @@ def main():
         semester = lichen_config_data["semester"]
         course = lichen_config_data["course"]
         gradeable = lichen_config_data["gradeable"]
+        users_to_ignore = lichen_config_data["ignore_submissions"]
 
         # this assumes regex is seperated by a ','
         regex_expressions = lichen_config_data["regex"].split(',')
@@ -79,6 +80,8 @@ def main():
         # walk the subdirectories
         for user in sorted(os.listdir(submission_dir)):
             if not os.path.isdir(os.path.join(submission_dir, user)):
+                continue
+            elif user in users_to_ignore:
                 continue
             for version in sorted(os.listdir(os.path.join(submission_dir, user))):
                 if not os.path.isdir(os.path.join(submission_dir, user, version)):

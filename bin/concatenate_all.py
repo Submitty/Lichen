@@ -39,10 +39,18 @@ def main():
         semester = lichen_config_data["semester"]
         course = lichen_config_data["course"]
         gradeable = lichen_config_data["gradeable"]
+        users_to_ignore = lichen_config_data["ignore_submissions"]
 
         # this assumes regex is seperated by a ','
         regex_expressions = lichen_config_data["regex"].split(',')
         regex_dirs = lichen_config_data["regex_dirs"]
+
+    # ==========================================================================
+    # error checking
+    course_dir = os.path.join(SUBMITTY_DATA_DIR, "courses", semester, course)
+    if not os.path.isdir(course_dir):
+        print("ERROR! ", course_dir, " is not a valid course directory")
+        exit(1)
 
     for e in regex_expressions:
         # Check for backwards crawling
@@ -50,24 +58,21 @@ def main():
             print('ERROR! Invalid path component ".." in regex')
             exit(1)
 
-    # =========================================================================
-    # error checking
-    course_dir = os.path.join(SUBMITTY_DATA_DIR, "courses", semester, course)
-    if not os.path.isdir(course_dir):
-        print("ERROR! ", course_dir, " is not a valid course directory")
-        exit(1)
-
-    # =========================================================================
-    # create the directory
-    concatenated_dir = os.path.join(course_dir, "lichen", "concatenated", gradeable)
-    if not os.path.isdir(concatenated_dir):
-        os.makedirs(concatenated_dir)
-
     for dir in regex_dirs:
         if dir not in ["submissions", "results", "checkout"]:
             print("ERROR! ", dir, " is not a valid input directory for Lichen")
             exit(1)
 
+    # ==========================================================================
+    # create the directory
+    concatenated_dir = os.path.join(course_dir, "lichen", "concatenated", gradeable)
+    if not os.path.isdir(concatenated_dir):
+        os.makedirs(concatenated_dir)
+
+    # ==========================================================================
+    count_total_files = 0
+
+    for dir in regex_dirs:
         submission_dir = os.path.join(course_dir, dir, gradeable)
 
         # more error checking
@@ -80,20 +85,20 @@ def main():
         for user in sorted(os.listdir(submission_dir)):
             if not os.path.isdir(os.path.join(submission_dir, user)):
                 continue
+            elif user in users_to_ignore:
+                continue
             for version in sorted(os.listdir(os.path.join(submission_dir, user))):
                 if not os.path.isdir(os.path.join(submission_dir, user, version)):
                     continue
 
                 # -----------------------------------------------------------------
-                # concatenate all files for this submisison into a single file
+                # concatenate all files for this submissison into a single file
                 my_concatenated_dir = os.path.join(concatenated_dir, user, version)
                 if not os.path.isdir(my_concatenated_dir):
                     os.makedirs(my_concatenated_dir)
                 my_concatenated_file = os.path.join(my_concatenated_dir, "submission.concatenated")
-                total_concat = 0
-                with open(my_concatenated_file, 'a+') as my_cf:
-                    if len(my_cf.read()) > 0:
-                        total_concat = 1
+
+                with open(my_concatenated_file, 'a') as my_cf:
                     # loop over all files in all subdirectories
                     base_path = os.path.join(submission_dir, user, version)
                     for my_dir, _dirs, my_files in os.walk(base_path):
@@ -106,28 +111,30 @@ def main():
                                 files_filtered.extend(fnmatch.filter(files, e.strip()))
                             files = files_filtered
 
-                        total_concat += len(files)
                         for my_file in files:
                             # exclude any files we have ignored for all submissions
                             if my_file in IGNORED_FILES:
                                 continue
                             absolute_path = os.path.join(my_dir, my_file)
                             # print a separator & filename
-                            my_cf.write(f"==========={my_file}===========\n")
+                            my_cf.write(f"=============== {my_file} ===============\n")
                             with open(absolute_path, encoding='ISO-8859-1') as tmp:
                                 # append the contents of the file
                                 my_cf.write(tmp.read())
                                 my_cf.write("\n")
-                # Remove concat file if there no content...
-                if total_concat == 0:
-                    os.remove(my_concatenated_file)
-                    # FIXME: is this the correct path?
-                    p2 = os.path.join(course_dir, "lichen", "tokenized", gradeable, user, version)
-                    if os.path.isdir(p2):
-                        shutil.rmtree(p2)
-                    os.rmdir(my_concatenated_dir)
+                            count_total_files += 1
+    # ==========================================================================
+    # iterate over all of the created submissions, checking to see if they are
+    # and adding a message to the top if so (to differentiate empty files from errors in the UI)
+    for user in os.listdir(concatenated_dir):
+        for version in os.listdir(os.path.join(concatenated_dir, user)):
+            my_concatenated_file = os.path.join(concatenated_dir,
+                                                user, version, "submission.concatenated")
+            with open(my_concatenated_file, "r+") as my_cf:
+                if my_cf.read() == "":
+                    my_cf.write("Error: No files matched provided regex in selected directories")
 
-    # =========================================================================
+    # ==========================================================================
     # concatenate any files in the provided_code directory
     provided_code_path = os.path.join(course_dir, "lichen", "provided_code", gradeable)
     output_dir = os.path.join(course_dir, "lichen", "concatenated",
@@ -147,7 +154,9 @@ def main():
                     # append the contents of the file
                     of.write(tmp.read())
 
+    # ==========================================================================
     print("done")
+    print(f"{count_total_files} files concatenated")
 
 
 if __name__ == "__main__":

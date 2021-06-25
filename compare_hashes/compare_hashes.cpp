@@ -8,6 +8,7 @@
 #include <fstream>
 #include <set>
 #include <iomanip>
+#include <time.h>
 
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
@@ -157,17 +158,20 @@ bool ranking_sorter(const StudentRanking &a, const StudentRanking &b) {
 // ===================================================================================
 // ===================================================================================
 int main(int argc, char* argv[]) {
-
   std::cout << "COMPARE HASHES...";
   fflush(stdout);
+  time_t overall_start, overall_end;
+  time(&overall_start);
 
   // ---------------------------------------------------------------------------
   // deal with command line arguments
 
   assert (argc == 2);
-  std::string config_file = argv[1];
+  std::string lichen_gradeable_path_str = argv[1];
+  boost::filesystem::path lichen_gradeable_path = boost::filesystem::system_complete(lichen_gradeable_path_str);
+  boost::filesystem::path config_file_json_path = lichen_gradeable_path / "config.json";
 
-  std::ifstream istr(config_file.c_str());
+  std::ifstream istr(config_file_json_path.string());
   assert (istr.good());
   nlohmann::json config_file_json = nlohmann::json::parse(istr);
 
@@ -181,17 +185,15 @@ int main(int argc, char* argv[]) {
   assert (threshold >= 2);
 
   // error checking, confirm there are hashes to work with
-  std::string tmp = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/hashes/"+gradeable;
-  boost::filesystem::path hashes_root_directory = boost::filesystem::system_complete(tmp);
-  if (!boost::filesystem::exists(hashes_root_directory) ||
-      !boost::filesystem::is_directory(hashes_root_directory)) {
-    std::cerr << "ERROR with directory " << hashes_root_directory << std::endl;
+  boost::filesystem::path users_root_directory = lichen_gradeable_path / "users";
+  if (!boost::filesystem::exists(users_root_directory) ||
+      !boost::filesystem::is_directory(users_root_directory)) {
+    std::cerr << "ERROR with directory " << users_root_directory << std::endl;
     exit(0);
   }
 
   // the file path where we expect to find the hashed instructor provided code file
-  std::string tmp2 = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/hashes/"+gradeable+"/provided_code/provided_code/hashes.txt";
-  boost::filesystem::path provided_code_file = boost::filesystem::system_complete(tmp2);
+  boost::filesystem::path provided_code_file = lichen_gradeable_path / "provided_code" / "hashes.txt";
   // if file exists in that location, the provided code mode is enabled.
   bool provided_code_enabled = boost::filesystem::exists(provided_code_file);
 
@@ -205,24 +207,25 @@ int main(int argc, char* argv[]) {
   // Stores all hashes from the instructor provided code
   std::unordered_set<hash> provided_code;
 
+  time_t start, end;
+  time(&start);
+
+  if (provided_code_enabled) {
+    // load the instructor provided code's hashes
+    std::ifstream istr(provided_code_file.string());
+    assert(istr.good());
+    hash instructor_hash;
+    while (istr >> instructor_hash) {
+      provided_code.insert(instructor_hash);
+    }
+  }
+
   // loop over all users
   boost::filesystem::directory_iterator end_iter;
-  for (boost::filesystem::directory_iterator dir_itr( hashes_root_directory ); dir_itr != end_iter; ++dir_itr) {
+  for (boost::filesystem::directory_iterator dir_itr( users_root_directory ); dir_itr != end_iter; ++dir_itr) {
     boost::filesystem::path username_path = dir_itr->path();
     assert (is_directory(username_path));
     std::string username = dir_itr->path().filename().string();
-
-    if (username == "provided_code") {
-      assert(provided_code_enabled);
-
-      // load the instructor provided code's hashes
-      std::ifstream istr(provided_code_file.string());
-      hash instructor_hash;
-      while (istr >> instructor_hash) {
-        provided_code.insert(instructor_hash);
-      }
-      continue;
-    }
 
     // loop over all versions
     for (boost::filesystem::directory_iterator username_itr( username_path ); username_itr != end_iter; ++username_itr) {
@@ -239,6 +242,7 @@ int main(int argc, char* argv[]) {
       boost::filesystem::path hash_file = version_path;
       hash_file /= "hashes.txt";
       std::ifstream istr(hash_file.string());
+      assert(istr.good());
       hash input_hash;
       int location = 0;
       while (istr >> input_hash) {
@@ -251,8 +255,9 @@ int main(int argc, char* argv[]) {
     }
   }
 
-
-  std::cout << "finished loading" << std::endl;
+  time(&end);
+  double diff = difftime(end, start);
+  std::cout << "finished loading in " << diff  << "s" << std::endl;
 
   // ---------------------------------------------------------------------------
   // THIS IS THE MAIN PLAGIARISM DETECTION ALGORITHM
@@ -260,6 +265,7 @@ int main(int argc, char* argv[]) {
   // Used to calculate current progress (printed to the log)
   int my_counter = 0;
   int my_percent = 0;
+  time(&start);
 
   // walk over every Submission
   for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
@@ -317,7 +323,9 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  std::cout << "finished walking" << std::endl;
+  time(&end);
+  diff = difftime(end, start);
+  std::cout << "finished walking in " << diff << "s" << std::endl;
 
   // ---------------------------------------------------------------------------
   // Writing the output files and merging the results
@@ -325,6 +333,7 @@ int main(int argc, char* argv[]) {
   my_counter = 0;
   my_percent = 0;
   std::cout << "writing matches files and merging regions..." << std::endl;
+  time(&start);
 
   // Loop over all of the submissions, writing a JSON file for each one if it has suspicious matches
   for (std::vector<Submission>::iterator submission_itr = all_submissions.begin();
@@ -487,11 +496,10 @@ int main(int argc, char* argv[]) {
 
     // save the file with matches per user
     nlohmann::json match_data = result;
-    std::string matches_dir = "/var/local/submitty/courses/"+semester+"/"+course
-        +"/lichen/matches/"+gradeable+"/"+submission_itr->student()+"/"+std::to_string(submission_itr->version());
-    boost::filesystem::create_directories(matches_dir);
-    std::string matches_file = matches_dir+"/matches.json";
-    std::ofstream ostr(matches_file);
+    boost::filesystem::path submission_dir = users_root_directory / submission_itr->student() / std::to_string(submission_itr->version());
+    boost::filesystem::create_directories(submission_dir);
+    boost::filesystem::path matches_file = submission_dir / "matches.json";
+    std::ofstream ostr(matches_file.string());
     assert(ostr.good());
     ostr << match_data.dump(4) << std::endl;
 
@@ -503,16 +511,19 @@ int main(int argc, char* argv[]) {
     }
 
   }
-  std::cout << "done merging and writing matches files" << std::endl;
+
+  time(&end);
+  diff = difftime(end, start);
+  std::cout << "done merging and writing matches files in " << diff << "s" << std::endl;
 
   // ---------------------------------------------------------------------------
   // Create a general summary of rankings of users by percentage match
+  std::cout << "writing rakings files..." << std::endl;
+  time(&start);
 
   // create a single file of students ranked by highest percentage of code plagiarised
-  std::string ranking_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"+gradeable+"/";
-  std::string ranking_file = ranking_dir+"overall_ranking.txt";
-  boost::filesystem::create_directories(ranking_dir);
-  std::ofstream ranking_ostr(ranking_file);
+  boost::filesystem::path ranking_file = lichen_gradeable_path / "overall_ranking.txt";
+  std::ofstream ranking_ostr(ranking_file.string());
 
   // a map of students to a pair of the version and highest percent match for each student
   std::unordered_map<std::string, std::pair<int, float> > highest_matches;
@@ -596,11 +607,10 @@ int main(int argc, char* argv[]) {
     std::sort(student_ranking.begin(), student_ranking.end(), ranking_sorter);
 
     // create the directory and a file to write into
-    std::string ranking_student_dir = "/var/local/submitty/courses/"+semester+"/"+course+"/lichen/ranking/"
-                                      +gradeable+"/"+submission_itr->student()+"/"+std::to_string(submission_itr->version())+"/";
-    std::string ranking_student_file = ranking_student_dir+submission_itr->student()+"_"+std::to_string(submission_itr->version())+".txt";
+    boost::filesystem::path ranking_student_dir = users_root_directory / submission_itr->student() / std::to_string(submission_itr->version());
+    boost::filesystem::path ranking_student_file = ranking_student_dir / "ranking.txt";
     boost::filesystem::create_directories(ranking_student_dir);
-    std::ofstream ranking_student_ostr(ranking_student_file);
+    std::ofstream ranking_student_ostr(ranking_student_file.string());
 
     // finally, write the file of ranking for this submission
     for (unsigned int i = 0; i < student_ranking.size(); i++) {
@@ -610,10 +620,14 @@ int main(int argc, char* argv[]) {
         << std::setw(3) << std::right << student_ranking[i].version << std::endl;
     }
   }
-  
 
+  time(&end);
+  diff = difftime(end, start);
+  std::cout << "finished writing rankings in " << diff << "s" << std::endl;
 
   // ---------------------------------------------------------------------------
-  std::cout << "done" << std::endl;
+  time(&overall_end);
+  double overall_diff = difftime(overall_end, overall_start);
+  std::cout << "DONE in " << overall_diff << "s" << std::endl;
 
 }

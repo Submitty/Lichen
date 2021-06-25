@@ -6,20 +6,24 @@
 # TODO: Assert permissions, as necessary
 
 basepath=$1 # holds the path to a directory containing a config for this gradeable
+datapath=$2 # holds the path to a directory conatining courses and their data
+            # (probably /var/local/submitty/courses on Submitty)
 
 # kill the script if there is no config file
-if [! -f "${basepath}/config.json" ]; then
+if [ ! -f "${basepath}/config.json" ]; then
     echo "Unable to find config.json in provided directory"
 		exit 1
 fi
 
-# provided_code should already exist if the user wishes to run with provided code
+# create these directories if they don't already exist
 mkdir -p "${basepath}/logs"
+mkdir -p "${basepath}/provided_code"
+mkdir -p "${basepath}/provided_code/files"
 mkdir -p "${basepath}/other_gradeables"
 mkdir -p "${basepath}/users"
 
-
-/usr/local/submitty/Lichen/bin/concatenate_all.py  $basepath
-#/usr/local/submitty/Lichen/bin/tokenize_all.py     $basepath
-#/usr/local/submitty/Lichen/bin/hash_all.py         $basepath
-#/usr/local/submitty/Lichen/bin/compare_hashes.out  $basepath
+# run all of the modules and exit if an error occurs
+/usr/local/submitty/Lichen/bin/concatenate_all.py  $basepath $datapath || exit 1
+#/usr/local/submitty/Lichen/bin/tokenize_all.py     $basepath || exit 1
+#/usr/local/submitty/Lichen/bin/hash_all.py         $basepath || exit 1
+#/usr/local/submitty/Lichen/bin/compare_hashes.out  $basepath || exit 1

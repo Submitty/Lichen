@@ -1,47 +1,25 @@
-#!/bin/bash
+# This script is the startup script for Lichen.  It accepts a single path to a
+# directory containing a config file and creates the necessary output directories
+# as appropriate, relative to the provided path.  It is possible to run this script
+# from the command line but it is meant to be run via the Plagiarism Detection UI.
 
-semester=$1
-course=$2
-gradeable=$3
+# TODO: Assert permissions, as necessary
 
-prev_argument=""
-prior_term_gradeables=()
-ignore_submissions=()
-for argument in "$@"
-do
-	if [[ $argument == --* ]]
-	then
-		prev_argument=$argument
-	else
-	    case $prev_argument in
-		"--language")
-			language=$argument
-		  	;;
-		"--window")
-		  	window=$argument
-		  	;;
-		"--threshold")
-		  	threshold=$argument
-		  	;;
-		"--regrex")
-		  	regrex=$argument
-		  	;;
-		"--provided_code_path")
-		  	provided_code_path=$argument
-		  	;;
-		"--prior_term_gradeables")
-			prior_term_gradeables+=("$argument")
-		  	;;
-		"--ignore_submissions")
-			ignore_submissions+=("$argument")
-		  	;;
-		esac
-	fi
-done
+basepath=$1 # holds the path to a directory containing a config for this gradeable
 
-/usr/local/submitty/Lichen/bin/concatenate_all.py  $semester $course $gradeable
-/usr/local/submitty/Lichen/bin/tokenize_all.py     $semester $course $gradeable  --${language}
-/usr/local/submitty/Lichen/bin/hash_all.py         $semester $course $gradeable  --window $window  --${language}
+# kill the script if there is no config file
+if [! -f "${basepath}/config.json" ]; then
+    echo "Unable to find config.json in provided directory"
+		exit 1
+fi
 
-/usr/local/submitty/Lichen/bin/compare_hashes.out  $semester $course $gradeable  --window $window
+# provided_code should already exist if the user wishes to run with provided code
+mkdir -p "${basepath}/logs"
+mkdir -p "${basepath}/other_gradeables"
+mkdir -p "${basepath}/users"
 
+
+/usr/local/submitty/Lichen/bin/concatenate_all.py  $basepath
+#/usr/local/submitty/Lichen/bin/tokenize_all.py     $basepath
+#/usr/local/submitty/Lichen/bin/hash_all.py         $basepath
+#/usr/local/submitty/Lichen/bin/compare_hashes.out  $basepath

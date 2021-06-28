@@ -22,7 +22,7 @@ def getConcatFilesInDir(input_dir, regex_patterns):
     for my_dir, _dirs, my_files in os.walk(input_dir):
         # Determine if regex should be used (blank regex is equivalent to selecting all files)
         files = sorted(my_files)
-        if regex_expressions[0] != "":
+        if regex_patterns[0] != "":
             files_filtered = []
             for e in regex_patterns:
                 files_filtered.extend(fnmatch.filter(files, e.strip()))
@@ -88,7 +88,7 @@ def main():
     # loop through and concatenate the selected files for each user in this gradeable
 
     for dir in regex_dirs:
-        gradeable_path = os.path.join(datapath, semester, course, dir, gradeable)
+        gradeable_path = os.path.join(args.datapath, semester, course, dir, gradeable)
         # loop over each user
         for user in sorted(os.listdir(gradeable_path)):
             user_path = os.path.join(gradeable_path, user)
@@ -113,7 +113,6 @@ def main():
                 with open(output_file_path, "a") as output_file:
                     concatenated_contents = getConcatFilesInDir(version_path, regex_patterns)
                     output_file.write(concatenated_contents)
-
 
     # ==========================================================================
     # iterate over all of the created submissions, checking to see if they are empty

@@ -9,28 +9,18 @@ import json
 import sys
 
 
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'config')
-with open(os.path.join(CONFIG_PATH, 'submitty.json')) as open_file:
-    OPEN_JSON = json.load(open_file)
-SUBMITTY_DATA_DIR = OPEN_JSON['submitty_data_dir']
-SUBMITTY_INSTALL_DIR = OPEN_JSON['submitty_install_dir']
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description="")
-    parser.add_argument("config_path")
+    parser.add_argument("basepath")
     return parser.parse_args()
 
 
-def tokenize(args, my_concatenated_file, my_tokenized_file):
-
-    with open(args.config_path) as lichen_config:
-        lichen_config_data = json.load(lichen_config)
-        language = lichen_config_data["language"]
+def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
+    language = lichen_config_data["language"]
 
     language_token_data = dict()
 
-    data_json_path = os.path.join(SUBMITTY_INSTALL_DIR, "Lichen", "bin", "data.json")
+    data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
     with open(data_json_path, 'r') as token_data_file:
         token_data = json.load(token_data_file)
         if language not in token_data:
@@ -39,8 +29,7 @@ def tokenize(args, my_concatenated_file, my_tokenized_file):
         else:
             language_token_data = token_data[language]
 
-    tokenizer = os.path.join(SUBMITTY_INSTALL_DIR, "Lichen", "bin",
-                             language_token_data["tokenizer"])
+    tokenizer = f"./{language_token_data['tokenizer']}"
 
     if not language_token_data.get("input_as_argument"):
         my_concatenated_file = f'< {my_concatenated_file}'
@@ -58,39 +47,27 @@ def main():
     sys.stdout.write("TOKENIZE ALL...")
     sys.stdout.flush()
 
-    with open(args.config_path) as lichen_config:
+    with open(os.path.join(args.basepath, "config.json")) as lichen_config:
         lichen_config_data = json.load(lichen_config)
-        semester = lichen_config_data["semester"]
-        course = lichen_config_data["course"]
-        gradeable = lichen_config_data["gradeable"]
-
-    # ===========================================================================
-    # error checking
-    course_dir = os.path.join(SUBMITTY_DATA_DIR, "courses", semester, course)
-    if not os.path.isdir(course_dir):
-        print("ERROR! ", course_dir, " is not a valid course directory")
-        exit(1)
-    concatenated_dir = os.path.join(course_dir, "lichen", "concatenated", gradeable)
-    if not os.path.isdir(concatenated_dir):
-        print("ERROR! ", concatenated_dir, " is not a valid gradeable concatenated directory")
-        exit(1)
-
-    tokenized_dir = os.path.join(course_dir, "lichen", "tokenized", gradeable)
 
     # ===========================================================================
     # walk the subdirectories
-    for user in sorted(os.listdir(concatenated_dir)):
-        for version in sorted(os.listdir(os.path.join(concatenated_dir, user))):
-            my_concatenated_file = os.path.join(concatenated_dir, user, version,
-                                                "submission.concatenated")
+    users_dir = os.path.join(args.basepath, "users")
+    for user in sorted(os.listdir(users_dir)):
+        user_dir = os.path.join(users_dir, user)
+        if not os.path.isdir(user_dir):
+            continue
 
-            # ==================================================================
-            # create the directory
-            my_tokenized_dir = os.path.join(tokenized_dir, user, version)
-            if not os.path.isdir(my_tokenized_dir):
-                os.makedirs(my_tokenized_dir)
-            my_tokenized_file = os.path.join(my_tokenized_dir, "tokens.json")
-            tokenize(args, my_concatenated_file, my_tokenized_file)
+        for version in sorted(os.listdir(user_dir)):
+            my_dir = os.path.join(user_dir, version)
+            if not os.path.isdir(my_dir):
+                continue
+
+            print(my_dir)
+
+            my_concatenated_file = os.path.join(my_dir, "submission.concatenated")
+            my_tokenized_file = os.path.join(my_dir, "tokens.json")
+            tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file)
 
     print("done")
 

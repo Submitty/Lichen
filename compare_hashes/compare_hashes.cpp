@@ -628,6 +628,6 @@ int main(int argc, char* argv[]) {
   // ---------------------------------------------------------------------------
   time(&overall_end);
   double overall_diff = difftime(overall_end, overall_start);
-  std::cout << "DONE in " << overall_diff << "s" << std::endl;
+  std::cout << "done in " << overall_diff << "s" << std::endl;
 
 }

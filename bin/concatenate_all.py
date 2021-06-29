@@ -103,7 +103,7 @@ def main():
                 if not os.path.isdir(version_path):
                     continue
 
-                output_file_path = os.path.join(args.basepath, user,
+                output_file_path = os.path.join(args.basepath, "users", user,
                                                 version, "submission.concatenated")
 
                 if not os.path.exists(os.path.dirname(output_file_path)):
@@ -130,7 +130,7 @@ def main():
     # concatenate provided code
     with open(os.path.join(args.basepath, "provided_code",
                            "submission.concatenated"), "w") as file:
-        file.write(getConcatFilesInDir(os.path.join(args.basepath, "provided_code", "files")), [])
+        file.write(getConcatFilesInDir(os.path.join(args.basepath, "provided_code", "files"), regex_patterns))
 
     # ==========================================================================
     end_time = time.time()

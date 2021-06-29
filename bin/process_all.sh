@@ -31,7 +31,7 @@ mkdir -p "${basepath}/other_gradeables"
 mkdir -p "${basepath}/users"
 
 # run all of the modules and exit if an error occurs
-./concatenate_all.py  "${basepath}" "${datapath}" || exit 1
+./concatenate_all.py  $basepath $datapath || exit 1
 ./tokenize_all.py     $basepath || exit 1
 ./hash_all.py         $basepath || exit 1
 ./compare_hashes.out  $basepath || exit 1

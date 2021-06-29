@@ -8,6 +8,7 @@ the tokenized files.
 import argparse
 import os
 import json
+import time
 import sys
 import hashlib
 
@@ -48,6 +49,7 @@ def hasher(lichen_config_data, my_tokenized_file, my_hashes_file):
 
 
 def main():
+    start_time = time.time()
     args = parse_args()
 
     with open(os.path.join(args.basepath, "config.json")) as lichen_config:
@@ -77,7 +79,9 @@ def main():
             my_hashes_file = os.path.join(my_dir, "hashes.txt")
             hasher(lichen_config_data, my_tokenized_file, my_hashes_file)
 
-    print("done")
+    # ==========================================================================
+    end_time = time.time()
+    print("done in " + "%.0f" % (end_time - start_time) + " seconds")
 
 
 if __name__ == "__main__":

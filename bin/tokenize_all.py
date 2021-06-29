@@ -6,6 +6,7 @@ Tokenizes the concatenated files.
 import argparse
 import os
 import json
+import time
 import sys
 
 
@@ -42,6 +43,7 @@ def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
 
 
 def main():
+    start_time = time.time()
     args = parse_args()
 
     sys.stdout.write("TOKENIZE ALL...")
@@ -71,7 +73,9 @@ def main():
             my_tokenized_file = os.path.join(my_dir, "tokens.json")
             tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file)
 
-    print("done")
+    # ==========================================================================
+    end_time = time.time()
+    print("done in " + "%.0f" % (end_time - start_time) + " seconds")
 
 
 if __name__ == "__main__":

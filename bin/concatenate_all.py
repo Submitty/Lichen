@@ -134,7 +134,7 @@ def main():
 
     # ==========================================================================
     end_time = time.time()
-    print("done in " + str(end_time - start_time) + " seconds")
+    print("done in " + "%.0f" % (end_time - start_time) + " seconds")
 
 
 if __name__ == "__main__":

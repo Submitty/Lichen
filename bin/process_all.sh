@@ -12,10 +12,16 @@ datapath=$2 # holds the path to a directory conatining courses and their data
             # (probably /var/local/submitty/courses on Submitty)
 
 # kill the script if there is no config file
-# if [ ! -f "${basepath}/config.json" ]; then
-#     echo "Unable to find config.json in provided directory"
-# 		exit 1
-# fi
+if [ ! -f "${basepath}/config.json" ]; then
+    echo "Unable to find config.json in provided directory"
+		exit 1
+fi
+
+# delete any previous run results
+# TODO: determine if any caching should occur
+rm -rf "${basepath}/logs"
+rm -rf "${basepath}/other_gradeables"
+rm -rf "${basepath}/users"
 
 # create these directories if they don't already exist
 mkdir -p "${basepath}/logs"

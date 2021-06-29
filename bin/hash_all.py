@@ -11,27 +11,18 @@ import json
 import sys
 import hashlib
 
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'config')
-with open(os.path.join(CONFIG_PATH, 'submitty.json')) as open_file:
-    OPEN_JSON = json.load(open_file)
-SUBMITTY_DATA_DIR = OPEN_JSON['submitty_data_dir']
-SUBMITTY_INSTALL_DIR = OPEN_JSON['submitty_install_dir']
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description="")
-    parser.add_argument("config_path")
-    args = parser.parse_args()
-    return args
+    parser.add_argument("basepath")
+    return parser.parse_args()
 
 
-def hasher(args, my_tokenized_file, my_hashes_file):
-    with open(args.config_path) as lichen_config:
-        lichen_config_data = json.load(lichen_config)
-        language = lichen_config_data["language"]
-        sequence_length = int(lichen_config_data["sequence_length"])
+def hasher(lichen_config_data, my_tokenized_file, my_hashes_file):
+    language = lichen_config_data["language"]
+    sequence_length = int(lichen_config_data["sequence_length"])
 
-    data_json_path = os.path.join(SUBMITTY_INSTALL_DIR, "Lichen", "bin", "data.json")
+    data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
     with open(data_json_path) as token_data_file:
         token_data = json.load(token_data_file)
         if language not in token_data:
@@ -59,42 +50,32 @@ def hasher(args, my_tokenized_file, my_hashes_file):
 def main():
     args = parse_args()
 
-    with open(args.config_path) as lichen_config:
+    with open(os.path.join(args.basepath, "config.json")) as lichen_config:
         lichen_config_data = json.load(lichen_config)
-        semester = lichen_config_data["semester"]
-        course = lichen_config_data["course"]
-        gradeable = lichen_config_data["gradeable"]
 
     sys.stdout.write("HASH ALL...")
     sys.stdout.flush()
 
     # =========================================================================
-    # error checking
-    course_dir = os.path.join(SUBMITTY_DATA_DIR, "courses", semester, course)
-    if not os.path.isdir(course_dir):
-        print("ERROR! ", course_dir, " is not a valid course directory")
-        exit(1)
-    tokenized_dir = os.path.join(course_dir, "lichen", "tokenized", gradeable)
-    if not os.path.isdir(tokenized_dir):
-        print("ERROR! ", tokenized_dir, " is not a valid gradeable tokenized directory")
-        exit(1)
-
-    hashes_dir = os.path.join(course_dir, "lichen", "hashes", gradeable)
-
-    # =========================================================================
     # walk the subdirectories
-    for user in sorted(os.listdir(tokenized_dir)):
-        for version in sorted(os.listdir(os.path.join(tokenized_dir, user))):
-            my_tokenized_file = os.path.join(tokenized_dir, user, version, "tokens.json")
+    users_dir = os.path.join(args.basepath, "users")
+    if not os.path.isdir(users_dir):
+        print("Error: Unable to find users directory")
+        exit(1)
 
-            # =================================================================
-            # create the directory
-            my_hashes_dir = os.path.join(hashes_dir, user, version)
-            if not os.path.isdir(my_hashes_dir):
-                os.makedirs(my_hashes_dir)
+    for user in sorted(os.listdir(users_dir)):
+        user_dir = os.path.join(users_dir, user)
+        if not os.path.isdir(user_dir):
+            continue
 
-            my_hashes_file = os.path.join(my_hashes_dir, "hashes.txt")
-            hasher(args, my_tokenized_file, my_hashes_file)
+        for version in sorted(os.listdir(user_dir)):
+            my_dir = os.path.join(user_dir, version)
+            if not os.path.isdir(my_dir):
+                continue
+
+            my_tokenized_file = os.path.join(my_dir, "tokens.json")
+            my_hashes_file = os.path.join(my_dir, "hashes.txt")
+            hasher(lichen_config_data, my_tokenized_file, my_hashes_file)
 
     print("done")
 

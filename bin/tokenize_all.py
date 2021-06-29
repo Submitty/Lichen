@@ -53,6 +53,10 @@ def main():
     # ===========================================================================
     # walk the subdirectories
     users_dir = os.path.join(args.basepath, "users")
+    if not os.path.isdir(users_dir):
+        print("Error: Unable to find users directory")
+        exit(1)
+
     for user in sorted(os.listdir(users_dir)):
         user_dir = os.path.join(users_dir, user)
         if not os.path.isdir(user_dir):
@@ -62,8 +66,6 @@ def main():
             my_dir = os.path.join(user_dir, version)
             if not os.path.isdir(my_dir):
                 continue
-
-            print(my_dir)
 
             my_concatenated_file = os.path.join(my_dir, "submission.concatenated")
             my_tokenized_file = os.path.join(my_dir, "tokens.json")

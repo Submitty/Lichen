@@ -55,7 +55,7 @@ def main():
     sys.stdout.write("CONCATENATE ALL...")  # don't want a newline here so can't use print
     sys.stdout.flush()
 
-    config_path = args.basepath + '/config.json'
+    config_path = os.path.join(args.basepath, "config.json")
     if not os.path.isfile(config_path):
         print(f"Error: invalid config path provided ({config_path})")
         exit(1)
@@ -130,7 +130,8 @@ def main():
     # concatenate provided code
     with open(os.path.join(args.basepath, "provided_code",
                            "submission.concatenated"), "w") as file:
-        file.write(getConcatFilesInDir(os.path.join(args.basepath, "provided_code", "files"), regex_patterns))
+        provided_code_files = os.path.join(args.basepath, "provided_code", "files")
+        file.write(getConcatFilesInDir(provided_code_files, regex_patterns))
 
     # ==========================================================================
     end_time = time.time()

@@ -79,6 +79,12 @@ def main():
             my_hashes_file = os.path.join(my_dir, "hashes.txt")
             hasher(lichen_config_data, my_tokenized_file, my_hashes_file)
 
+    # ===========================================================================
+    # hash the provided code
+    provided_code_tokenized = os.path.join(args.basepath, "provided_code", "tokens.json")
+    provided_code_hashed = os.path.join(args.basepath, "provided_code", "hashes.txt")
+    hasher(lichen_config_data, provided_code_tokenized, provided_code_hashed)
+
     # ==========================================================================
     end_time = time.time()
     print("done in " + "%.0f" % (end_time - start_time) + " seconds")

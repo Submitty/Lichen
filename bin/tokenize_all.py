@@ -73,6 +73,12 @@ def main():
             my_tokenized_file = os.path.join(my_dir, "tokens.json")
             tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file)
 
+    # ===========================================================================
+    # tokenize the provided code
+    provided_code_concat = os.path.join(args.basepath, "provided_code", "submission.concatenated")
+    provided_code_tokenized = os.path.join(args.basepath, "provided_code", "tokens.json")
+    tokenize(lichen_config_data, provided_code_concat, provided_code_tokenized)
+
     # ==========================================================================
     end_time = time.time()
     print("done in " + "%.0f" % (end_time - start_time) + " seconds")

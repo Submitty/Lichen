@@ -22,6 +22,10 @@ fi
 rm -rf "${basepath}/logs"
 rm -rf "${basepath}/other_gradeables"
 rm -rf "${basepath}/users"
+rm "${basepath}/overall_ranking.txt"
+rm "${basepath}/provided_code/submission.concatenated"
+rm "${basepath}/provided_code/tokens.json"
+rm "${basepath}/provided_code/hashes.txt"
 
 # create these directories if they don't already exist
 mkdir -p "${basepath}/logs"

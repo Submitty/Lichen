@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # This script is the startup script for Lichen.  It accepts a single path to a
 # directory containing a config file and creates the necessary output directories
 # as appropriate, relative to the provided path.  It is possible to run this script
@@ -22,10 +24,10 @@ fi
 rm -rf "${basepath}/logs"
 rm -rf "${basepath}/other_gradeables"
 rm -rf "${basepath}/users"
-rm "${basepath}/overall_ranking.txt"
-rm "${basepath}/provided_code/submission.concatenated"
-rm "${basepath}/provided_code/tokens.json"
-rm "${basepath}/provided_code/hashes.txt"
+rm -f "${basepath}/overall_ranking.txt"
+rm -f "${basepath}/provided_code/submission.concatenated"
+rm -f "${basepath}/provided_code/tokens.json"
+rm -f "${basepath}/provided_code/hashes.txt"
 
 # create these directories if they don't already exist
 mkdir -p "${basepath}/logs"
@@ -34,8 +36,13 @@ mkdir -p "${basepath}/provided_code/files"
 mkdir -p "${basepath}/other_gradeables"
 mkdir -p "${basepath}/users"
 
+log_file="${basepath}/logs/lichen_job_output.txt"
+
+cd $(dirname "${0}")
+
 # run all of the modules and exit if an error occurs
-./concatenate_all.py  $basepath $datapath || exit 1
-./tokenize_all.py     $basepath || exit 1
-./hash_all.py         $basepath || exit 1
-./compare_hashes.out  $basepath || exit 1
+echo "Beginning Lichen run: $(date +"%Y-%m-%d %H:%M:%S")" >> $log_file 2>&1
+./concatenate_all.py  $basepath $datapath >> $log_file 2>&1 || exit 1
+./tokenize_all.py     $basepath           >> $log_file 2>&1 || exit 1
+./hash_all.py         $basepath           >> $log_file 2>&1 || exit 1
+./compare_hashes.out  $basepath           >> $log_file 2>&1 || exit 1

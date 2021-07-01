@@ -518,7 +518,7 @@ int main(int argc, char* argv[]) {
 
   // ---------------------------------------------------------------------------
   // Create a general summary of rankings of users by percentage match
-  std::cout << "writing rakings files..." << std::endl;
+  std::cout << "writing rankings files..." << std::endl;
   time(&start);
 
   // create a single file of students ranked by highest percentage of code plagiarised

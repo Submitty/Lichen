@@ -36,6 +36,9 @@ mkdir -p "${basepath}/provided_code/files"
 mkdir -p "${basepath}/other_gradeables"
 mkdir -p "${basepath}/users"
 
+# the default is r-x and we need PHP to be able to write if edits are made to the provided code
+chmod g=rwxs "${basepath}/provided_code/files"
+
 log_file="${basepath}/logs/lichen_job_output.txt"
 
 cd $(dirname "${0}")

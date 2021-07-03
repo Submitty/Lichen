@@ -8,6 +8,7 @@ lichen_data_dir = "/var/local/submitty/courses/"
 
 class TestPlaintextTokenizer(unittest.TestCase):
     def testPlaintextTokenizer(self):
+        print("test starting")
         input_file = f"{lichen_repository_dir}/tests/data/tokenizer/plaintext/input.txt"
         output_file = f"{lichen_data_dir}/f21/test_tokenizers/lichen/plaintext_tokenizer_tests/output.json"
         # expected_output_file = f"{lichen_repository_dir}/tests/data/tokenizer/plaintext/output.json"
@@ -19,6 +20,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             print(file.read())
 
         os.remove(output_file)
+        print("test complete")
 
 
 if __name__ == '__main__':

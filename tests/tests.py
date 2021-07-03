@@ -49,6 +49,27 @@ class TestPlaintextTokenizer(unittest.TestCase):
         # clean up the files
         os.remove(output_file)
 
+    def testPlaintextTokenizerIgnoreEverything(self):
+        self.maxDiff = None
+
+        input_file = f"{lichen_repository_dir}/tests/data/tokenizer/plaintext/input.txt"
+        output_file = f"{lichen_data_dir}/f21/test_tokenizers/lichen/plaintext_tokenizer_tests/output.json"
+        expected_output_file = f"{lichen_repository_dir}/tests/data/tokenizer/plaintext/expected_output/output_ignore_everything.json"
+
+        command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out --ignore_punctuation --to_lower --ignore_numbers --ignore_newlines  < {input_file} > {output_file}"
+        os.system(command)
+
+        with open(output_file) as file:
+            actual_output = file.read()
+
+        with open(expected_output_file) as file:
+            expected_output = file.read()
+
+        self.assertEqual(actual_output, expected_output)
+
+        # clean up the files
+        os.remove(output_file)
+
 
 if __name__ == '__main__':
     unittest.main()

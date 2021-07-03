@@ -19,4 +19,6 @@ jobs:
           sudo mkdir -p /usr/local/submitty/Lichen/
           sudo cp -r * /usr/local/submitty/GIT_CHECKOUT/Lichen/
           sudo bash /usr/local/submitty/GIT_CHECKOUT/Lichen/install_lichen.sh
-          sudo ls /usr/local/submitty/Lichen/
+      - name: Run Tests
+        run: |
+          python3 ./tests.py

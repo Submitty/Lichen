@@ -3,7 +3,7 @@ import unittest
 
 class TestTokenizers(unittest.TestCase):
 
-    def test(self):
+    def testPlaintextTokenizer(self):
         print('test!')
 
 

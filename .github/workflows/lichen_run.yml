@@ -15,10 +15,7 @@ jobs:
           sudo apt install libboost-all-dev
       - name: Create Directory Structure
         run: |
-          sudo mkdir -p /usr/local/submitty/GIT_CHECKOUT/Lichen/
-          sudo mkdir -p /usr/local/submitty/Lichen/
-          sudo cp -r * /usr/local/submitty/GIT_CHECKOUT/Lichen/
-          sudo bash /usr/local/submitty/GIT_CHECKOUT/Lichen/install_lichen.sh
+          sudo ./tests/setup.sh
       - name: Run Tests
         run: |
           python3 ./tests/tests.py

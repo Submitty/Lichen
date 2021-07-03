@@ -15,7 +15,7 @@ jobs:
           sudo apt install libboost-all-dev
       - name: Create Directory Structure
         run: |
-          sudo ./tests/setup.sh
+          sudo bash ./tests/setup.sh
       - name: Run Tests
         run: |
           python3 ./tests/tests.py

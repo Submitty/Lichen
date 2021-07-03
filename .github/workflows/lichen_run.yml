@@ -18,4 +18,4 @@ jobs:
           sudo bash ./tests/setup.sh
       - name: Run Tests
         run: |
-          python3 ./tests/tests.py
+          sudo python3 ./tests/tests.py

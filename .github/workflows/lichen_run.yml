@@ -21,4 +21,4 @@ jobs:
           sudo bash /usr/local/submitty/GIT_CHECKOUT/Lichen/install_lichen.sh
       - name: Run Tests
         run: |
-          python3 ./tests.py
+          python3 ./tests/tests.py

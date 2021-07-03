@@ -13,7 +13,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
         output_file = f"{lichen_data_dir}/f21/test_tokenizers/lichen/plaintext_tokenizer_tests/output.json"
         # expected_output_file = f"{lichen_repository_dir}/tests/data/tokenizer/plaintext/output.json"
 
-        command = f"{lichen_installation_dir}/plaintext_tokenizer.out {input_file} > {output_file}"
+        command = f"{lichen_installation_dir}plaintext_tokenizer.out {input_file} > {output_file}"
         os.system(command)
 
         with open(output_file) as file:

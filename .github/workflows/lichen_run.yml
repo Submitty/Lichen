@@ -14,4 +14,6 @@ jobs:
         run: |
           sudo mkdir -p /usr/local/submitty/GIT_CHECKOUT/Lichen/
           sudo mkdir -p /usr/local/submitty/Lichen/
-          ls
+          cp * /usr/local/submitty/GIT_CHECKOUT/Lichen/
+          bash /usr/local/submitty/GIT_CHECKOUT/Lichen/install_lichen.sh
+          ls /usr/local/submitty/Lichen/

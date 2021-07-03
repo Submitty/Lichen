@@ -3,7 +3,7 @@ name: Test Lichen
 on: [push]
 
 jobs:
-  python-lint:
+  Test Lichen:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
@@ -12,6 +12,6 @@ jobs:
           python-version: '3.6'
       - name: Create Directory Structure
         run: |
-          mkdir -p /usr/local/submitty/GIT_CHECKOUT/Lichen/
-          mkdir -p /usr/local/submitty/Lichen/
+          sudo mkdir -p /usr/local/submitty/GIT_CHECKOUT/Lichen/
+          sudo mkdir -p /usr/local/submitty/Lichen/
           ls

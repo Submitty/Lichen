@@ -77,7 +77,6 @@ def main():
             if not os.path.isdir(my_dir):
                 continue
 
-            print(my_dir)
             my_tokenized_file = os.path.join(my_dir, "tokens.json")
             my_hashes_file = os.path.join(my_dir, "hashes.txt")
             hasher(lichen_config_data, my_tokenized_file, my_hashes_file)

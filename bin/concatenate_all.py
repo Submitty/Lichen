@@ -120,7 +120,7 @@ def main():
     for user in os.listdir(os.path.join(args.basepath, "users")):
         user_path = os.path.join(args.basepath, "users", user)
         for version in os.listdir(user_path):
-            version_path = user_path = os.path.join(user_path, version)
+            version_path = os.path.join(user_path, version)
             my_concatenated_file = os.path.join(version_path, "submission.concatenated")
             with open(my_concatenated_file, "r+") as my_cf:
                 if my_cf.read() == "":

@@ -13,6 +13,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt install libboost-all-dev
+          pip install clang
       - name: Create Directory Structure
         run: |
           sudo bash ./tests/setup.sh

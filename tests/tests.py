@@ -117,11 +117,34 @@ class TestCTokenizer(unittest.TestCase):
     def testCTokenizer(self):
         self.maxDiff = None
 
-        input_file = f"{lichen_repository_dir}/tests/data/tokenizer/c/input.txt"
+        input_file = f"{lichen_repository_dir}/tests/data/tokenizer/c/input.cpp"
         output_file = f"{lichen_data_dir}/f21/test_tokenizers/lichen/output.json"
         expected_output_file = f"{lichen_repository_dir}/tests/data/tokenizer/c/expected_output/output.json"
 
         command = f"python3 {lichen_installation_dir}/bin/c_tokenizer.py {input_file} > {output_file}"
+        os.system(command)
+
+        with open(output_file) as file:
+            actual_output = file.read()
+
+        with open(expected_output_file) as file:
+            expected_output = file.read()
+
+        self.assertEqual(actual_output, expected_output)
+
+        # clean up the files
+        os.remove(output_file)
+
+
+class TestMIPSTokenizer(unittest.TestCase):
+    def testMIPSTokenizer(self):
+        self.maxDiff = None
+
+        input_file = f"{lichen_repository_dir}/tests/data/tokenizer/mips/input.s"
+        output_file = f"{lichen_data_dir}/f21/test_tokenizers/lichen/output.json"
+        expected_output_file = f"{lichen_repository_dir}/tests/data/tokenizer/mips/expected_output/output.json"
+
+        command = f"python3 {lichen_installation_dir}/bin/mips_tokenizer.py {input_file} > {output_file}"
         os.system(command)
 
         with open(output_file) as file:

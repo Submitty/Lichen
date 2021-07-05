@@ -140,6 +140,7 @@ class TestMIPSTokenizer(unittest.TestCase):
     def testMIPSTokenizer(self):
         self.maxDiff = None
 
+
         input_file = f"{lichen_repository_dir}/tests/data/tokenizer/mips/input.s"
         output_file = f"{lichen_data_dir}/f21/test_tokenizers/lichen/output.json"
         expected_output_file = f"{lichen_repository_dir}/tests/data/tokenizer/mips/expected_output/output.json"

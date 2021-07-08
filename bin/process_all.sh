@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # This script is the startup script for Lichen.  It accepts a single path to a
 # directory containing a config file and creates the necessary output directories
 # as appropriate, relative to the provided path.  It is possible to run this script
@@ -6,6 +8,8 @@
 # TODO: Assert permissions, as necessary
 
 basepath=$1 # holds the path to a directory containing a config for this gradeable
+            # (probably .../lichen/gradeable/<unique number>/ on Submitty)
+
 datapath=$2 # holds the path to a directory conatining courses and their data
             # (probably /var/local/submitty/courses on Submitty)
 
@@ -15,6 +19,16 @@ if [ ! -f "${basepath}/config.json" ]; then
 		exit 1
 fi
 
+# delete any previous run results
+# TODO: determine if any caching should occur
+rm -rf "${basepath}/logs"
+rm -rf "${basepath}/other_gradeables"
+rm -rf "${basepath}/users"
+rm -f "${basepath}/overall_ranking.txt"
+rm -f "${basepath}/provided_code/submission.concatenated"
+rm -f "${basepath}/provided_code/tokens.json"
+rm -f "${basepath}/provided_code/hashes.txt"
+
 # create these directories if they don't already exist
 mkdir -p "${basepath}/logs"
 mkdir -p "${basepath}/provided_code"
@@ -22,8 +36,16 @@ mkdir -p "${basepath}/provided_code/files"
 mkdir -p "${basepath}/other_gradeables"
 mkdir -p "${basepath}/users"
 
+# the default is r-x and we need PHP to be able to write if edits are made to the provided code
+chmod g=rwxs "${basepath}/provided_code/files"
+
+log_file="${basepath}/logs/lichen_job_output.txt"
+
+cd $(dirname "${0}")
+
 # run all of the modules and exit if an error occurs
-/usr/local/submitty/Lichen/bin/concatenate_all.py  $basepath $datapath || exit 1
-#/usr/local/submitty/Lichen/bin/tokenize_all.py     $basepath || exit 1
-#/usr/local/submitty/Lichen/bin/hash_all.py         $basepath || exit 1
-#/usr/local/submitty/Lichen/bin/compare_hashes.out  $basepath || exit 1
+echo "Beginning Lichen run: $(date +"%Y-%m-%d %H:%M:%S")" >> $log_file 2>&1
+./concatenate_all.py  $basepath $datapath >> $log_file 2>&1 || exit 1
+./tokenize_all.py     $basepath           >> $log_file 2>&1 || exit 1
+./hash_all.py         $basepath           >> $log_file 2>&1 || exit 1
+./compare_hashes.out  $basepath           >> $log_file 2>&1 || exit 1

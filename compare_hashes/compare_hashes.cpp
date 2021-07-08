@@ -257,7 +257,7 @@ int main(int argc, char* argv[]) {
 
   time(&end);
   double diff = difftime(end, start);
-  std::cout << "finished loading in " << diff  << "s" << std::endl;
+  std::cout << "finished loading in " << diff  << " seconds" << std::endl;
 
   // ---------------------------------------------------------------------------
   // THIS IS THE MAIN PLAGIARISM DETECTION ALGORITHM
@@ -325,7 +325,7 @@ int main(int argc, char* argv[]) {
 
   time(&end);
   diff = difftime(end, start);
-  std::cout << "finished walking in " << diff << "s" << std::endl;
+  std::cout << "finished walking in " << diff << " seconds" << std::endl;
 
   // ---------------------------------------------------------------------------
   // Writing the output files and merging the results
@@ -514,11 +514,11 @@ int main(int argc, char* argv[]) {
 
   time(&end);
   diff = difftime(end, start);
-  std::cout << "done merging and writing matches files in " << diff << "s" << std::endl;
+  std::cout << "done merging and writing matches files in " << diff << " seconds" << std::endl;
 
   // ---------------------------------------------------------------------------
   // Create a general summary of rankings of users by percentage match
-  std::cout << "writing rakings files..." << std::endl;
+  std::cout << "writing rankings files..." << std::endl;
   time(&start);
 
   // create a single file of students ranked by highest percentage of code plagiarised
@@ -623,11 +623,11 @@ int main(int argc, char* argv[]) {
 
   time(&end);
   diff = difftime(end, start);
-  std::cout << "finished writing rankings in " << diff << "s" << std::endl;
+  std::cout << "finished writing rankings in " << diff << " seconds" << std::endl;
 
   // ---------------------------------------------------------------------------
   time(&overall_end);
   double overall_diff = difftime(overall_end, overall_start);
-  std::cout << "DONE in " << overall_diff << "s" << std::endl;
+  std::cout << "done in " << overall_diff << " seconds" << std::endl;
 
 }

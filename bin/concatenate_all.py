@@ -22,7 +22,7 @@ def getConcatFilesInDir(input_dir, regex_patterns):
     for my_dir, _dirs, my_files in os.walk(input_dir):
         # Determine if regex should be used (blank regex is equivalent to selecting all files)
         files = sorted(my_files)
-        if regex_expressions[0] != "":
+        if regex_patterns[0] != "":
             files_filtered = []
             for e in regex_patterns:
                 files_filtered.extend(fnmatch.filter(files, e.strip()))
@@ -55,7 +55,7 @@ def main():
     sys.stdout.write("CONCATENATE ALL...")  # don't want a newline here so can't use print
     sys.stdout.flush()
 
-    config_path = args.basepath + '/config.json'
+    config_path = os.path.join(args.basepath, "config.json")
     if not os.path.isfile(config_path):
         print(f"Error: invalid config path provided ({config_path})")
         exit(1)
@@ -89,7 +89,7 @@ def main():
     # loop through and concatenate the selected files for each user in this gradeable
 
     for dir in regex_dirs:
-        gradeable_path = os.path.join(datapath, semester, course, dir, gradeable)
+        gradeable_path = os.path.join(args.datapath, semester, course, dir, gradeable)
         # loop over each user
         for user in sorted(os.listdir(gradeable_path)):
             user_path = os.path.join(gradeable_path, user)
@@ -114,7 +114,7 @@ def main():
                 if version_mode == "active_version" and int(version) != my_active_version:
                     continue
 
-                output_file_path = os.path.join(args.basepath, user,
+                output_file_path = os.path.join(args.basepath, "users", user,
                                                 version, "submission.concatenated")
 
                 if not os.path.exists(os.path.dirname(output_file_path)):
@@ -125,14 +125,13 @@ def main():
                     concatenated_contents = getConcatFilesInDir(version_path, regex_patterns)
                     output_file.write(concatenated_contents)
 
-
     # ==========================================================================
     # iterate over all of the created submissions, checking to see if they are empty
     # and adding a message to the top if so (to differentiate empty files from errors in the UI)
     for user in os.listdir(os.path.join(args.basepath, "users")):
         user_path = os.path.join(args.basepath, "users", user)
         for version in os.listdir(user_path):
-            version_path = user_path = os.path.join(user_path, version)
+            version_path = os.path.join(user_path, version)
             my_concatenated_file = os.path.join(version_path, "submission.concatenated")
             with open(my_concatenated_file, "r+") as my_cf:
                 if my_cf.read() == "":
@@ -142,11 +141,12 @@ def main():
     # concatenate provided code
     with open(os.path.join(args.basepath, "provided_code",
                            "submission.concatenated"), "w") as file:
-        file.write(getConcatFilesInDir(os.path.join(args.basepath, "provided_code", "files")), [])
+        provided_code_files = os.path.join(args.basepath, "provided_code", "files")
+        file.write(getConcatFilesInDir(provided_code_files, regex_patterns))
 
     # ==========================================================================
     end_time = time.time()
-    print("done in " + str(end_time - start_time) + " seconds")
+    print("done in " + "%.0f" % (end_time - start_time) + " seconds")
 
 
 if __name__ == "__main__":

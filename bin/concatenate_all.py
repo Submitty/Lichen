@@ -8,52 +8,73 @@ import argparse
 import os
 import json
 import sys
-import shutil
+import time
 import fnmatch
-
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'config')
-with open(os.path.join(CONFIG_PATH, 'submitty.json')) as open_file:
-    OPEN_JSON = json.load(open_file)
-SUBMITTY_DATA_DIR = OPEN_JSON['submitty_data_dir']
-SUBMITTY_INSTALL_DIR = OPEN_JSON['submitty_install_dir']
 
 IGNORED_FILES = [
     ".submit.timestamp"
 ]
 
 
+# returns a string containing the contents of the files which match the regex in the specified dir
+def getConcatFilesInDir(input_dir, regex_patterns):
+    result = ""
+    for my_dir, _dirs, my_files in os.walk(input_dir):
+        # Determine if regex should be used (blank regex is equivalent to selecting all files)
+        files = sorted(my_files)
+        if regex_patterns[0] != "":
+            files_filtered = []
+            for e in regex_patterns:
+                files_filtered.extend(fnmatch.filter(files, e.strip()))
+            files = files_filtered
+
+        for my_file in files:
+            # exclude any files we have ignored for all submissions
+            if my_file in IGNORED_FILES:
+                continue
+            absolute_path = os.path.join(my_dir, my_file)
+            # print a separator & filename
+            with open(absolute_path, encoding='ISO-8859-1') as tmp:
+                result += f"=============== {my_file} ===============\n"
+                # append the contents of the file
+                result += tmp.read() + "\n"
+    return result
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="")
-    parser.add_argument("config_path")
+    parser.add_argument("basepath")
+    parser.add_argument("datapath")
     return parser.parse_args()
 
 
 def main():
+    start_time = time.time()
     args = parse_args()
 
-    sys.stdout.write("CONCATENATE ALL...")
+    sys.stdout.write("CONCATENATE ALL...")  # don't want a newline here so can't use print
     sys.stdout.flush()
 
-    with open(args.config_path) as lichen_config:
-        lichen_config_data = json.load(lichen_config)
-        semester = lichen_config_data["semester"]
-        course = lichen_config_data["course"]
-        gradeable = lichen_config_data["gradeable"]
-        users_to_ignore = lichen_config_data["ignore_submissions"]
-
-        # this assumes regex is seperated by a ','
-        regex_expressions = lichen_config_data["regex"].split(',')
-        regex_dirs = lichen_config_data["regex_dirs"]
-
-    # ==========================================================================
-    # error checking
-    course_dir = os.path.join(SUBMITTY_DATA_DIR, "courses", semester, course)
-    if not os.path.isdir(course_dir):
-        print("ERROR! ", course_dir, " is not a valid course directory")
+    config_path = os.path.join(args.basepath, "config.json")
+    if not os.path.isfile(config_path):
+        print(f"Error: invalid config path provided ({config_path})")
         exit(1)
 
-    for e in regex_expressions:
-        # Check for backwards crawling
+    with open(config_path) as config_file:
+        config = json.load(config_file)
+
+    semester = config["semester"]
+    course = config["course"]
+    gradeable = config["gradeable"]
+    users_to_ignore = config["ignore_submissions"]
+    regex_patterns = config["regex"].split(',')
+    regex_dirs = config["regex_dirs"]
+
+    # ==========================================================================
+    # Error checking
+
+    # Check for backwards crawling
+    for e in regex_patterns:
         if ".." in e:
             print('ERROR! Invalid path component ".." in regex')
             exit(1)
@@ -64,99 +85,57 @@ def main():
             exit(1)
 
     # ==========================================================================
-    # create the directory
-    concatenated_dir = os.path.join(course_dir, "lichen", "concatenated", gradeable)
-    if not os.path.isdir(concatenated_dir):
-        os.makedirs(concatenated_dir)
-
-    # ==========================================================================
-    count_total_files = 0
+    # loop through and concatenate the selected files for each user in this gradeable
 
     for dir in regex_dirs:
-        submission_dir = os.path.join(course_dir, dir, gradeable)
-
-        # more error checking
-        if not os.path.isdir(submission_dir):
-            print("ERROR! ", submission_dir, " is not a valid gradeable ", dir, " directory")
-            exit(1)
-
-        # =========================================================================
-        # walk the subdirectories
-        for user in sorted(os.listdir(submission_dir)):
-            if not os.path.isdir(os.path.join(submission_dir, user)):
+        gradeable_path = os.path.join(args.datapath, semester, course, dir, gradeable)
+        # loop over each user
+        for user in sorted(os.listdir(gradeable_path)):
+            user_path = os.path.join(gradeable_path, user)
+            if not os.path.isdir(user_path):
                 continue
             elif user in users_to_ignore:
                 continue
-            for version in sorted(os.listdir(os.path.join(submission_dir, user))):
-                if not os.path.isdir(os.path.join(submission_dir, user, version)):
+
+            # loop over each version
+            for version in sorted(os.listdir(user_path)):
+                version_path = os.path.join(user_path, version)
+                if not os.path.isdir(version_path):
                     continue
 
-                # -----------------------------------------------------------------
-                # concatenate all files for this submissison into a single file
-                my_concatenated_dir = os.path.join(concatenated_dir, user, version)
-                if not os.path.isdir(my_concatenated_dir):
-                    os.makedirs(my_concatenated_dir)
-                my_concatenated_file = os.path.join(my_concatenated_dir, "submission.concatenated")
+                output_file_path = os.path.join(args.basepath, "users", user,
+                                                version, "submission.concatenated")
 
-                with open(my_concatenated_file, 'a') as my_cf:
-                    # loop over all files in all subdirectories
-                    base_path = os.path.join(submission_dir, user, version)
-                    for my_dir, _dirs, my_files in os.walk(base_path):
-                        # Determine if regex should be used (no regex provided
-                        # is equivalent to selecting all files)
-                        files = sorted(my_files)
-                        if regex_expressions[0] != "":
-                            files_filtered = []
-                            for e in regex_expressions:
-                                files_filtered.extend(fnmatch.filter(files, e.strip()))
-                            files = files_filtered
+                if not os.path.exists(os.path.dirname(output_file_path)):
+                    os.makedirs(os.path.dirname(output_file_path))
 
-                        for my_file in files:
-                            # exclude any files we have ignored for all submissions
-                            if my_file in IGNORED_FILES:
-                                continue
-                            absolute_path = os.path.join(my_dir, my_file)
-                            # print a separator & filename
-                            my_cf.write(f"=============== {my_file} ===============\n")
-                            with open(absolute_path, encoding='ISO-8859-1') as tmp:
-                                # append the contents of the file
-                                my_cf.write(tmp.read())
-                                my_cf.write("\n")
-                            count_total_files += 1
+                # append to concatenated file
+                with open(output_file_path, "a") as output_file:
+                    concatenated_contents = getConcatFilesInDir(version_path, regex_patterns)
+                    output_file.write(concatenated_contents)
+
     # ==========================================================================
-    # iterate over all of the created submissions, checking to see if they are
+    # iterate over all of the created submissions, checking to see if they are empty
     # and adding a message to the top if so (to differentiate empty files from errors in the UI)
-    for user in os.listdir(concatenated_dir):
-        for version in os.listdir(os.path.join(concatenated_dir, user)):
-            my_concatenated_file = os.path.join(concatenated_dir,
-                                                user, version, "submission.concatenated")
+    for user in os.listdir(os.path.join(args.basepath, "users")):
+        user_path = os.path.join(args.basepath, "users", user)
+        for version in os.listdir(user_path):
+            version_path = os.path.join(user_path, version)
+            my_concatenated_file = os.path.join(version_path, "submission.concatenated")
             with open(my_concatenated_file, "r+") as my_cf:
                 if my_cf.read() == "":
                     my_cf.write("Error: No files matched provided regex in selected directories")
 
     # ==========================================================================
-    # concatenate any files in the provided_code directory
-    provided_code_path = os.path.join(course_dir, "lichen", "provided_code", gradeable)
-    output_dir = os.path.join(course_dir, "lichen", "concatenated",
-                              gradeable, "provided_code", "provided_code")
-    output_file = os.path.join(output_dir, "submission.concatenated")
-
-    if os.path.isdir(provided_code_path) and len(os.listdir(provided_code_path)) != 0:
-        # If the directory already exists, delete it and make a new one
-        if os.path.isdir(output_dir):
-            shutil.rmtree(output_dir)
-        os.makedirs(output_dir)
-
-        with open(output_file, 'w') as of:
-            # Loop over all of the provided files and concatenate them
-            for file in sorted(os.listdir(provided_code_path)):
-                with open(os.path.join(provided_code_path, file), encoding='ISO-8859-1') as tmp:
-                    # append the contents of the file
-                    of.write(tmp.read())
+    # concatenate provided code
+    with open(os.path.join(args.basepath, "provided_code",
+                           "submission.concatenated"), "w") as file:
+        provided_code_files = os.path.join(args.basepath, "provided_code", "files")
+        file.write(getConcatFilesInDir(provided_code_files, regex_patterns))
 
     # ==========================================================================
-    print("done")
-    print(f"{count_total_files} files concatenated")
+    end_time = time.time()
+    print("done in " + "%.0f" % (end_time - start_time) + " seconds")
 
 
 if __name__ == "__main__":

@@ -1,47 +1,51 @@
-#!/bin/bash
+#!/bin/sh
 
-semester=$1
-course=$2
-gradeable=$3
+# This script is the startup script for Lichen.  It accepts a single path to a
+# directory containing a config file and creates the necessary output directories
+# as appropriate, relative to the provided path.  It is possible to run this script
+# from the command line but it is meant to be run via the Plagiarism Detection UI.
 
-prev_argument=""
-prior_term_gradeables=()
-ignore_submissions=()
-for argument in "$@"
-do
-	if [[ $argument == --* ]]
-	then
-		prev_argument=$argument
-	else
-	    case $prev_argument in
-		"--language")
-			language=$argument
-		  	;;
-		"--window")
-		  	window=$argument
-		  	;;
-		"--threshold")
-		  	threshold=$argument
-		  	;;
-		"--regrex")
-		  	regrex=$argument
-		  	;;
-		"--provided_code_path")
-		  	provided_code_path=$argument
-		  	;;
-		"--prior_term_gradeables")
-			prior_term_gradeables+=("$argument")
-		  	;;
-		"--ignore_submissions")
-			ignore_submissions+=("$argument")
-		  	;;
-		esac
-	fi
-done
+# TODO: Assert permissions, as necessary
 
-/usr/local/submitty/Lichen/bin/concatenate_all.py  $semester $course $gradeable
-/usr/local/submitty/Lichen/bin/tokenize_all.py     $semester $course $gradeable  --${language}
-/usr/local/submitty/Lichen/bin/hash_all.py         $semester $course $gradeable  --window $window  --${language}
+basepath=$1 # holds the path to a directory containing a config for this gradeable
+            # (probably .../lichen/gradeable/<unique number>/ on Submitty)
 
-/usr/local/submitty/Lichen/bin/compare_hashes.out  $semester $course $gradeable  --window $window
+datapath=$2 # holds the path to a directory conatining courses and their data
+            # (probably /var/local/submitty/courses on Submitty)
 
+# kill the script if there is no config file
+if [ ! -f "${basepath}/config.json" ]; then
+    echo "Unable to find config.json in provided directory"
+		exit 1
+fi
+
+# delete any previous run results
+# TODO: determine if any caching should occur
+rm -rf "${basepath}/logs"
+rm -rf "${basepath}/other_gradeables"
+rm -rf "${basepath}/users"
+rm -f "${basepath}/overall_ranking.txt"
+rm -f "${basepath}/provided_code/submission.concatenated"
+rm -f "${basepath}/provided_code/tokens.json"
+rm -f "${basepath}/provided_code/hashes.txt"
+
+# create these directories if they don't already exist
+mkdir -p "${basepath}/logs"
+mkdir -p "${basepath}/provided_code"
+mkdir -p "${basepath}/provided_code/files"
+mkdir -p "${basepath}/other_gradeables"
+mkdir -p "${basepath}/users"
+
+# the default is r-x and we need PHP to be able to write if edits are made to the provided code
+chmod g=rwxs "${basepath}/provided_code/files"
+
+log_file="${basepath}/logs/lichen_job_output.txt"
+
+cd $(dirname "${0}")
+
+# run all of the modules and exit if an error occurs
+echo "Beginning Lichen run: $(date +"%Y-%m-%d %H:%M:%S")" >> $log_file 2>&1
+./concatenate_all.py  $basepath $datapath >> $log_file 2>&1 || exit 1
+./tokenize_all.py     $basepath           >> $log_file 2>&1 || exit 1
+./hash_all.py         $basepath           >> $log_file 2>&1 || exit 1
+./compare_hashes.out  $basepath           >> $log_file 2>&1 || exit 1

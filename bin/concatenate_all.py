@@ -98,7 +98,6 @@ def main():
             elif user in users_to_ignore:
                 continue
 
-            my_active_version = 0
             if version_mode == "active_version":
                 # get the user's active version from their settings file
                 submissions_details_path = os.path.join(user_path, 'user_assignment_settings.json')

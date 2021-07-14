@@ -198,7 +198,7 @@ def main():
 
     # do the same for the other gradeables
     for other_gradeable in prior_term_gradeables:
-        for other_user in os.listdir(os.path.join(args.basepath, "other_gradeables")):
+        for other_user in os.listdir(os.path.join(args.basepath, "other_gradeables", other_gradeable)):
             other_user_path = os.path.join(args.basepath, "other_gradeables", other_user)
             for other_version in os.listdir(other_user_path):
                 other_version_path = os.path.join(other_user_path, other_version)

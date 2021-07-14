@@ -10,6 +10,7 @@ import json
 import sys
 import time
 import fnmatch
+from pathlib import Path
 
 IGNORED_FILES = [
     ".submit.timestamp"
@@ -81,6 +82,22 @@ def main():
             print('ERROR! Invalid path component ".." in regex')
             exit(1)
 
+    for ptg in prior_term_gradeables:
+        for field in ptg:
+            if ".." in field:
+                print('ERROR! Invalid path component ".." in prior_term_gradeable field')
+                exit(1)
+
+    # check permissions to make sure we have access to the prior term gradeables
+    my_course_group_perms = Path(args.basepath).group()
+    for ptg in prior_term_gradeables:
+        if Path(args.datapath, ptg["prior_semester"], ptg["prior_course"]).group()\
+           != my_course_group_perms:
+            print(f"Error: Invalid permissions to access course {ptg['prior_semester']}"
+                  f"/{ptg['prior_course']}")
+            exit(1)
+
+    # make sure the regex directory is one of the acceptable directories
     for dir in regex_dirs:
         if dir not in ["submissions", "results", "checkout"]:
             print("ERROR! ", dir, " is not a valid input directory for Lichen")

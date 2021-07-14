@@ -60,8 +60,8 @@ def main():
     sys.stdout.write("HASH ALL...")
     sys.stdout.flush()
 
-    # =========================================================================
-    # walk the subdirectories
+    # ==========================================================================
+    # walk the subdirectories of this gradeable
     users_dir = os.path.join(args.basepath, "users")
     if not os.path.isdir(users_dir):
         print("Error: Unable to find users directory")
@@ -81,7 +81,34 @@ def main():
             my_hashes_file = os.path.join(my_dir, "hashes.txt")
             hasher(lichen_config_data, my_tokenized_file, my_hashes_file)
 
-    # ===========================================================================
+    # ==========================================================================
+    # walk the subdirectories of the other gradeables
+
+    other_gradeables_dir = os.path.join(args.basepath, "other_gradeables")
+    if not os.path.isdir(other_gradeables_dir):
+        print("Error: Unable to find other gradeables directory")
+        exit(1)
+
+    for other_gradeable in sorted(os.listdir(other_gradeables_dir)):
+        other_gradeable_dir = os.path.join(other_gradeables_dir, other_gradeable)
+        if not os.path.isdir(other_gradeable_dir):
+            continue
+
+        for other_user in sorted(os.listdir(other_gradeable_dir)):
+            other_user_dir = os.path.join(other_gradeable_dir, other_user)
+            if not os.path.isdir(other_user_dir):
+                continue
+
+            for other_version in sorted(os.listdir(other_user_dir)):
+                other_version_dir = os.path.join(other_user_dir, other_version)
+                if not os.path.isdir(other_version_dir):
+                    continue
+
+                other_tokenized_file = os.path.join(other_version_dir, "tokens.json")
+                other_hashes_file = os.path.join(other_version_dir, "hashes.txt")
+                hasher(lichen_config_data, other_tokenized_file, other_hashes_file)
+
+    # ==========================================================================
     # hash the provided code
     provided_code_tokenized = os.path.join(args.basepath, "provided_code", "tokens.json")
     provided_code_hashed = os.path.join(args.basepath, "provided_code", "hashes.txt")

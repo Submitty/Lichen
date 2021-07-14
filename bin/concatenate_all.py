@@ -70,6 +70,7 @@ def main():
     users_to_ignore = config["ignore_submissions"]
     regex_patterns = config["regex"].split(',')
     regex_dirs = config["regex_dirs"]
+    prior_term_gradeables = config["prior_term_gradeables"]
 
     # ==========================================================================
     # Error checking
@@ -125,6 +126,48 @@ def main():
                     output_file.write(concatenated_contents)
 
     # ==========================================================================
+    # loop over all of the other prior term gradeables and concatenate their submissions
+    for other_gradeable in prior_term_gradeables:
+        for dir in regex_dirs:
+            other_gradeable_path = os.path.join(args.datapath,
+                                                other_gradeable["prior_semester"],
+                                                other_gradeable["prior_course"],
+                                                dir,
+                                                other_gradeable["prior_gradeable"])
+            # loop over each user
+            for other_user in sorted(os.listdir(other_gradeable_path)):
+                other_user_path = os.path.join(other_gradeable_path, user)
+                if not os.path.isdir(other_user_path):
+                    continue
+
+                if version_mode == "active_version":
+                    # get the user's active version from their settings file
+                    other_submissions_details_path = os.path.join(other_user_path,
+                                                                  'user_assignment_settings.json')
+
+                    with open(other_submissions_details_path) as other_details_file:
+                        other_details_json = json.load(other_details_file)
+                        my_active_version = int(other_details_json["active_version"])
+
+                # loop over each version
+                for other_version in sorted(os.listdir(other_user_path)):
+                    other_version_path = os.path.join(other_user_path, other_version)
+                    if not os.path.isdir(other_version_path):
+                        continue
+
+                    other_output_file_path = os.path.join(args.basepath, "users", other_user,
+                                                          other_version, "submission.concatenated")
+
+                    if not os.path.exists(os.path.dirname(other_output_file_path)):
+                        os.makedirs(os.path.dirname(other_output_file_path))
+
+                    # append to concatenated file
+                    with open(other_output_file_path, "a") as other_output_file:
+                        other_concatenated_contents = getConcatFilesInDir(other_version_path,
+                                                                          regex_patterns)
+                        other_output_file.write(other_concatenated_contents)
+
+    # ==========================================================================
     # iterate over all of the created submissions, checking to see if they are empty
     # and adding a message to the top if so (to differentiate empty files from errors in the UI)
     for user in os.listdir(os.path.join(args.basepath, "users")):
@@ -135,6 +178,18 @@ def main():
             with open(my_concatenated_file, "r+") as my_cf:
                 if my_cf.read() == "":
                     my_cf.write("Error: No files matched provided regex in selected directories")
+
+    # do the same for the other gradeables
+    for other_gradeable in prior_term_gradeables:
+        for other_user in os.listdir(os.path.join(args.basepath, "other_gradeables")):
+            other_user_path = os.path.join(args.basepath, "other_gradeables", other_user)
+            for other_version in os.listdir(other_user_path):
+                other_version_path = os.path.join(other_user_path, other_version)
+                my_concatenated_file = os.path.join(other_version_path, "submission.concatenated")
+                with open(my_concatenated_file, "r+") as my_cf:
+                    if my_cf.read() == "":
+                        my_cf.write("Error: No files matched provided regex in"
+                                    "selected directories")
 
     # ==========================================================================
     # concatenate provided code

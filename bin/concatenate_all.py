@@ -172,8 +172,10 @@ def main():
                     if not os.path.isdir(other_version_path):
                         continue
 
-                    other_output_file_path = os.path.join(args.basepath, "users", other_user,
-                                                          other_version, "submission.concatenated")
+                    other_output_file_path = os.path.join(args.basepath, "other_gradeables",
+                                                          other_gradeable["prior_gradeable"],
+                                                          other_user, other_version,
+                                                          "submission.concatenated")
 
                     if not os.path.exists(os.path.dirname(other_output_file_path)):
                         os.makedirs(os.path.dirname(other_output_file_path))
@@ -198,9 +200,10 @@ def main():
 
     # do the same for the other gradeables
     for other_gradeable in prior_term_gradeables:
-        for other_user in os.listdir(os.path.join(args.basepath,
-                                                  "other_gradeables", other_gradeable)):
-            other_user_path = os.path.join(args.basepath, "other_gradeables", other_user)
+        for other_user in os.listdir(os.path.join(args.basepath, "other_gradeables",
+                                                  other_gradeable["prior_gradeable"])):
+            other_user_path = os.path.join(args.basepath, "other_gradeables",
+                                           other_gradeable["prior_gradeable"], other_user)
             for other_version in os.listdir(other_user_path):
                 other_version_path = os.path.join(other_user_path, other_version)
                 my_concatenated_file = os.path.join(other_version_path, "submission.concatenated")

@@ -235,13 +235,13 @@ int main(int argc, char* argv[]) {
 
     // loop over every user
     for (boost::filesystem::directory_iterator other_user_itr(other_gradeable_path); other_user_itr != end_iter; ++other_user_itr) {
-      boost::filesystem::path other_username_path = other_gradeable_itr->path();
+      boost::filesystem::path other_username_path = other_user_itr->path();
       assert (is_directory(other_username_path));
-      std::string other_username = other_gradeable_itr->path().filename().string();
+      std::string other_username = other_user_itr->path().filename().string();
 
       // loop over every version
       for (boost::filesystem::directory_iterator other_version_itr(other_username_path); other_version_itr != end_iter; ++other_version_itr) {
-        boost::filesystem::path other_version_path = other_user_itr->path();
+        boost::filesystem::path other_version_path = other_version_itr->path();
         assert (is_directory(other_version_path));
         std::string str_other_version = other_version_itr->path().filename().string();
         int other_version = std::stoi(str_other_version);

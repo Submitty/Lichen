@@ -153,7 +153,7 @@ def main():
                                                 other_gradeable["prior_gradeable"])
             # loop over each user
             for other_user in sorted(os.listdir(other_gradeable_path)):
-                other_user_path = os.path.join(other_gradeable_path, user)
+                other_user_path = os.path.join(other_gradeable_path, other_user)
                 if not os.path.isdir(other_user_path):
                     continue
 
@@ -173,7 +173,7 @@ def main():
                         continue
 
                     other_output_file_path = os.path.join(args.basepath, "other_gradeables",
-                                                          other_gradeable["prior_gradeable"],
+                                                          f"{other_gradeable['prior_semester']}__{other_gradeable['prior_course']}__{other_gradeable['prior_gradeable']}",  # noqa: E501
                                                           other_user, other_version,
                                                           "submission.concatenated")
 
@@ -200,10 +200,11 @@ def main():
 
     # do the same for the other gradeables
     for other_gradeable in prior_term_gradeables:
+        other_gradeable_dir_name = f"{other_gradeable['prior_semester']}__{other_gradeable['prior_course']}__{other_gradeable['prior_gradeable']}"  # noqa: E501
         for other_user in os.listdir(os.path.join(args.basepath, "other_gradeables",
-                                                  other_gradeable["prior_gradeable"])):
+                                                  other_gradeable_dir_name)):
             other_user_path = os.path.join(args.basepath, "other_gradeables",
-                                           other_gradeable["prior_gradeable"], other_user)
+                                           other_gradeable_dir_name, other_user)
             for other_version in os.listdir(other_user_path):
                 other_version_path = os.path.join(other_user_path, other_version)
                 my_concatenated_file = os.path.join(other_version_path, "submission.concatenated")

@@ -29,7 +29,7 @@ typedef std::string hash;
 // represents the location of a hash within
 // a unique student and version pair
 struct HashLocation {
-  HashLocation(const std::string &s, int v, location_in_submission l, std::string scg) : student(s), version(v), location(l), semester_course_gradeable(scg) {}
+  HashLocation(const std::string &s, int v, location_in_submission l, const std::string &scg) : student(s), version(v), location(l), semester_course_gradeable(scg) {}
   std::string student;
   int version;
   location_in_submission location;
@@ -39,9 +39,10 @@ struct HashLocation {
 
 // represents an element in a ranking of students by percent match
 struct StudentRanking {
-  StudentRanking(const std::string &s, int v, float p) : student(s), version(v), percent(p) {}
+  StudentRanking(const std::string &s, int v, const std::string &scg, float p) : student(s), version(v), semester_course_gradeable(scg), percent(p) {}
   std::string student;
   int version;
+  std::string semester_course_gradeable;
   float percent;
 };
 
@@ -50,7 +51,10 @@ struct StudentRanking {
 // hashes, and other submissions with those hashes
 class Submission {
 public:
+  // Constructor
   Submission(const std::string &s, int v) : student_(s), version_(v) {}
+  
+  // getters
   const std::string & student() const { return student_; }
   int version() const { return version_; }
   void addHash(const hash &h, location_in_submission l) { hashes.push_back(make_pair(h, l)); }
@@ -613,7 +617,7 @@ int main(int argc, char* argv[]) {
   std::vector<StudentRanking> ranking;
   for (std::unordered_map<std::string, std::pair<int, float> >::iterator itr
         = highest_matches.begin(); itr != highest_matches.end(); ++itr) {
-    ranking.push_back(StudentRanking(itr->first, itr->second.first, itr->second.second));
+    ranking.push_back(StudentRanking(itr->first, itr->second.first, "", itr->second.second));
   }
 
   std::sort(ranking.begin(), ranking.end(), ranking_sorter);

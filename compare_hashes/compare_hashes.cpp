@@ -703,6 +703,5 @@ int main(int argc, char* argv[]) {
   // ---------------------------------------------------------------------------
   time(&overall_end);
   double overall_diff = difftime(overall_end, overall_start);
-  std::cout << "done in " << overall_diff << " seconds" << std::endl;
-
+  std::cout << "COMPARE HASHES done in " << overall_diff << " seconds" << std::endl;
 }

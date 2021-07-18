@@ -36,7 +36,7 @@ def getConcatFilesInDir(input_dir, regex_patterns):
             absolute_path = os.path.join(my_dir, my_file)
             # print a separator & filename
             with open(absolute_path, encoding='ISO-8859-1') as tmp:
-                result += f"=============== {my_file} ===============\n"
+                result += f"==== {my_file} ====\n"
                 # append the contents of the file
                 result += tmp.read() + "\n"
     return result

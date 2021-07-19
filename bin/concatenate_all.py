@@ -66,6 +66,7 @@ def main():
     semester = config["semester"]
     course = config["course"]
     gradeable = config["gradeable"]
+    version_mode = config["version"]
     users_to_ignore = config["ignore_submissions"]
     regex_patterns = config["regex"].split(',')
     regex_dirs = config["regex_dirs"]
@@ -97,10 +98,19 @@ def main():
             elif user in users_to_ignore:
                 continue
 
+            if version_mode == "active_version":
+                # get the user's active version from their settings file
+                submissions_details_path = os.path.join(user_path, 'user_assignment_settings.json')
+                with open(submissions_details_path) as details_file:
+                    details_json = json.load(details_file)
+                    my_active_version = int(details_json["active_version"])
+
             # loop over each version
             for version in sorted(os.listdir(user_path)):
                 version_path = os.path.join(user_path, version)
                 if not os.path.isdir(version_path):
+                    continue
+                if version_mode == "active_version" and int(version) != my_active_version:
                     continue
 
                 output_file_path = os.path.join(args.basepath, "users", user,
@@ -120,7 +130,7 @@ def main():
     for user in os.listdir(os.path.join(args.basepath, "users")):
         user_path = os.path.join(args.basepath, "users", user)
         for version in os.listdir(user_path):
-            version_path = user_path = os.path.join(user_path, version)
+            version_path = os.path.join(user_path, version)
             my_concatenated_file = os.path.join(version_path, "submission.concatenated")
             with open(my_concatenated_file, "r+") as my_cf:
                 if my_cf.read() == "":

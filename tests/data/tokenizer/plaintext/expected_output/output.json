@@ -51,7 +51,7 @@
         "char": 20,
         "line": 3,
         "type": "number",
-        "value": "1"
+        "value": 1
     },
     {
         "char": 22,
@@ -159,7 +159,7 @@
         "char": 26,
         "line": 4,
         "type": "number",
-        "value": "1"
+        "value": 1
     },
     {
         "char": 27,
@@ -171,7 +171,7 @@
         "char": 28,
         "line": 4,
         "type": "number",
-        "value": "2"
+        "value": 2
     },
     {
         "char": 29,

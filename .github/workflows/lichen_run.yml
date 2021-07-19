@@ -18,4 +18,5 @@ jobs:
           sudo bash ./tests/setup.sh
       - name: Run Tests
         run: |
-          sudo python3 ./tests/tests.py
+          cd /usr/local/submitty/GIT_CHECKOUT/Lichen/tests
+          sudo python3 -m unittest discover

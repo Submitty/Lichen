@@ -142,7 +142,7 @@ class TestHashAll(unittest.TestCase):
         shutil.rmtree(lichen_test_playground)
 
     def testHashAll(self):
-        # make the fake directory structure hash_all.p expects
+        # make the fake directory structure hash_all.py expects
         os.makedirs(f"{lichen_test_playground}/test_hash_all/provided_code")
         os.makedirs(f"{lichen_test_playground}/test_hash_all/other_gradeables")
         os.makedirs(f"{lichen_test_playground}/test_hash_all/users/student/1")

@@ -1,7 +1,6 @@
 import unittest
 import os
 import shutil
-import subprocess
 import json
 
 lichen_installation_dir = "/usr/local/submitty/Lichen"
@@ -179,8 +178,7 @@ class TestHashAll(unittest.TestCase):
 
         # run hash_all
         os.chdir(f"{lichen_installation_dir}/bin")
-        # TODO: make this not print to stdout
-        os.system(f"python3 {lichen_installation_dir}/bin/hash_all.py {lichen_test_playground}/test_hash_all")
+        os.system(f"python3 {lichen_installation_dir}/bin/hash_all.py {lichen_test_playground}/test_hash_all > /dev/null")
         os.chdir(cwd)
 
         # test output

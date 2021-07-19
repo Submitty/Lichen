@@ -32,9 +32,6 @@ class TestPlaintextTokenizer(unittest.TestCase):
 
         self.assertEqual(actual_output, expected_output)
 
-        # clean up the files
-        os.remove(output_file)
-
     def testPlaintextTokenizerIgnorePunctuation(self):
         self.maxDiff = None
 
@@ -52,9 +49,6 @@ class TestPlaintextTokenizer(unittest.TestCase):
             expected_output = file.read()
 
         self.assertEqual(actual_output, expected_output)
-
-        # clean up the files
-        os.remove(output_file)
 
     def testPlaintextTokenizerToLower(self):
         self.maxDiff = None
@@ -74,9 +68,6 @@ class TestPlaintextTokenizer(unittest.TestCase):
 
         self.assertEqual(actual_output, expected_output)
 
-        # clean up the files
-        os.remove(output_file)
-
     def testPlaintextTokenizerIgnoreNewlines(self):
         self.maxDiff = None
 
@@ -95,9 +86,6 @@ class TestPlaintextTokenizer(unittest.TestCase):
 
         self.assertEqual(actual_output, expected_output)
 
-        # clean up the files
-        os.remove(output_file)
-
     def testPlaintextTokenizerIgnoreEverything(self):
         self.maxDiff = None
 
@@ -115,9 +103,6 @@ class TestPlaintextTokenizer(unittest.TestCase):
             expected_output = file.read()
 
         self.assertEqual(actual_output, expected_output)
-
-        # clean up the files
-        os.remove(output_file)
 
 
 class TestMIPSTokenizer(unittest.TestCase):
@@ -145,9 +130,6 @@ class TestMIPSTokenizer(unittest.TestCase):
             expected_output = file.read()
 
         self.assertEqual(actual_output, expected_output)
-
-        # clean up the files
-        os.remove(output_file)
 
 
 if __name__ == '__main__':

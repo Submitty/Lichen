@@ -63,7 +63,7 @@ public:
   }
   const std::set<location_in_submission>& getCommonMatches() const { return common_matches; }
   const std::set<location_in_submission>& getProvidedMatches() const { return provided_matches; }
-  const std::unordered_map<std::string ,std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>>& getStudentsMatched() const {
+  const std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>>& getStudentsMatched() const {
     return students_matched;
   }
   float getPercentage() const {
@@ -104,7 +104,7 @@ private:
   // a container to keep track of all the students this submission
   // matched and the number of matching hashes per submission
   // <source_gradeable, <username, <version, <hashes>> > >
-  std::unordered_map<std::string ,std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>> students_matched;
+  std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>> students_matched;
 };
 
 
@@ -644,14 +644,14 @@ int main(int argc, char* argv[]) {
 
     // find and sort the other submissions it matches with
     std::vector<StudentRanking> student_ranking;
-    std::unordered_map<std::string ,std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>> matches = submission_itr->getStudentsMatched();
+    std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>> matches = submission_itr->getStudentsMatched();
 
     // no need to create a file for students with no matches
     if (matches.size() == 0) {
       continue;
     }
 
-    std::unordered_map<std::string ,std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>>::const_iterator gradeables_itr = matches.begin();
+    std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>>::const_iterator gradeables_itr = matches.begin();
     for (; gradeables_itr != matches.end(); ++gradeables_itr) {
       for (std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>::const_iterator matches_itr = gradeables_itr->second.begin();
          matches_itr != gradeables_itr->second.end(); ++matches_itr) {

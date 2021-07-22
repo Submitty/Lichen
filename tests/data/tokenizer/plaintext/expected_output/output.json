@@ -3,19 +3,19 @@
         "char": 5,
         "line": 1,
         "type": "string",
-        "value": "a"
+        "value": "A"
     },
     {
         "char": 7,
         "line": 1,
         "type": "string",
-        "value": "sample"
+        "value": "Sample"
     },
     {
         "char": 14,
         "line": 1,
         "type": "string",
-        "value": "file"
+        "value": "File"
     },
     {
         "char": 18,
@@ -33,7 +33,7 @@
         "char": 1,
         "line": 3,
         "type": "string",
-        "value": "this"
+        "value": "This"
     },
     {
         "char": 6,
@@ -51,7 +51,7 @@
         "char": 20,
         "line": 3,
         "type": "number",
-        "value": "1"
+        "value": 1
     },
     {
         "char": 22,
@@ -93,7 +93,7 @@
         "char": 46,
         "line": 3,
         "type": "string",
-        "value": "we"
+        "value": "We"
     },
     {
         "char": 48,
@@ -117,7 +117,7 @@
         "char": 14,
         "line": 4,
         "type": "string",
-        "value": "this"
+        "value": "THIS"
     },
     {
         "char": 18,
@@ -159,7 +159,7 @@
         "char": 26,
         "line": 4,
         "type": "number",
-        "value": "1"
+        "value": 1
     },
     {
         "char": 27,
@@ -171,7 +171,7 @@
         "char": 28,
         "line": 4,
         "type": "number",
-        "value": "2"
+        "value": 2
     },
     {
         "char": 29,
@@ -195,7 +195,7 @@
         "char": 1,
         "line": 5,
         "type": "string",
-        "value": "good"
+        "value": "Good"
     },
     {
         "char": 5,

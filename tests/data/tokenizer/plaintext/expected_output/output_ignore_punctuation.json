@@ -51,13 +51,7 @@
         "char": 20,
         "line": 3,
         "type": "number",
-        "value": "1"
-    },
-    {
-        "char": 22,
-        "line": 3,
-        "type": "punctuation",
-        "value": "\""
+        "value": 1
     },
     {
         "char": 23,
@@ -76,18 +70,6 @@
         "line": 3,
         "type": "string",
         "value": "plaintext"
-    },
-    {
-        "char": 42,
-        "line": 3,
-        "type": "punctuation",
-        "value": "\""
-    },
-    {
-        "char": 43,
-        "line": 3,
-        "type": "punctuation",
-        "value": "."
     },
     {
         "char": 46,
@@ -120,34 +102,16 @@
         "value": "THIS"
     },
     {
-        "char": 18,
-        "line": 4,
-        "type": "punctuation",
-        "value": "."
-    },
-    {
         "char": 21,
         "line": 4,
         "type": "string",
         "value": "a"
     },
     {
-        "char": 22,
-        "line": 4,
-        "type": "punctuation",
-        "value": "."
-    },
-    {
         "char": 23,
         "line": 4,
         "type": "string",
         "value": "b"
-    },
-    {
-        "char": 24,
-        "line": 4,
-        "type": "punctuation",
-        "value": "."
     },
     {
         "char": 25,
@@ -159,7 +123,7 @@
         "char": 26,
         "line": 4,
         "type": "number",
-        "value": "1"
+        "value": 1
     },
     {
         "char": 27,
@@ -171,19 +135,13 @@
         "char": 28,
         "line": 4,
         "type": "number",
-        "value": "2"
+        "value": 2
     },
     {
         "char": 29,
         "line": 4,
         "type": "string",
         "value": "e"
-    },
-    {
-        "char": 30,
-        "line": 4,
-        "type": "punctuation",
-        "value": "!"
     },
     {
         "char": 31,
@@ -198,22 +156,10 @@
         "value": "Good"
     },
     {
-        "char": 5,
-        "line": 5,
-        "type": "punctuation",
-        "value": "-"
-    },
-    {
         "char": 6,
         "line": 5,
         "type": "string",
         "value": "bye"
-    },
-    {
-        "char": 9,
-        "line": 5,
-        "type": "punctuation",
-        "value": "."
     },
     {
         "char": 10,

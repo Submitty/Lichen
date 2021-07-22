@@ -1,0 +1,22 @@
+name: Test Lichen
+
+on: [push]
+
+jobs:
+  test-lichen:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+      - name: Install Dependencies
+        run: |
+          sudo apt install libboost-all-dev
+      - name: Create Directory Structure
+        run: |
+          sudo bash ./tests/setup.sh
+      - name: Run Tests
+        run: |
+          cd /usr/local/submitty/GIT_CHECKOUT/Lichen/tests
+          sudo python3 -m unittest discover

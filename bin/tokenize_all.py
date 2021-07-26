@@ -53,7 +53,7 @@ def main():
         lichen_config_data = json.load(lichen_config)
 
     # ===========================================================================
-    # walk the subdirectories
+    # walk the subdirectories to tokenize this gradeable's submissions
     users_dir = os.path.join(args.basepath, "users")
     if not os.path.isdir(users_dir):
         print("Error: Unable to find users directory")
@@ -72,6 +72,32 @@ def main():
             my_concatenated_file = os.path.join(my_dir, "submission.concatenated")
             my_tokenized_file = os.path.join(my_dir, "tokens.json")
             tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file)
+
+    # ===========================================================================
+    # tokenize the other prior term gradeables' submissions
+    other_gradeables_dir = os.path.join(args.basepath, "other_gradeables")
+    if not os.path.isdir(other_gradeables_dir):
+        print("Error: Unable to find other gradeables directory")
+        exit(1)
+
+    for other_gradeable in sorted(os.listdir(other_gradeables_dir)):
+        other_gradeable_dir = os.path.join(other_gradeables_dir, other_gradeable)
+        if not os.path.isdir(other_gradeable_dir):
+            continue
+
+        for other_user in sorted(os.listdir(other_gradeable_dir)):
+            other_user_dir = os.path.join(other_gradeable_dir, other_user)
+            if not os.path.isdir(other_user_dir):
+                continue
+
+            for other_version in sorted(os.listdir(other_user_dir)):
+                other_version_dir = os.path.join(other_user_dir, other_version)
+                if not os.path.isdir(other_version_dir):
+                    continue
+
+                other_concatenated_file = os.path.join(other_version_dir, "submission.concatenated")
+                other_tokenized_file = os.path.join(other_version_dir, "tokens.json")
+                tokenize(lichen_config_data, other_concatenated_file, other_tokenized_file)
 
     # ===========================================================================
     # tokenize the provided code

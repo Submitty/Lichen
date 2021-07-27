@@ -1,0 +1,16 @@
+{
+    "semester": "f21",
+    "course": "plagiarism",
+    "gradeable": "repeated_sequences",
+    "config_id": "1",
+    "version": "all_versions",
+    "regex": "",
+    "regex_dirs": [
+        "submissions"
+    ],
+    "language": "plaintext",
+    "threshold": 5,
+    "sequence_length": 5,
+    "prior_term_gradeables": [],
+    "ignore_submissions": []
+}

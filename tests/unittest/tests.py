@@ -18,9 +18,9 @@ class TestPlaintextTokenizer(unittest.TestCase):
     def testPlaintextTokenizer(self):
         self.maxDiff = None
 
-        input_file = "./data/tokenizer/plaintext/input.txt"
+        input_file = "../data/tokenizer/plaintext/input.txt"
         output_file = f"{lichen_test_playground}/plaintext_tokenizer/output.json"
-        expected_output_file = "./data/tokenizer/plaintext/expected_output/output.json"
+        expected_output_file = "../data/tokenizer/plaintext/expected_output/output.json"
 
         command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out < {input_file} > {output_file}"
         os.system(command)
@@ -36,9 +36,9 @@ class TestPlaintextTokenizer(unittest.TestCase):
     def testPlaintextTokenizerIgnorePunctuation(self):
         self.maxDiff = None
 
-        input_file = "./data/tokenizer/plaintext/input.txt"
+        input_file = "../data/tokenizer/plaintext/input.txt"
         output_file = f"{lichen_test_playground}/plaintext_tokenizer/output.json"
-        expected_output_file = "./data/tokenizer/plaintext/expected_output/output_ignore_punctuation.json"
+        expected_output_file = "../data/tokenizer/plaintext/expected_output/output_ignore_punctuation.json"
 
         command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out --ignore_punctuation < {input_file} > {output_file}"
         os.system(command)
@@ -54,9 +54,9 @@ class TestPlaintextTokenizer(unittest.TestCase):
     def testPlaintextTokenizerToLower(self):
         self.maxDiff = None
 
-        input_file = "./data/tokenizer/plaintext/input.txt"
+        input_file = "../data/tokenizer/plaintext/input.txt"
         output_file = f"{lichen_test_playground}/plaintext_tokenizer/output.json"
-        expected_output_file = "./data/tokenizer/plaintext/expected_output/output_to_lower.json"
+        expected_output_file = "../data/tokenizer/plaintext/expected_output/output_to_lower.json"
 
         command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out --to_lower < {input_file} > {output_file}"
         os.system(command)
@@ -72,9 +72,9 @@ class TestPlaintextTokenizer(unittest.TestCase):
     def testPlaintextTokenizerIgnoreNewlines(self):
         self.maxDiff = None
 
-        input_file = "./data/tokenizer/plaintext/input.txt"
+        input_file = "../data/tokenizer/plaintext/input.txt"
         output_file = f"{lichen_test_playground}/plaintext_tokenizer/output.json"
-        expected_output_file = "./data/tokenizer/plaintext/expected_output/output_ignore_newlines.json"
+        expected_output_file = "../data/tokenizer/plaintext/expected_output/output_ignore_newlines.json"
 
         command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out --ignore_newlines < {input_file} > {output_file}"
         os.system(command)
@@ -90,9 +90,9 @@ class TestPlaintextTokenizer(unittest.TestCase):
     def testPlaintextTokenizerIgnoreEverything(self):
         self.maxDiff = None
 
-        input_file = "./data/tokenizer/plaintext/input.txt"
+        input_file = "../data/tokenizer/plaintext/input.txt"
         output_file = f"{lichen_test_playground}/plaintext_tokenizer/output.json"
-        expected_output_file = "./data/tokenizer/plaintext/expected_output/output_ignore_everything.json"
+        expected_output_file = "../data/tokenizer/plaintext/expected_output/output_ignore_everything.json"
 
         command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out --ignore_punctuation --to_lower --ignore_numbers --ignore_newlines  < {input_file} > {output_file}"
         os.system(command)
@@ -117,9 +117,9 @@ class TestMIPSTokenizer(unittest.TestCase):
     def testMIPSTokenizer(self):
         self.maxDiff = None
 
-        input_file = "./data/tokenizer/mips/input.s"
+        input_file = "../data/tokenizer/mips/input.s"
         output_file = f"{lichen_test_playground}/mips_tokenizer/output.json"
-        expected_output_file = "./data/tokenizer/mips/expected_output/output.json"
+        expected_output_file = "../data/tokenizer/mips/expected_output/output.json"
 
         command = f"python3 {lichen_installation_dir}/bin/mips_tokenizer.py {input_file} > {output_file}"
         os.system(command)
@@ -152,8 +152,8 @@ class TestHashAll(unittest.TestCase):
             file.write("null")
 
         # copy the input files from /data to the the new path
-        shutil.copyfile("data/hash_all/config.json", f"{lichen_test_playground}/test_hash_all/config.json")
-        shutil.copyfile("data/hash_all/tokens.json", f"{lichen_test_playground}/test_hash_all/users/student/1/tokens.json")
+        shutil.copyfile("../data/hash_all/config.json", f"{lichen_test_playground}/test_hash_all/config.json")
+        shutil.copyfile("../data/hash_all/tokens.json", f"{lichen_test_playground}/test_hash_all/users/student/1/tokens.json")
 
         # save current working directory
         cwd = os.getcwd()

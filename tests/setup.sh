@@ -12,9 +12,3 @@ cd $lichen_repository_dir
 # install Lichen
 mkdir -p $lichen_installation_dir
 bash $lichen_repository_dir/install_lichen.sh
-
-# SETUP TOKENIZER TESTS ########################################################
-tokenizer_tests_course=$lichen_data_dir/f21/test_tokenizers/lichen/
-# set up file structure for tokenizer tests
-# (doesn't need a full file structure, just a place to put files)
-mkdir -p $tokenizer_tests_course

@@ -160,6 +160,11 @@ void incrementEndPositionsForMatches(nlohmann::json &others) {
 }
 
 
+bool regions_sorter(const nlohmann::json &region_a, const nlohmann::json &region_b) {
+  return region_a["start"].get<int>() > region_b["start"].get<int>();
+}
+
+
 bool ranking_sorter(const StudentRanking &a, const StudentRanking &b) {
   return a.percent > b.percent ||
         (a.percent == b.percent && a.student < b.student);
@@ -514,56 +519,82 @@ int main(int argc, char* argv[]) {
     // Done creating the JSON file/objects, now we merge them to shrink them in size
 
     // Merge matching regions:
-    if (result.size() > 0) { // check to make sure that there are more than 1 positions (if it's 1, we can't merge anyway)
-      // loop through all positions
-      for (unsigned int position = 1; position < result.size(); position++) {
-        nlohmann::json* prevPosition = &result[position - 1];
-        nlohmann::json* currPosition = &result[position];
-        // check whether they are next to each other and have the same type
-        if ((*currPosition)["end"].get<int>() == (*prevPosition)["end"].get<int>() + 1 && (*currPosition)["type"] == (*prevPosition)["type"]) {
-          bool canBeMerged = true;
 
-          // if they are both of type match, we have to do extra steps to make sure they are mergeable
-          if ((*prevPosition)["type"] == "match") {
-            // easy check to see if they can't be merged for certain
-            if ((*prevPosition)["others"].size() != (*currPosition)["others"].size()) {
-              canBeMerged = false;
-            }
-            else {
-              nlohmann::json::iterator prevPosItr = (*prevPosition)["others"].begin();
-              nlohmann::json::iterator currPosItr = (*currPosition)["others"].begin();
-              for (; prevPosItr != (*prevPosition)["others"].end() && currPosItr != (*currPosition)["others"].end(); prevPosItr++, currPosItr++) {
-                // we can't merge the two positions if they are different in any way, except for the ending positions
-                if ((*prevPosItr)["username"] != (*currPosItr)["username"] ||
-                    (*prevPosItr)["version"] != (*currPosItr)["version"] ||
-                    (*prevPosItr)["source_gradeable"] != (*currPosItr)["source_gradeable"] ||
-                    !matchingPositionsAreAdjacent((*prevPosItr), (*currPosItr))) {
-                  canBeMerged = false;
-                  break;
-                }
+    // loop through all positions
+    for (unsigned int position = 1; position < result.size(); position++) {
+      nlohmann::json* prevPosition = &result[position - 1];
+      nlohmann::json* currPosition = &result[position];
+      // check whether they are next to each other and have the same type
+      if ((*currPosition)["end"].get<int>() == (*prevPosition)["end"].get<int>() + 1 && (*currPosition)["type"] == (*prevPosition)["type"]) {
+        bool canBeMerged = true;
+
+        // if they are both of type match, we have to do extra steps to make sure they are mergeable
+        if ((*prevPosition)["type"] == "match") {
+          // easy check to see if they can't be merged for certain
+          if ((*prevPosition)["others"].size() != (*currPosition)["others"].size()) {
+            canBeMerged = false;
+          }
+          else {
+            nlohmann::json::iterator prevPosItr = (*prevPosition)["others"].begin();
+            nlohmann::json::iterator currPosItr = (*currPosition)["others"].begin();
+            for (; prevPosItr != (*prevPosition)["others"].end() && currPosItr != (*currPosition)["others"].end(); prevPosItr++, currPosItr++) {
+              // we can't merge the two positions if they are different in any way, except for the ending positions
+              if ((*prevPosItr)["username"] != (*currPosItr)["username"] ||
+                  (*prevPosItr)["version"] != (*currPosItr)["version"] ||
+                  (*prevPosItr)["source_gradeable"] != (*currPosItr)["source_gradeable"] ||
+                  !matchingPositionsAreAdjacent((*prevPosItr), (*currPosItr))) {
+                canBeMerged = false;
+                break;
               }
             }
           }
+        }
 
-          //if it's possible to do the merging, do it here by adjusting the end of the previous position and erasing the current position
-          if (canBeMerged && (*prevPosition)["type"] == "match") {
-            (*prevPosition)["end"] = (*currPosition)["end"].get<int>(); // (should be the equivalent of prevPosition["end"]++)
+        //if it's possible to do the merging, do it here by adjusting the end of the previous position and erasing the current position
+        if (canBeMerged && (*prevPosition)["type"] == "match") {
+          (*prevPosition)["end"] = (*currPosition)["end"].get<int>(); // (should be the equivalent of prevPosition["end"]++)
 
-            // increment end positions for each element
-            incrementEndPositionsForMatches((*prevPosition)["others"]);
+          // increment end positions for each element
+          incrementEndPositionsForMatches((*prevPosition)["others"]);
 
-            result.erase(result.begin() + position);
-            position--;
-          }
-          else if (canBeMerged) { // common code or provided code that can be matched
-            (*prevPosition)["end"] = (*currPosition)["end"].get<int>();
+          result.erase(result.begin() + position);
+          position--;
+        }
+        else if (canBeMerged) { // common code or provided code that can be matched
+          (*prevPosition)["end"] = (*currPosition)["end"].get<int>();
 
-            result.erase(result.begin() + position);
-            position--;
+          result.erase(result.begin() + position);
+          position--;
+        }
+      }
+    }
+
+    // sort matchiing regions by start position
+    std::sort(result.begin(), result.end(), regions_sorter);
+
+    // trim any matching regions which overlap with common/provided code
+    for (int region = 0; region < result.size() - 1; ++region) {
+      if (result[region]["type"] == "match") {
+        for (int i = 1; region + i < result.size() && result[region]["end"].get<int>() >= result[region + i]["start"].get<int>(); ++i) {
+          if (result[region + i]["type"] == "common" || result[region + i]["type"] == "provided") {
+            // trim the region+matching positions
+            int delta = result[region]["end"].get<int>() - result[region + i]["start"].get<int>() - 1;
+            result[region]["end"] = result[region]["end"].get<int>() - delta;
+            // loop over the "others"
+            for (nlohmann::json::iterator others_itr = result[region]["others"].begin(); others_itr != result[region]["others"].end(); ++others_itr) {
+              // trim the "matching positions"
+              for (nlohmann::json::iterator matching_positions_itr = (*others_itr)["matchingpositions"].begin(); matching_positions_itr != (*others_itr)["matchingpositions"].end(); ++matching_positions_itr) {
+                (*matching_positions_itr)["end"] = (*matching_positions_itr)["end"].get<int>() - delta;
+              }
+            }
+
+            // don't have to keep looking for other overlapping regions once we have trimmed it once
+            break;
           }
         }
       }
     }
+
 
     // save the file with matches per user
     nlohmann::json match_data = result;

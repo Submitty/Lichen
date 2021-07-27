@@ -161,7 +161,7 @@ void incrementEndPositionsForMatches(nlohmann::json &others) {
 
 
 bool regions_sorter(const nlohmann::json &region_a, const nlohmann::json &region_b) {
-  return region_a["start"].get<int>() > region_b["start"].get<int>();
+  return region_a["start"].get<int>() <= region_b["start"].get<int>();
 }
 
 

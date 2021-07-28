@@ -19,6 +19,9 @@ nlohmann_dir=${lichen_repository_dir}/../vendor/nlohmann/json
 ########################################################################################################################
 # install dependencies
 
+# install clang
+apt-get install clang-6.0
+
 # boost
 apt-get install libboost-all-dev
 

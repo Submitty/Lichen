@@ -2,7 +2,7 @@
 
 
 # Python tokenization
-parso==0.8.2x
+parso==0.8.2
 
 # C/C++ tokenization
 clang==11.0

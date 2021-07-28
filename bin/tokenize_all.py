@@ -24,11 +24,7 @@ def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
     data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
     with open(data_json_path, 'r') as token_data_file:
         token_data = json.load(token_data_file)
-        if language not in token_data:
-            print("\n\nERROR: UNKNOWN TOKENIZER\n\n")
-            exit(1)
-        else:
-            language_token_data = token_data[language]
+        language_token_data = token_data[language]
 
     tokenizer = f"./{language_token_data['tokenizer']}"
 

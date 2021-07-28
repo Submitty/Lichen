@@ -26,13 +26,6 @@ def hasher(lichen_config_data, my_tokenized_file, my_hashes_file):
     data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
     with open(data_json_path) as token_data_file:
         token_data = json.load(token_data_file)
-        if language not in token_data:
-            print("\n\nERROR: UNKNOWN HASHER\n\n")
-            exit(1)
-
-    if (sequence_length < 1):
-        print("ERROR! sequence_length must be >= 1")
-        exit(1)
 
     with open(my_tokenized_file, 'r', encoding='ISO-8859-1') as my_tf:
         with open(my_hashes_file, 'w') as my_hf:

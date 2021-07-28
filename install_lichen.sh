@@ -20,13 +20,13 @@ nlohmann_dir=${lichen_repository_dir}/../vendor/nlohmann/json
 # install dependencies
 
 # install clang
-apt-get install clang-6.0
+apt-get install -y clang-6.0
 
 # boost
-apt-get install libboost-all-dev
+apt-get install -y libboost-all-dev
 
 # python requirements
-pip install -r requirements.txt
+pip install -r ${lichen_repository_dir}/requirements.txt
 
 ########################################################################################################################
 # get tools/source code from other repositories

@@ -7,6 +7,9 @@ lichen_installation_dir = "/usr/local/submitty/Lichen"
 lichen_test_playground = "/usr/local/submitty/Lichen/test_output"
 
 
+################################################################################
+# Tokenizer tests
+
 class TestPlaintextTokenizer(unittest.TestCase):
     def setUp(self):
         if not os.path.isdir(os.path.join(lichen_test_playground, 'plaintext_tokenizer')):
@@ -26,10 +29,10 @@ class TestPlaintextTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -44,10 +47,10 @@ class TestPlaintextTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -62,10 +65,10 @@ class TestPlaintextTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -80,10 +83,10 @@ class TestPlaintextTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -98,10 +101,10 @@ class TestPlaintextTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -125,10 +128,10 @@ class TestMIPSTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -152,10 +155,10 @@ class TestJavaTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -179,13 +182,16 @@ class TestCTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
+
+################################################################################
+# Hasher tests
 
 class TestHashAll(unittest.TestCase):
     def setUp(self):

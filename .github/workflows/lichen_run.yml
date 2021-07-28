@@ -10,10 +10,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.6'
-      - name: Install Dependencies
-        run: |
-          sudo apt install libboost-all-dev
-      - name: Create Directory Structure
+      - name: Install Lichen
         run: |
           sudo bash ./tests/setup.sh
       - name: Run Tests

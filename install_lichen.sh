@@ -17,6 +17,15 @@ nlohmann_dir=${lichen_repository_dir}/../vendor/nlohmann/json/
 
 
 ########################################################################################################################
+# install dependencies
+
+# boost
+apt-get install libboost-all-dev
+
+# python requirements
+pip install -r requirements.txt
+
+########################################################################################################################
 # get tools/source code from other repositories
 
 if [ ! -e "${nlohmann_dir}" ]; then

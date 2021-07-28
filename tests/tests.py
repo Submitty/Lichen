@@ -133,6 +133,33 @@ class TestMIPSTokenizer(unittest.TestCase):
         self.assertEqual(actual_output, expected_output)
 
 
+class TestJavaTokenizer(unittest.TestCase):
+    def setUp(self):
+        if not os.path.isdir(os.path.join(lichen_test_playground, 'java_tokenizer')):
+            os.makedirs(os.path.join(lichen_test_playground, 'java_tokenizer'))
+
+    def tearDown(self):
+        shutil.rmtree(os.path.join(lichen_test_playground, 'java_tokenizer'))
+
+    def testMIPSTokenizer(self):
+        self.maxDiff = None
+
+        input_file = "./data/tokenizer/java/input_with_error.java"
+        output_file = f"{lichen_test_playground}/java_tokenizer/output.json"
+        expected_output_file = "./data/tokenizer/java/expected_output/output.json"
+
+        command = f"python {lichen_installation_dir}/bin/java_tokenizer.py {input_file} > {output_file}"
+        os.system(command)
+
+        with open(output_file) as file:
+            actual_output = file.read()
+
+        with open(expected_output_file) as file:
+            expected_output = file.read()
+
+        self.assertEqual(actual_output, expected_output)
+
+
 class TestCTokenizer(unittest.TestCase):
     def setUp(self):
         if not os.path.isdir(os.path.join(lichen_test_playground, 'c_tokenizer')):

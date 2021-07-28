@@ -8,4 +8,4 @@ parso==0.8.2
 clang==11.0
 
 # Java tokenization
-javac_parser==
+javac_parser==1.0.0

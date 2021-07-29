@@ -62,7 +62,7 @@ def validate(config, args):
     with open(langs_data_json_path, 'r') as langs_data_file:
         langs_data = json.load(langs_data_file)
         if language not in langs_data:
-            raise SystemExit(f"\n\nERROR! tokenizing and hashing not supported for language {language}\n\n")
+            raise SystemExit(f"ERROR! tokenizing not supported for language {language}")
 
     # Check values of common code threshold and sequence length
     if (threshold < 2):
@@ -79,7 +79,7 @@ def validate(config, args):
     for ptg in prior_term_gradeables:
         for field in ptg:
             if ".." in field:
-                raise SystemExit('ERROR! Invalid path component ".." in prior_term_gradeable field')
+                raise SystemExit('ERROR! Invalid component ".." in prior_term_gradeable path')
 
     # check permissions to make sure we have access to the prior term gradeables
     my_course_group_perms = Path(args.basepath).group()

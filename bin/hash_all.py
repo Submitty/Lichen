@@ -9,7 +9,6 @@ import argparse
 import os
 import json
 import time
-import sys
 import hashlib
 
 
@@ -50,15 +49,13 @@ def main():
     with open(os.path.join(args.basepath, "config.json")) as lichen_config:
         lichen_config_data = json.load(lichen_config)
 
-    sys.stdout.write("HASH ALL...")
-    sys.stdout.flush()
+    print("HASH ALL...", end="")
 
     # ==========================================================================
     # walk the subdirectories of this gradeable
     users_dir = os.path.join(args.basepath, "users")
     if not os.path.isdir(users_dir):
-        print("Error: Unable to find users directory")
-        exit(1)
+        raise SystemExit("ERROR! Unable to find users directory")
 
     for user in sorted(os.listdir(users_dir)):
         user_dir = os.path.join(users_dir, user)
@@ -79,8 +76,7 @@ def main():
 
     other_gradeables_dir = os.path.join(args.basepath, "other_gradeables")
     if not os.path.isdir(other_gradeables_dir):
-        print("Error: Unable to find other gradeables directory")
-        exit(1)
+        raise SystemExit("ERROR! Unable to find other gradeables directory")
 
     for other_gradeable in sorted(os.listdir(other_gradeables_dir)):
         other_gradeable_dir = os.path.join(other_gradeables_dir, other_gradeable)

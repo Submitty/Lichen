@@ -7,7 +7,6 @@ the concatenated files.
 import argparse
 import os
 import json
-import sys
 import time
 import fnmatch
 from pathlib import Path
@@ -63,57 +62,48 @@ def validate(config, args):
     with open(langs_data_json_path, 'r') as langs_data_file:
         langs_data = json.load(langs_data_file)
         if language not in langs_data:
-            print(f"\n\nERROR! tokenizing and hashing not supported for language {language}\n\n")
-            exit(1)
+            raise SystemExit(f"\n\nERROR! tokenizing and hashing not supported for language {language}\n\n")
 
     # Check values of common code threshold and sequence length
     if (threshold < 2):
-        print("ERROR! threshold must be >= 2")
-        exit(1)
+        raise SystemExit("ERROR! threshold must be >= 2")
 
     if (sequence_length < 1):
-        print("ERROR! sequence_length must be >= 1")
-        exit(1)
+        raise SystemExit("ERROR! sequence_length must be >= 1")
 
     # Check for backwards crawling
     for e in regex_patterns:
         if ".." in e:
-            print('ERROR! Invalid path component ".." in regex')
-            exit(1)
+            raise SystemExit('ERROR! Invalid path component ".." in regex')
 
     for ptg in prior_term_gradeables:
         for field in ptg:
             if ".." in field:
-                print('ERROR! Invalid path component ".." in prior_term_gradeable field')
-                exit(1)
+                raise SystemExit('ERROR! Invalid path component ".." in prior_term_gradeable field')
 
     # check permissions to make sure we have access to the prior term gradeables
     my_course_group_perms = Path(args.basepath).group()
     for ptg in prior_term_gradeables:
         if Path(args.datapath, ptg["prior_semester"], ptg["prior_course"]).group()\
            != my_course_group_perms:
-            print(f"ERROR! Invalid permissions to access course {ptg['prior_semester']}"
+            raise SystemExit(f"ERROR! Invalid permissions to access course {ptg['prior_semester']}"
                   f"/{ptg['prior_course']}")
-            exit(1)
 
     # make sure the regex directory is one of the acceptable directories
     for dir in regex_dirs:
         if dir not in ["submissions", "results", "checkout"]:
-            print("ERROR! ", dir, " is not a valid input directory for Lichen")
-            exit(1)
+            raise SystemExit("ERROR! ", dir, " is not a valid input directory for Lichen")
 
 
 def main():
     start_time = time.time()
     args = parse_args()
 
-    sys.stdout.write("CONCATENATE ALL...")  # don't want a newline here so can't use print
-    sys.stdout.flush()
+    print("CONCATENATE ALL...", end="")
 
     config_path = os.path.join(args.basepath, "config.json")
     if not os.path.isfile(config_path):
-        print(f"ERROR! invalid config path provided ({config_path})")
-        exit(1)
+        raise SystemExit(f"ERROR! invalid config path provided ({config_path})")
 
     with open(config_path) as config_file:
         config = json.load(config_file)

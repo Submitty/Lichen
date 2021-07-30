@@ -7,6 +7,9 @@ lichen_installation_dir = "/usr/local/submitty/Lichen"
 lichen_test_playground = "/usr/local/submitty/Lichen/test_output"
 
 
+################################################################################
+# Tokenizer tests
+
 class TestPlaintextTokenizer(unittest.TestCase):
     def setUp(self):
         if not os.path.isdir(os.path.join(lichen_test_playground, 'plaintext_tokenizer')):
@@ -26,10 +29,10 @@ class TestPlaintextTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -44,10 +47,10 @@ class TestPlaintextTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -62,10 +65,10 @@ class TestPlaintextTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -80,10 +83,10 @@ class TestPlaintextTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -98,10 +101,10 @@ class TestPlaintextTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
@@ -125,13 +128,97 @@ class TestMIPSTokenizer(unittest.TestCase):
         os.system(command)
 
         with open(output_file) as file:
-            actual_output = file.read()
+            actual_output = json.load(file)
 
         with open(expected_output_file) as file:
-            expected_output = file.read()
+            expected_output = json.load(file)
 
         self.assertEqual(actual_output, expected_output)
 
+
+class TestJavaTokenizer(unittest.TestCase):
+    def setUp(self):
+        if not os.path.isdir(os.path.join(lichen_test_playground, 'java_tokenizer')):
+            os.makedirs(os.path.join(lichen_test_playground, 'java_tokenizer'))
+
+    def tearDown(self):
+        shutil.rmtree(os.path.join(lichen_test_playground, 'java_tokenizer'))
+
+    def testJavaTokenizer(self):
+        self.maxDiff = None
+
+        input_file = "./data/tokenizer/java/input_with_error.java"
+        output_file = f"{lichen_test_playground}/java_tokenizer/output.json"
+        expected_output_file = "./data/tokenizer/java/expected_output/output.json"
+
+        command = f"python3 {lichen_installation_dir}/bin/java_tokenizer.py {input_file} > {output_file}"
+        os.system(command)
+
+        with open(output_file) as file:
+            actual_output = json.load(file)
+
+        with open(expected_output_file) as file:
+            expected_output = json.load(file)
+
+        self.assertEqual(actual_output, expected_output)
+
+
+class TestCTokenizer(unittest.TestCase):
+    def setUp(self):
+        if not os.path.isdir(os.path.join(lichen_test_playground, 'c_tokenizer')):
+            os.makedirs(os.path.join(lichen_test_playground, 'c_tokenizer'))
+
+    def tearDown(self):
+        shutil.rmtree(os.path.join(lichen_test_playground, 'c_tokenizer'))
+
+    def testCTokenizer(self):
+        self.maxDiff = None
+
+        input_file = "./data/tokenizer/c/input.cpp"
+        output_file = f"{lichen_test_playground}/c_tokenizer/output.json"
+        expected_output_file = "./data/tokenizer/c/expected_output/output.json"
+
+        command = f"python3 {lichen_installation_dir}/bin/c_tokenizer.py {input_file} > {output_file}"
+        os.system(command)
+
+        with open(output_file) as file:
+            actual_output = json.load(file)
+
+        with open(expected_output_file) as file:
+            expected_output = json.load(file)
+
+        self.assertEqual(actual_output, expected_output)
+
+
+class TestPythonTokenizer(unittest.TestCase):
+    def setUp(self):
+        if not os.path.isdir(os.path.join(lichen_test_playground, 'python_tokenizer')):
+            os.makedirs(os.path.join(lichen_test_playground, 'python_tokenizer'))
+
+    def tearDown(self):
+        shutil.rmtree(os.path.join(lichen_test_playground, 'python_tokenizer'))
+
+    def testPythonTokenizer(self):
+        self.maxDiff = None
+
+        input_file = "./data/tokenizer/python/input.py"
+        output_file = f"{lichen_test_playground}/python_tokenizer/output.json"
+        expected_output_file = "./data/tokenizer/python/expected_output/output.json"
+
+        command = f"python3 {lichen_installation_dir}/bin/python_tokenizer.py {input_file} > {output_file}"
+        os.system(command)
+
+        with open(output_file) as file:
+            actual_output = json.load(file)
+
+        with open(expected_output_file) as file:
+            expected_output = json.load(file)
+
+        self.assertEqual(actual_output, expected_output)
+
+
+################################################################################
+# Hasher tests
 
 class TestHashAll(unittest.TestCase):
     def setUp(self):

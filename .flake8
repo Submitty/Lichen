@@ -1,7 +1,7 @@
 [flake8]
 max-line-length = 100
 exclude=
-    tokenizer/python/input.py
+    tests/data/tokenizer/python/input.py
 
 per-file-ignores =
     tokenizer/mips/mips_tokenizer.py:W605

@@ -7,7 +7,6 @@ the concatenated files.
 import argparse
 import os
 import json
-import sys
 import time
 import fnmatch
 from pathlib import Path
@@ -49,59 +48,78 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
-    start_time = time.time()
-    args = parse_args()
-
-    sys.stdout.write("CONCATENATE ALL...")  # don't want a newline here so can't use print
-    sys.stdout.flush()
-
-    config_path = os.path.join(args.basepath, "config.json")
-    if not os.path.isfile(config_path):
-        print(f"Error: invalid config path provided ({config_path})")
-        exit(1)
-
-    with open(config_path) as config_file:
-        config = json.load(config_file)
-
-    semester = config["semester"]
-    course = config["course"]
-    gradeable = config["gradeable"]
-    version_mode = config["version"]
-    users_to_ignore = config["ignore_submissions"]
+def validate(config, args):
+    # load parameters from the config to be checked
     regex_patterns = config["regex"].split(',')
     regex_dirs = config["regex_dirs"]
+    language = config["language"]
+    threshold = int(config["threshold"])
+    sequence_length = int(config["sequence_length"])
     prior_term_gradeables = config["prior_term_gradeables"]
 
-    # ==========================================================================
-    # Error checking
+    # Check we have a tokenizer to support the configured language
+    langs_data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
+    with open(langs_data_json_path, 'r') as langs_data_file:
+        langs_data = json.load(langs_data_file)
+        if language not in langs_data:
+            raise SystemExit(f"ERROR! tokenizing not supported for language {language}")
+
+    # Check values of common code threshold and sequence length
+    if (threshold < 2):
+        raise SystemExit("ERROR! threshold must be >= 2")
+
+    if (sequence_length < 1):
+        raise SystemExit("ERROR! sequence_length must be >= 1")
 
     # Check for backwards crawling
     for e in regex_patterns:
         if ".." in e:
-            print('ERROR! Invalid path component ".." in regex')
-            exit(1)
+            raise SystemExit('ERROR! Invalid path component ".." in regex')
 
     for ptg in prior_term_gradeables:
         for field in ptg:
             if ".." in field:
-                print('ERROR! Invalid path component ".." in prior_term_gradeable field')
-                exit(1)
+                raise SystemExit('ERROR! Invalid component ".." in prior_term_gradeable path')
 
     # check permissions to make sure we have access to the prior term gradeables
     my_course_group_perms = Path(args.basepath).group()
     for ptg in prior_term_gradeables:
         if Path(args.datapath, ptg["prior_semester"], ptg["prior_course"]).group()\
            != my_course_group_perms:
-            print(f"Error: Invalid permissions to access course {ptg['prior_semester']}"
+            raise SystemExit(f"ERROR! Invalid permissions to access course {ptg['prior_semester']}"
                   f"/{ptg['prior_course']}")
-            exit(1)
 
     # make sure the regex directory is one of the acceptable directories
     for dir in regex_dirs:
         if dir not in ["submissions", "results", "checkout"]:
-            print("ERROR! ", dir, " is not a valid input directory for Lichen")
-            exit(1)
+            raise SystemExit("ERROR! ", dir, " is not a valid input directory for Lichen")
+
+
+def main():
+    start_time = time.time()
+    args = parse_args()
+
+    print("CONCATENATE ALL...", end="")
+
+    config_path = os.path.join(args.basepath, "config.json")
+    if not os.path.isfile(config_path):
+        raise SystemExit(f"ERROR! invalid config path provided ({config_path})")
+
+    with open(config_path) as config_file:
+        config = json.load(config_file)
+
+    # perform error checking on config parameters
+    validate(config, args)
+
+    # parameters to be used in this file
+    semester = config["semester"]
+    course = config["course"]
+    gradeable = config["gradeable"]
+    version_mode = config["version"]
+    regex_patterns = config["regex"].split(',')
+    regex_dirs = config["regex_dirs"]
+    prior_term_gradeables = config["prior_term_gradeables"]
+    users_to_ignore = config["ignore_submissions"]
 
     # ==========================================================================
     # loop through and concatenate the selected files for each user in this gradeable
@@ -196,7 +214,7 @@ def main():
             my_concatenated_file = os.path.join(version_path, "submission.concatenated")
             with open(my_concatenated_file, "r+") as my_cf:
                 if my_cf.read() == "":
-                    my_cf.write("Error: No files matched provided regex in selected directories")
+                    my_cf.write("ERROR! No files matched provided regex in selected directories")
 
     # do the same for the other gradeables
     for other_gradeable in prior_term_gradeables:
@@ -210,7 +228,7 @@ def main():
                 my_concatenated_file = os.path.join(other_version_path, "submission.concatenated")
                 with open(my_concatenated_file, "r+") as my_cf:
                     if my_cf.read() == "":
-                        my_cf.write("Error: No files matched provided regex in"
+                        my_cf.write("ERROR! No files matched provided regex in"
                                     "selected directories")
 
     # ==========================================================================

@@ -192,9 +192,6 @@ int main(int argc, char* argv[]) {
   int sequence_length = config_file_json.value("sequence_length",1);
   int threshold = config_file_json.value("threshold",5);
 
-  assert (sequence_length >= 1);
-  assert (threshold >= 2);
-
   // error checking, confirm there are hashes to work with
   boost::filesystem::path users_root_directory = lichen_gradeable_path / "users";
   if (!boost::filesystem::exists(users_root_directory) ||

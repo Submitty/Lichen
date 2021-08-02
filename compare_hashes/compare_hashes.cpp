@@ -75,7 +75,6 @@ public:
   const std::vector<std::pair<hash, location_in_submission>> & getHashes() const { return hashes; }
 
   void addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location, hash matched_hash) {
-    std::map<location_in_submission, std::set<HashLocation>>::iterator itr = suspicious_matches.find(location);
     // save the found match
     suspicious_matches[location].insert(matching_location);
     // update the students_matched container

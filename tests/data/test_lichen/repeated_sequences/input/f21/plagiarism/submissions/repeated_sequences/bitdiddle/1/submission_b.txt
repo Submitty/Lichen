@@ -1,10 +1,10 @@
-This second case was designed to examine token sequences which repeat in
+This second case was designed to examine token sequences which repeat in 
 multiple locations in a file.
 
-For example this sequence repeats in this file for the first time. We
-create a small distraction by adding some text between the matching
+For example this sequence repeats in this file for the first time. We 
+create a small distraction by adding some text between the matching 
 sequences that would not match.
-Next, we see this sequence repeats in this file again and that this file
+Next, we see this sequence repeats in this file again and that this file 
 which has a second repeating sequence here.
-Finally, to conclude our experiment this sequence repeats in this file
+Finally, to conclude our experiment this sequence repeats in this file 
 which has a second repeating sequence here one last time.

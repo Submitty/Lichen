@@ -13,9 +13,9 @@ class TestLichen(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(os.path.join(lichen_test_playground, 'test_lichen'))
-        pass
 
     def testLichen(self):
+        self.maxDiff = None
         for test_case in sorted(os.listdir('../data/test_lichen')):
             # make the fake directory where the config.json is saved
             base_path = f"{lichen_test_playground}/test_lichen/{test_case}"

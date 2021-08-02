@@ -10,7 +10,7 @@
     ],
     "language": "plaintext",
     "threshold": 5,
-    "sequence_length": 5,
+    "sequence_length": 4,
     "prior_term_gradeables": [],
     "ignore_submissions": []
 }

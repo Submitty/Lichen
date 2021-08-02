@@ -9,6 +9,7 @@ import os
 import sys
 import json
 import time
+import humanize
 import fnmatch
 from pathlib import Path
 
@@ -263,7 +264,7 @@ def main():
 
     # ==========================================================================
     end_time = time.time()
-    print("done in " + "%.0f" % (end_time - start_time) + " seconds")
+    print("done in " + "%.0f" % (end_time - start_time) + " seconds, " + humanize.naturalsize(total_concat) + "concatenated")
 
 
 if __name__ == "__main__":

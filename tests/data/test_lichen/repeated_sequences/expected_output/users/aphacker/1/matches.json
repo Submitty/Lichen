@@ -1,0 +1,130 @@
+[
+    {
+        "end": 4,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 4,
+                        "start": 1
+                    },
+                    {
+                        "end": 13,
+                        "start": 10
+                    }
+                ],
+                "source_gradeable": "f21__plagiarism__repeated_sequences",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 1,
+        "type": "match"
+    },
+    {
+        "end": 6,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 6,
+                        "start": 2
+                    }
+                ],
+                "source_gradeable": "f21__plagiarism__repeated_sequences",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 2,
+        "type": "match"
+    },
+    {
+        "end": 12,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 12,
+                        "start": 8
+                    }
+                ],
+                "source_gradeable": "f21__plagiarism__repeated_sequences",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 8,
+        "type": "match"
+    },
+    {
+        "end": 13,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 4,
+                        "start": 1
+                    },
+                    {
+                        "end": 13,
+                        "start": 10
+                    }
+                ],
+                "source_gradeable": "f21__plagiarism__repeated_sequences",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 10,
+        "type": "match"
+    },
+    {
+        "end": 39,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 39,
+                        "start": 34
+                    },
+                    {
+                        "end": 72,
+                        "start": 67
+                    },
+                    {
+                        "end": 97,
+                        "start": 92
+                    }
+                ],
+                "source_gradeable": "f21__plagiarism__repeated_sequences",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 34,
+        "type": "match"
+    },
+    {
+        "end": 74,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 84,
+                        "start": 76
+                    },
+                    {
+                        "end": 104,
+                        "start": 96
+                    }
+                ],
+                "source_gradeable": "f21__plagiarism__repeated_sequences",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 66,
+        "type": "match"
+    }
+]

@@ -17,3 +17,7 @@ jobs:
         run: |
           cd /usr/local/submitty/GIT_CHECKOUT/Lichen/tests/unittest
           sudo python3 -m unittest discover
+      - name: Run Integration Tests
+        run: |
+          cd /usr/local/submitty/GIT_CHECKOUT/Lichen/tests/integration
+          sudo python3 -m unittest discover

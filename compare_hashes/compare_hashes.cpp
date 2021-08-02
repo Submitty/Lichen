@@ -76,16 +76,8 @@ public:
 
   void addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location, hash matched_hash) {
     std::map<location_in_submission, std::set<HashLocation>>::iterator itr = suspicious_matches.find(location);
-    // TODO: is this if-else necessary? would this not work if we just did?: suspicious_matches[location].insert(matching_location);
-    if (itr != suspicious_matches.end()) {
-      // location already exists in the map, so we just append the location to the set
-      suspicious_matches[location].insert(matching_location);
-    } else {
-      // intialize the set and add the location
-      std::set<HashLocation> s;
-      s.insert(matching_location);
-      suspicious_matches[location] = s;
-    }
+    // save the found match
+    suspicious_matches[location].insert(matching_location);
     // update the students_matched container
     students_matched[matching_location.source_gradeable][matching_location.student][matching_location.version].insert(matched_hash);
   }

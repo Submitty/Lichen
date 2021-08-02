@@ -34,6 +34,8 @@ class TestLichen(unittest.TestCase):
             # compare the output and expected output directory structure and file contents
             ex_files_count = 0
             for root, dirs, files in os.walk(ex_output_path):
+                print(dirs)
+                print(files)
                 ex_files_count += len(dirs) + len(files)
                 for file in files:
                     if file != "lichen_job_output.txt":
@@ -55,5 +57,7 @@ class TestLichen(unittest.TestCase):
 
             act_files_count = 0
             for _, dirs, files in os.walk(base_path):
+                print(dirs)
+                print(files)
                 act_files_count += len(dirs) + len(files)
             self.assertEqual(ex_files_count, act_files_count)

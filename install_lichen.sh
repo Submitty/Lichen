@@ -10,11 +10,23 @@ fi
 
 echo -e "Installing lichen... "
 
-lichen_repository_dir=/usr/local/submitty/GIT_CHECKOUT/Lichen/
-lichen_installation_dir=/usr/local/submitty/Lichen/
+lichen_repository_dir=/usr/local/submitty/GIT_CHECKOUT/Lichen
+lichen_installation_dir=/usr/local/submitty/Lichen
 
-nlohmann_dir=${lichen_repository_dir}/../vendor/nlohmann/json/
+nlohmann_dir=${lichen_repository_dir}/../vendor/nlohmann/json
 
+
+########################################################################################################################
+# install dependencies
+
+# install clang
+apt-get install -y clang-6.0
+
+# boost
+apt-get install -y libboost-all-dev
+
+# python requirements
+pip install -r ${lichen_repository_dir}/requirements.txt
 
 ########################################################################################################################
 # get tools/source code from other repositories

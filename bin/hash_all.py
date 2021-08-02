@@ -9,7 +9,6 @@ import argparse
 import os
 import json
 import time
-import sys
 import hashlib
 
 
@@ -26,13 +25,6 @@ def hasher(lichen_config_data, my_tokenized_file, my_hashes_file):
     data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
     with open(data_json_path) as token_data_file:
         token_data = json.load(token_data_file)
-        if language not in token_data:
-            print("\n\nERROR: UNKNOWN HASHER\n\n")
-            exit(1)
-
-    if (sequence_length < 1):
-        print("ERROR! sequence_length must be >= 1")
-        exit(1)
 
     with open(my_tokenized_file, 'r', encoding='ISO-8859-1') as my_tf:
         with open(my_hashes_file, 'w') as my_hf:
@@ -57,15 +49,13 @@ def main():
     with open(os.path.join(args.basepath, "config.json")) as lichen_config:
         lichen_config_data = json.load(lichen_config)
 
-    sys.stdout.write("HASH ALL...")
-    sys.stdout.flush()
+    print("HASH ALL...", end="")
 
     # ==========================================================================
     # walk the subdirectories of this gradeable
     users_dir = os.path.join(args.basepath, "users")
     if not os.path.isdir(users_dir):
-        print("Error: Unable to find users directory")
-        exit(1)
+        raise SystemExit("ERROR! Unable to find users directory")
 
     for user in sorted(os.listdir(users_dir)):
         user_dir = os.path.join(users_dir, user)
@@ -86,8 +76,7 @@ def main():
 
     other_gradeables_dir = os.path.join(args.basepath, "other_gradeables")
     if not os.path.isdir(other_gradeables_dir):
-        print("Error: Unable to find other gradeables directory")
-        exit(1)
+        raise SystemExit("ERROR! Unable to find other gradeables directory")
 
     for other_gradeable in sorted(os.listdir(other_gradeables_dir)):
         other_gradeable_dir = os.path.join(other_gradeables_dir, other_gradeable)

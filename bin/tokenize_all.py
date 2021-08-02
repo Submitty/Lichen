@@ -7,7 +7,6 @@ import argparse
 import os
 import json
 import time
-import sys
 
 
 def parse_args():
@@ -24,11 +23,7 @@ def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
     data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
     with open(data_json_path, 'r') as token_data_file:
         token_data = json.load(token_data_file)
-        if language not in token_data:
-            print("\n\nERROR: UNKNOWN TOKENIZER\n\n")
-            exit(1)
-        else:
-            language_token_data = token_data[language]
+        language_token_data = token_data[language]
 
     tokenizer = f"./{language_token_data['tokenizer']}"
 
@@ -46,8 +41,7 @@ def main():
     start_time = time.time()
     args = parse_args()
 
-    sys.stdout.write("TOKENIZE ALL...")
-    sys.stdout.flush()
+    print("TOKENIZE ALL...", end="")
 
     with open(os.path.join(args.basepath, "config.json")) as lichen_config:
         lichen_config_data = json.load(lichen_config)
@@ -56,8 +50,7 @@ def main():
     # walk the subdirectories to tokenize this gradeable's submissions
     users_dir = os.path.join(args.basepath, "users")
     if not os.path.isdir(users_dir):
-        print("Error: Unable to find users directory")
-        exit(1)
+        raise SystemExit("ERROR! Unable to find users directory")
 
     for user in sorted(os.listdir(users_dir)):
         user_dir = os.path.join(users_dir, user)
@@ -77,8 +70,7 @@ def main():
     # tokenize the other prior term gradeables' submissions
     other_gradeables_dir = os.path.join(args.basepath, "other_gradeables")
     if not os.path.isdir(other_gradeables_dir):
-        print("Error: Unable to find other gradeables directory")
-        exit(1)
+        raise SystemExit("ERROR! Unable to find other gradeables directory")
 
     for other_gradeable in sorted(os.listdir(other_gradeables_dir)):
         other_gradeable_dir = os.path.join(other_gradeables_dir, other_gradeable)

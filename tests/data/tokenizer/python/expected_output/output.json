@@ -2,1177 +2,1039 @@
     {
         "char": 1,
         "line": 1,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "import"
     },
     {
         "char": 8,
         "line": 1,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "support"
     },
     {
         "char": 16,
         "line": 1,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "as"
     },
     {
         "char": 19,
         "line": 1,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "sp"
     },
     {
         "char": 21,
         "line": 1,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 9,
         "line": 3,
-        "type": "INDENT",
-        "value": ""
-    },
-    {
-        "char": 9,
-        "line": 3,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "class"
     },
     {
         "char": 15,
         "line": 3,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "Snake"
     },
     {
         "char": 20,
         "line": 3,
-        "type": "COLON",
+        "type": "nTypes.OP",
         "value": ":"
     },
     {
         "char": 21,
         "line": 3,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
-        "char": 1,
-        "line": 5,
-        "type": "ERROR_DEDENT",
-        "value": ""
-    },
-    {
         "char": 7,
         "line": 5,
-        "type": "DEDENT",
-        "value": ""
-    },
-    {
-        "char": 7,
-        "line": 5,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "def"
     },
     {
         "char": 11,
         "line": 5,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "__init__"
     },
     {
         "char": 19,
         "line": 5,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 20,
         "line": 5,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "self"
     },
     {
         "char": 24,
         "line": 5,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 26,
         "line": 5,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "name"
     },
     {
         "char": 30,
         "line": 5,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 31,
         "line": 5,
-        "type": "COLON",
+        "type": "nTypes.OP",
         "value": ":"
     },
     {
         "char": 32,
         "line": 5,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 10,
         "line": 6,
-        "type": "INDENT",
-        "value": ""
-    },
-    {
-        "char": 10,
-        "line": 6,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "self"
     },
     {
         "char": 14,
         "line": 6,
-        "type": "DOT",
+        "type": "nTypes.OP",
         "value": "."
     },
     {
         "char": 15,
         "line": 6,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "name"
     },
     {
         "char": 20,
         "line": 6,
-        "type": "EQEQUAL",
+        "type": "nTypes.OP",
         "value": "=="
     },
     {
         "char": 22,
         "line": 6,
-        "type": "EQEQUAL",
+        "type": "nTypes.OP",
         "value": "=="
     },
     {
         "char": 25,
         "line": 6,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "name"
     },
     {
         "char": 29,
         "line": 6,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
-        "char": 1,
-        "line": 8,
-        "type": "ERROR_DEDENT",
-        "value": ""
-    },
-    {
         "char": 6,
         "line": 8,
-        "type": "DEDENT",
-        "value": ""
-    },
-    {
-        "char": 6,
-        "line": 8,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "def"
     },
     {
         "char": 10,
         "line": 8,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "change_name"
     },
     {
         "char": 21,
         "line": 8,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 22,
         "line": 8,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "self"
     },
     {
         "char": 26,
         "line": 8,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 28,
         "line": 8,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "new_name"
     },
     {
         "char": 36,
         "line": 8,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 37,
         "line": 8,
-        "type": "COLON",
+        "type": "nTypes.OP",
         "value": ":"
     },
     {
         "char": 38,
         "line": 8,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 10,
         "line": 9,
-        "type": "INDENT",
-        "value": ""
-    },
-    {
-        "char": 10,
-        "line": 9,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "self"
     },
     {
         "char": 14,
         "line": 9,
-        "type": "DOT",
+        "type": "nTypes.OP",
         "value": "."
     },
     {
         "char": 15,
         "line": 9,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "name"
     },
     {
         "char": 20,
         "line": 9,
-        "type": "EQUAL",
+        "type": "nTypes.OP",
         "value": "="
     },
     {
         "char": 22,
         "line": 9,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "new_name"
     },
     {
         "char": 30,
         "line": 9,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
-        "char": 1,
-        "line": 13,
-        "type": "ERROR_DEDENT",
-        "value": ""
-    },
-    {
         "char": 2,
         "line": 13,
-        "type": "DEDENT",
-        "value": ""
-    },
-    {
-        "char": 2,
-        "line": 13,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "def"
     },
     {
         "char": 6,
         "line": 13,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "add"
     },
     {
         "char": 9,
         "line": 13,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 10,
         "line": 13,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 14,
         "line": 13,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 15,
         "line": 13,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 19,
         "line": 13,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 20,
         "line": 13,
-        "type": "COLON",
+        "type": "nTypes.OP",
         "value": ":"
     },
     {
         "char": 21,
         "line": 13,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 8,
         "line": 14,
-        "type": "INDENT",
-        "value": ""
-    },
-    {
-        "char": 8,
-        "line": 14,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num3"
     },
     {
         "char": 12,
         "line": 14,
-        "type": "EQUAL",
+        "type": "nTypes.OP",
         "value": "="
     },
     {
         "char": 13,
         "line": 14,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 17,
         "line": 14,
-        "type": "PLUS",
+        "type": "nTypes.OP",
         "value": "+"
     },
     {
         "char": 18,
         "line": 14,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 22,
         "line": 14,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
-        "char": 1,
-        "line": 15,
-        "type": "ERROR_DEDENT",
-        "value": ""
-    },
-    {
         "char": 6,
         "line": 15,
-        "type": "DEDENT",
-        "value": ""
-    },
-    {
-        "char": 6,
-        "line": 15,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "return"
     },
     {
         "char": 13,
         "line": 15,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num3"
     },
     {
         "char": 17,
         "line": 15,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 17,
-        "type": "INDENT",
-        "value": ""
-    },
-    {
-        "char": 2,
-        "line": 17,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "def"
     },
     {
         "char": 6,
         "line": 17,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "max"
     },
     {
         "char": 9,
         "line": 17,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 10,
         "line": 17,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 14,
         "line": 17,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 15,
         "line": 17,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 19,
         "line": 17,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 20,
         "line": 17,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num3"
     },
     {
         "char": 24,
         "line": 17,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 25,
         "line": 17,
-        "type": "COLON",
+        "type": "nTypes.OP",
         "value": ":"
     },
     {
         "char": 26,
         "line": 17,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 8,
         "line": 18,
-        "type": "INDENT",
-        "value": ""
-    },
-    {
-        "char": 8,
-        "line": 18,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "if"
     },
     {
         "char": 11,
         "line": 18,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 12,
         "line": 18,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 17,
         "line": 18,
-        "type": "GREATEREQUAL",
+        "type": "nTypes.OP",
         "value": ">="
     },
     {
         "char": 20,
         "line": 18,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 24,
         "line": 18,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 26,
         "line": 18,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "and"
     },
     {
         "char": 30,
         "line": 18,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 31,
         "line": 18,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 36,
         "line": 18,
-        "type": "GREATEREQUAL",
+        "type": "nTypes.OP",
         "value": ">="
     },
     {
         "char": 39,
         "line": 18,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num3"
     },
     {
         "char": 43,
         "line": 18,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 44,
         "line": 18,
-        "type": "COLON",
+        "type": "nTypes.OP",
         "value": ":"
     },
     {
         "char": 45,
         "line": 18,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 11,
         "line": 19,
-        "type": "INDENT",
-        "value": ""
-    },
-    {
-        "char": 11,
-        "line": 19,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "largest"
     },
     {
         "char": 19,
         "line": 19,
-        "type": "EQUAL",
+        "type": "nTypes.OP",
         "value": "="
     },
     {
         "char": 21,
         "line": 19,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 25,
         "line": 19,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 8,
         "line": 20,
-        "type": "DEDENT",
-        "value": ""
-    },
-    {
-        "char": 8,
-        "line": 20,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "elif"
     },
     {
         "char": 13,
         "line": 20,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 14,
         "line": 20,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 19,
         "line": 20,
-        "type": "GREATEREQUAL",
+        "type": "nTypes.OP",
         "value": ">="
     },
     {
         "char": 22,
         "line": 20,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 26,
         "line": 20,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 28,
         "line": 20,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "and"
     },
     {
         "char": 32,
         "line": 20,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 33,
         "line": 20,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 38,
         "line": 20,
-        "type": "GREATEREQUAL",
+        "type": "nTypes.OP",
         "value": ">="
     },
     {
         "char": 41,
         "line": 20,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num3"
     },
     {
         "char": 45,
         "line": 20,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 46,
         "line": 20,
-        "type": "COLON",
+        "type": "nTypes.OP",
         "value": ":"
     },
     {
         "char": 47,
         "line": 20,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 11,
         "line": 21,
-        "type": "INDENT",
-        "value": ""
-    },
-    {
-        "char": 11,
-        "line": 21,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "largest"
     },
     {
         "char": 19,
         "line": 21,
-        "type": "EQUAL",
+        "type": "nTypes.OP",
         "value": "="
     },
     {
         "char": 21,
         "line": 21,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 25,
         "line": 21,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 8,
         "line": 22,
-        "type": "DEDENT",
-        "value": ""
-    },
-    {
-        "char": 8,
-        "line": 22,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "else"
     },
     {
         "char": 12,
         "line": 22,
-        "type": "COLON",
+        "type": "nTypes.OP",
         "value": ":"
     },
     {
         "char": 13,
         "line": 22,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 11,
         "line": 23,
-        "type": "INDENT",
-        "value": ""
-    },
-    {
-        "char": 11,
-        "line": 23,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "largest"
     },
     {
         "char": 19,
         "line": 23,
-        "type": "EQUAL",
+        "type": "nTypes.OP",
         "value": "="
     },
     {
         "char": 21,
         "line": 23,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num3"
     },
     {
         "char": 25,
         "line": 23,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 8,
         "line": 24,
-        "type": "DEDENT",
-        "value": ""
-    },
-    {
-        "char": 8,
-        "line": 24,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "return"
     },
     {
         "char": 15,
         "line": 24,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "largest"
     },
     {
         "char": 40,
         "line": 24,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 26,
-        "type": "DEDENT",
-        "value": ""
-    },
-    {
-        "char": 2,
-        "line": 26,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 7,
         "line": 26,
-        "type": "EQUAL",
+        "type": "nTypes.OP",
         "value": "="
     },
     {
         "char": 9,
         "line": 26,
-        "type": "NUMBER",
+        "type": "nTypes.NUMBER",
         "value": "10"
     },
     {
         "char": 11,
         "line": 26,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 27,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 7,
         "line": 27,
-        "type": "EQUAL",
+        "type": "nTypes.OP",
         "value": "="
     },
     {
         "char": 9,
         "line": 27,
-        "type": "NUMBER",
+        "type": "nTypes.NUMBER",
         "value": "14"
     },
     {
         "char": 11,
         "line": 27,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 28,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num3"
     },
     {
         "char": 7,
         "line": 28,
-        "type": "EQUAL",
+        "type": "nTypes.OP",
         "value": "="
     },
     {
         "char": 9,
         "line": 28,
-        "type": "NUMBER",
+        "type": "nTypes.NUMBER",
         "value": "12"
     },
     {
         "char": 11,
         "line": 28,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 32,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "print"
     },
     {
         "char": 7,
         "line": 32,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 8,
         "line": 32,
-        "type": "STRING",
+        "type": "nTypes.STRING",
         "value": "\"The sum of \""
     },
     {
         "char": 21,
         "line": 32,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 22,
         "line": 32,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 26,
         "line": 32,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 27,
         "line": 32,
-        "type": "STRING",
+        "type": "nTypes.STRING",
         "value": "\",\""
     },
     {
         "char": 30,
         "line": 32,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 31,
         "line": 32,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 35,
         "line": 32,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 36,
         "line": 32,
-        "type": "STRING",
+        "type": "nTypes.STRING",
         "value": "\"is\""
     },
     {
         "char": 40,
         "line": 32,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 41,
         "line": 32,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "add"
     },
     {
         "char": 44,
         "line": 32,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 45,
         "line": 32,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 49,
         "line": 32,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 50,
         "line": 32,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 54,
         "line": 32,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 55,
         "line": 32,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 56,
         "line": 32,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 33,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "print"
     },
     {
         "char": 7,
         "line": 33,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 8,
         "line": 33,
-        "type": "STRING",
+        "type": "nTypes.STRING",
         "value": "\"The largest number between\""
     },
     {
         "char": 36,
         "line": 33,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 37,
         "line": 33,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 41,
         "line": 33,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 42,
         "line": 33,
-        "type": "STRING",
+        "type": "nTypes.STRING",
         "value": "\",\""
     },
     {
         "char": 45,
         "line": 33,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 46,
         "line": 33,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 50,
         "line": 33,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 51,
         "line": 33,
-        "type": "STRING",
+        "type": "nTypes.STRING",
         "value": "\"and\""
     },
     {
         "char": 56,
         "line": 33,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 57,
         "line": 33,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num3"
     },
     {
         "char": 61,
         "line": 33,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 62,
         "line": 33,
-        "type": "STRING",
+        "type": "nTypes.STRING",
         "value": "\"is\""
     },
     {
         "char": 66,
         "line": 33,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 67,
         "line": 33,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "max"
     },
     {
         "char": 70,
         "line": 33,
-        "type": "LPAR",
+        "type": "nTypes.OP",
         "value": "("
     },
     {
         "char": 71,
         "line": 33,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num1"
     },
     {
         "char": 75,
         "line": 33,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 76,
         "line": 33,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num2"
     },
     {
         "char": 80,
         "line": 33,
-        "type": "COMMA",
+        "type": "nTypes.OP",
         "value": ","
     },
     {
         "char": 81,
         "line": 33,
-        "type": "NAME",
+        "type": "nTypes.NAME",
         "value": "num3"
     },
     {
         "char": 85,
         "line": 33,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 86,
         "line": 33,
-        "type": "RPAR",
+        "type": "nTypes.OP",
         "value": ")"
     },
     {
         "char": 87,
         "line": 33,
-        "type": "NEWLINE",
+        "type": "nTypes.NEWLINE",
         "value": "\n"
-    },
-    {
-        "char": 1,
-        "line": 34,
-        "type": "DEDENT",
-        "value": ""
-    },
-    {
-        "char": 1,
-        "line": 34,
-        "type": "ENDMARKER",
-        "value": ""
     }
 ]

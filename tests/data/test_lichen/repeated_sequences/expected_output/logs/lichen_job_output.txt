@@ -1,0 +1,15 @@
+Beginning Lichen run: 2021-08-02 14:49:43
+CONCATENATE ALL...done in 0 seconds
+TOKENIZE ALL...done in 0 seconds
+HASH ALL...done in 0 seconds
+COMPARE HASHES...finished loading in 0 seconds
+hash walk: 50% complete
+hash walk: 100% complete
+finished walking in 0 seconds
+writing matches files and merging regions...
+merging: 50% complete
+merging: 100% complete
+done merging and writing matches files in 0 seconds
+writing rankings files...
+finished writing rankings in 0 seconds
+COMPARE HASHES done in 0 seconds

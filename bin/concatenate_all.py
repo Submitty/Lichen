@@ -46,7 +46,8 @@ def getConcatFilesInDir(input_dir, regex_patterns):
 
 def checkTotalSize(total_concat):
     if total_concat > MAX_CONCAT_SIZE:
-        raise SystemExit(f"ERROR! exceeded {MAX_CONCAT_SIZE} bytes of concatenated files allowed")
+        raise SystemExit(f"ERROR! exceeded {humanize.naturalsize(MAX_CONCAT_SIZE)}"
+                         " of concatenated files allowed")
 
 
 def parse_args():
@@ -264,7 +265,8 @@ def main():
 
     # ==========================================================================
     end_time = time.time()
-    print("done in " + "%.0f" % (end_time - start_time) + " seconds, " + humanize.naturalsize(total_concat) + "concatenated")
+    print("done in " + "%.0f" % (end_time - start_time) + " seconds,",
+          humanize.naturalsize(total_concat) + " concatenated")
 
 
 if __name__ == "__main__":

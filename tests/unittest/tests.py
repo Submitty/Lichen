@@ -2,279 +2,242 @@ import unittest
 import os
 import shutil
 import json
+import subprocess
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
-lichen_installation_dir = "/usr/local/submitty/Lichen"
-lichen_test_playground = "/usr/local/submitty/Lichen/test_output"
+
+test_data_dir = Path(__file__).resolve().parent / '..' / 'data'
+lichen_installation_dir = Path("/usr", "local", "submitty", "Lichen")
 
 
 ################################################################################
 # Tokenizer tests
 
 class TestPlaintextTokenizer(unittest.TestCase):
-    def setUp(self):
-        if not os.path.isdir(os.path.join(lichen_test_playground, 'plaintext_tokenizer')):
-            os.makedirs(os.path.join(lichen_test_playground, 'plaintext_tokenizer'))
-
-    def tearDown(self):
-        shutil.rmtree(os.path.join(lichen_test_playground, 'plaintext_tokenizer'))
-
     def testPlaintextTokenizer(self):
         self.maxDiff = None
 
-        input_file = "../data/tokenizer/plaintext/input.txt"
-        output_file = f"{lichen_test_playground}/plaintext_tokenizer/output.json"
-        expected_output_file = "../data/tokenizer/plaintext/expected_output/output.json"
+        with TemporaryDirectory() as temp_dir:
+            input_file = Path(test_data_dir, "tokenizer", "plaintext", "input.txt")
+            output_file = Path(temp_dir, "output.json")
+            expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output.json")
 
-        command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out < {input_file} > {output_file}"
-        os.system(command)
+            subprocess.check_call(f"{str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.out'))} < {str(input_file)} > {str(output_file)}", shell=True)
 
-        with open(output_file) as file:
-            actual_output = json.load(file)
+            with open(output_file) as file:
+                actual_output = json.load(file)
 
-        with open(expected_output_file) as file:
-            expected_output = json.load(file)
+            with open(expected_output_file) as file:
+                expected_output = json.load(file)
 
-        self.assertEqual(actual_output, expected_output)
+            self.assertEqual(actual_output, expected_output)
 
     def testPlaintextTokenizerIgnorePunctuation(self):
         self.maxDiff = None
 
-        input_file = "../data/tokenizer/plaintext/input.txt"
-        output_file = f"{lichen_test_playground}/plaintext_tokenizer/output.json"
-        expected_output_file = "../data/tokenizer/plaintext/expected_output/output_ignore_punctuation.json"
+        with TemporaryDirectory() as temp_dir:
+            input_file = Path(test_data_dir, "tokenizer", "plaintext", "input.txt")
+            output_file = Path(temp_dir, "output.json")
+            expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_ignore_punctuation.json")
 
-        command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out --ignore_punctuation < {input_file} > {output_file}"
-        os.system(command)
+            subprocess.check_call(f"{str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.out'))} --ignore_punctuation < {str(input_file)} > {str(output_file)}", shell=True)
 
-        with open(output_file) as file:
-            actual_output = json.load(file)
+            with open(output_file) as file:
+                actual_output = json.load(file)
 
-        with open(expected_output_file) as file:
-            expected_output = json.load(file)
+            with open(expected_output_file) as file:
+                expected_output = json.load(file)
 
-        self.assertEqual(actual_output, expected_output)
+            self.assertEqual(actual_output, expected_output)
 
     def testPlaintextTokenizerToLower(self):
         self.maxDiff = None
 
-        input_file = "../data/tokenizer/plaintext/input.txt"
-        output_file = f"{lichen_test_playground}/plaintext_tokenizer/output.json"
-        expected_output_file = "../data/tokenizer/plaintext/expected_output/output_to_lower.json"
+        with TemporaryDirectory() as temp_dir:
+            input_file = Path(test_data_dir, "tokenizer", "plaintext", "input.txt")
+            output_file = Path(temp_dir, "output.json")
+            expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_to_lower.json")
 
-        command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out --to_lower < {input_file} > {output_file}"
-        os.system(command)
+            subprocess.check_call(f"{str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.out'))} --to_lower < {str(input_file)} > {str(output_file)}", shell=True)
 
-        with open(output_file) as file:
-            actual_output = json.load(file)
+            with open(output_file) as file:
+                actual_output = json.load(file)
 
-        with open(expected_output_file) as file:
-            expected_output = json.load(file)
+            with open(expected_output_file) as file:
+                expected_output = json.load(file)
 
-        self.assertEqual(actual_output, expected_output)
+            self.assertEqual(actual_output, expected_output)
 
     def testPlaintextTokenizerIgnoreNewlines(self):
         self.maxDiff = None
 
-        input_file = "../data/tokenizer/plaintext/input.txt"
-        output_file = f"{lichen_test_playground}/plaintext_tokenizer/output.json"
-        expected_output_file = "../data/tokenizer/plaintext/expected_output/output_ignore_newlines.json"
+        with TemporaryDirectory() as temp_dir:
+            input_file = Path(test_data_dir, "tokenizer", "plaintext", "input.txt")
+            output_file = Path(temp_dir, "output.json")
+            expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_ignore_newlines.json")
 
-        command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out --ignore_newlines < {input_file} > {output_file}"
-        os.system(command)
+            subprocess.check_call(f"{str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.out'))} --ignore_newlines < {str(input_file)} > {str(output_file)}", shell=True)
 
-        with open(output_file) as file:
-            actual_output = json.load(file)
+            with open(output_file) as file:
+                actual_output = json.load(file)
 
-        with open(expected_output_file) as file:
-            expected_output = json.load(file)
+            with open(expected_output_file) as file:
+                expected_output = json.load(file)
 
-        self.assertEqual(actual_output, expected_output)
+            self.assertEqual(actual_output, expected_output)
 
     def testPlaintextTokenizerIgnoreEverything(self):
         self.maxDiff = None
 
-        input_file = "../data/tokenizer/plaintext/input.txt"
-        output_file = f"{lichen_test_playground}/plaintext_tokenizer/output.json"
-        expected_output_file = "../data/tokenizer/plaintext/expected_output/output_ignore_everything.json"
+        with TemporaryDirectory() as temp_dir:
+            input_file = Path(test_data_dir, "tokenizer", "plaintext", "input.txt")
+            output_file = Path(temp_dir, "output.json")
+            expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_ignore_everything.json")
 
-        command = f"{lichen_installation_dir}/bin/plaintext_tokenizer.out --ignore_punctuation --to_lower --ignore_numbers --ignore_newlines  < {input_file} > {output_file}"
-        os.system(command)
+            subprocess.check_call(f"{str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.out'))} --ignore_punctuation --to_lower --ignore_numbers --ignore_newlines  < {str(input_file)} > {str(output_file)}", shell=True)
 
-        with open(output_file) as file:
-            actual_output = json.load(file)
+            with open(output_file) as file:
+                actual_output = json.load(file)
 
-        with open(expected_output_file) as file:
-            expected_output = json.load(file)
+            with open(expected_output_file) as file:
+                expected_output = json.load(file)
 
-        self.assertEqual(actual_output, expected_output)
+            self.assertEqual(actual_output, expected_output)
 
 
 class TestMIPSTokenizer(unittest.TestCase):
-    def setUp(self):
-        if not os.path.isdir(os.path.join(lichen_test_playground, 'mips_tokenizer')):
-            os.makedirs(os.path.join(lichen_test_playground, 'mips_tokenizer'))
-
-    def tearDown(self):
-        shutil.rmtree(os.path.join(lichen_test_playground, 'mips_tokenizer'))
-
     def testMIPSTokenizer(self):
         self.maxDiff = None
 
-        input_file = "../data/tokenizer/mips/input.s"
-        output_file = f"{lichen_test_playground}/mips_tokenizer/output.json"
-        expected_output_file = "../data/tokenizer/mips/expected_output/output.json"
+        with TemporaryDirectory() as temp_dir:
+            input_file = Path(test_data_dir, "tokenizer", "mips", "input.s")
+            output_file = Path(temp_dir, "output.json")
+            expected_output_file = Path(test_data_dir, "tokenizer", "mips", "expected_output", "output.json")
 
-        command = f"python3 {lichen_installation_dir}/bin/mips_tokenizer.py {input_file} > {output_file}"
-        os.system(command)
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'mips_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
 
-        with open(output_file) as file:
-            actual_output = json.load(file)
+            with open(output_file) as file:
+                actual_output = json.load(file)
 
-        with open(expected_output_file) as file:
-            expected_output = json.load(file)
+            with open(expected_output_file) as file:
+                expected_output = json.load(file)
 
-        self.assertEqual(actual_output, expected_output)
+            self.assertEqual(actual_output, expected_output)
 
 
 class TestJavaTokenizer(unittest.TestCase):
-    def setUp(self):
-        if not os.path.isdir(os.path.join(lichen_test_playground, 'java_tokenizer')):
-            os.makedirs(os.path.join(lichen_test_playground, 'java_tokenizer'))
-
-    def tearDown(self):
-        shutil.rmtree(os.path.join(lichen_test_playground, 'java_tokenizer'))
-
     def testJavaTokenizer(self):
         self.maxDiff = None
 
-        input_file = "../data/tokenizer/java/input_with_error.java"
-        output_file = f"{lichen_test_playground}/java_tokenizer/output.json"
-        expected_output_file = "../data/tokenizer/java/expected_output/output.json"
+        with TemporaryDirectory() as temp_dir:
+            input_file = Path(test_data_dir, "tokenizer", "java", "input_with_error.java")
+            output_file = Path(temp_dir, "output.json")
+            expected_output_file = Path(test_data_dir, "tokenizer", "java", "expected_output", "output.json")
 
-        command = f"python3 {lichen_installation_dir}/bin/java_tokenizer.py {input_file} > {output_file}"
-        os.system(command)
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'java_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
 
-        with open(output_file) as file:
-            actual_output = json.load(file)
+            with open(output_file) as file:
+                actual_output = json.load(file)
 
-        with open(expected_output_file) as file:
-            expected_output = json.load(file)
+            with open(expected_output_file) as file:
+                expected_output = json.load(file)
 
-        self.assertEqual(actual_output, expected_output)
+            self.assertEqual(actual_output, expected_output)
 
 
 class TestCTokenizer(unittest.TestCase):
-    def setUp(self):
-        if not os.path.isdir(os.path.join(lichen_test_playground, 'c_tokenizer')):
-            os.makedirs(os.path.join(lichen_test_playground, 'c_tokenizer'))
-
-    def tearDown(self):
-        shutil.rmtree(os.path.join(lichen_test_playground, 'c_tokenizer'))
-
     def testCTokenizer(self):
         self.maxDiff = None
 
-        input_file = "../data/tokenizer/c/input.cpp"
-        output_file = f"{lichen_test_playground}/c_tokenizer/output.json"
-        expected_output_file = "../data/tokenizer/c/expected_output/output.json"
+        with TemporaryDirectory() as temp_dir:
+            input_file = Path(test_data_dir, "tokenizer", "c", "input.cpp")
+            output_file = Path(temp_dir, "output.json")
+            expected_output_file = Path(test_data_dir, "tokenizer", "c", "expected_output", "output.json")
 
-        command = f"python3 {lichen_installation_dir}/bin/c_tokenizer.py {input_file} > {output_file}"
-        os.system(command)
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'c_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
 
-        with open(output_file) as file:
-            actual_output = json.load(file)
+            with open(output_file) as file:
+                actual_output = json.load(file)
 
-        with open(expected_output_file) as file:
-            expected_output = json.load(file)
+            with open(expected_output_file) as file:
+                expected_output = json.load(file)
 
-        self.assertEqual(actual_output, expected_output)
+            self.assertEqual(actual_output, expected_output)
 
 
 class TestPythonTokenizer(unittest.TestCase):
-    def setUp(self):
-        if not os.path.isdir(os.path.join(lichen_test_playground, 'python_tokenizer')):
-            os.makedirs(os.path.join(lichen_test_playground, 'python_tokenizer'))
-
-    def tearDown(self):
-        shutil.rmtree(os.path.join(lichen_test_playground, 'python_tokenizer'))
-
     def testPythonTokenizer(self):
         self.maxDiff = None
 
-        input_file = "../data/tokenizer/python/input.py"
-        output_file = f"{lichen_test_playground}/python_tokenizer/output.json"
-        expected_output_file = "../data/tokenizer/python/expected_output/output.json"
+        with TemporaryDirectory() as temp_dir:
+            input_file = Path(test_data_dir, "tokenizer", "python", "input.py")
+            output_file = Path(temp_dir, "output.json")
+            expected_output_file = Path(test_data_dir, "tokenizer", "python", "expected_output", "output.json")
 
-        command = f"python3 {lichen_installation_dir}/bin/python_tokenizer.py {input_file} > {output_file}"
-        os.system(command)
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'python_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
 
-        with open(output_file) as file:
-            actual_output = json.load(file)
+            with open(output_file) as file:
+                actual_output = json.load(file)
 
-        with open(expected_output_file) as file:
-            expected_output = json.load(file)
+            with open(expected_output_file) as file:
+                expected_output = json.load(file)
 
-        self.assertEqual(actual_output, expected_output)
+            self.assertEqual(actual_output, expected_output)
 
 
 ################################################################################
 # Hasher tests
 
 class TestHashAll(unittest.TestCase):
-    def setUp(self):
-        if not os.path.isdir(lichen_test_playground):
-            os.makedirs(lichen_test_playground)
-
-    def tearDown(self):
-        shutil.rmtree(lichen_test_playground)
-
     def testHashAll(self):
-        # make the fake directory structure hash_all.py expects
-        os.makedirs(f"{lichen_test_playground}/test_hash_all/provided_code")
-        os.makedirs(f"{lichen_test_playground}/test_hash_all/other_gradeables")
-        os.makedirs(f"{lichen_test_playground}/test_hash_all/users/student/1")
-        open(f"{lichen_test_playground}/test_hash_all/config.json", 'a').close()
-        open(f"{lichen_test_playground}/test_hash_all/users/student/1/tokens.json", 'a').close()
-        with open(f"{lichen_test_playground}/test_hash_all/provided_code/tokens.json", 'w') as file:
-            file.write("null")
+        with TemporaryDirectory() as temp_dir:
+            # make the fake directory structure hash_all.py expects
+            os.makedirs(Path(temp_dir, "provided_code"))
+            os.makedirs(Path(temp_dir, "other_gradeables"))
+            os.makedirs(Path(temp_dir, "users", "student", "1"))
+            open(Path(temp_dir, "config.json"), 'a').close()
+            open(Path(temp_dir, "users", "student", "1", "tokens.json"), 'a').close()
+            with open(Path(temp_dir, "provided_code", "tokens.json"), 'w') as file:
+                file.write("null")
 
-        # copy the input files from /data to the the new path
-        shutil.copyfile("../data/hash_all/config.json", f"{lichen_test_playground}/test_hash_all/config.json")
-        shutil.copyfile("../data/hash_all/tokens.json", f"{lichen_test_playground}/test_hash_all/users/student/1/tokens.json")
+            # copy the input files from /data to the the new path
+            shutil.copyfile(Path(test_data_dir, "hash_all", "config.json"), Path(temp_dir, "config.json"))
+            shutil.copyfile(Path(test_data_dir, "hash_all", "tokens.json"), Path(temp_dir, "users", "student", "1", "tokens.json"))
 
-        # save current working directory
-        cwd = os.getcwd()
+            # save current working directory
+            cwd = os.getcwd()
 
-        # run hash_all
-        os.chdir(f"{lichen_installation_dir}/bin")
-        os.system(f"python3 {lichen_installation_dir}/bin/hash_all.py {lichen_test_playground}/test_hash_all > /dev/null")
-        os.chdir(cwd)
+            # run hash_all
+            os.chdir(Path(lichen_installation_dir, "bin"))
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'hash_all.py'))} {temp_dir} > /dev/null", shell=True)
+            os.chdir(cwd)
 
-        # test output
-        hashes_file = f"{lichen_test_playground}/test_hash_all/users/student/1/hashes.txt"
-        with open(hashes_file, 'r') as file:
-            lines = file.readlines()
-        lines = [x.strip() for x in lines]
-        tokens_file = f"{lichen_test_playground}/test_hash_all/users/student/1/tokens.json"
-        with open(tokens_file, 'r') as file:
-            tokens = json.load(file)
+            # test output
+            hashes_file = Path(temp_dir, "users", "student", "1", "hashes.txt")
+            with open(hashes_file, 'r') as file:
+                lines = file.readlines()
+            lines = [x.strip() for x in lines]
+            tokens_file = Path(temp_dir, "users", "student", "1", "tokens.json")
+            with open(tokens_file, 'r') as file:
+                tokens = json.load(file)
 
-        # make sure the number of sequences and the number of hashes are the same
-        self.assertEqual(len(lines), len(tokens) - 2 + 1)
+            # make sure the number of sequences and the number of hashes are the same
+            self.assertEqual(len(lines), len(tokens) - 2 + 1)
 
-        # make sure the same sequences hash to the same string, and
-        # that different sequences hash to different strings
-        for i in range(0, len(lines)):
-            for j in range(i + 1, len(lines)):
-                if i == 4 and j == 9\
-                 or i == 4 and j == 16\
-                 or i == 9 and j == 16\
-                 or i == 13 and j == 22\
-                 or i == 14 and j == 23\
-                 or i == 15 and j == 24:
-                    self.assertEqual(lines[i], lines[j])
-                else:
-                    self.assertNotEqual(lines[i], lines[j])
+            # make sure the same sequences hash to the same string, and
+            # that different sequences hash to different strings
+            for i in range(0, len(lines)):
+                for j in range(i + 1, len(lines)):
+                    if i == 4 and j == 9\
+                     or i == 4 and j == 16\
+                     or i == 9 and j == 16\
+                     or i == 13 and j == 22\
+                     or i == 14 and j == 23\
+                     or i == 15 and j == 24:
+                        self.assertEqual(lines[i], lines[j])
+                    else:
+                        self.assertNotEqual(lines[i], lines[j])
 
 
 if __name__ == '__main__':

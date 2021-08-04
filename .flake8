@@ -6,3 +6,4 @@ exclude=
 per-file-ignores =
     tokenizer/mips/mips_tokenizer.py:W605
     tests/unittest/tests.py:E501
+    tests/integration/test.py:E501

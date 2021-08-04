@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 
 
 test_data_dir = Path(__file__).resolve().parent / '..' / 'data'
-lichen_installation_dir = "/usr/local/submitty/Lichen"
+lichen_installation_dir = Path("/usr", "local", "submitty", "Lichen")
 
 
 class TestLichen(unittest.TestCase):

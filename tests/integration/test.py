@@ -1,63 +1,61 @@
 import unittest
 import os
 import shutil
+import subprocess
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
+
+test_data_dir = Path(__file__).resolve().parent / '..' / 'data'
 lichen_installation_dir = "/usr/local/submitty/Lichen"
-lichen_test_playground = "/usr/local/submitty/Lichen/test_output"
 
 
 class TestLichen(unittest.TestCase):
-    def setUp(self):
-        shutil.rmtree(os.path.join(lichen_test_playground, 'test_lichen'), ignore_errors=True)
-        os.makedirs(os.path.join(lichen_test_playground, 'test_lichen'))
-
-    def tearDown(self):
-        shutil.rmtree(os.path.join(lichen_test_playground, 'test_lichen'))
-
     def testLichen(self):
         self.maxDiff = None
-        for test_case in sorted(os.listdir('../data/test_lichen')):
+        for test_case in sorted(os.listdir(Path(test_data_dir, "test_lichen"))):
             print(f"running integration test for {test_case}...")
-            # make the fake directory where the config.json is saved
-            base_path = f"{lichen_test_playground}/test_lichen/{test_case}"
-            os.makedirs(base_path)
 
-            # copy the input files from /data to the the new path
-            data_path = f"{os.getcwd()}/../data/test_lichen/{test_case}/input"
-            shutil.copyfile(f"{data_path}/config.json", f"{base_path}/config.json")
+            with TemporaryDirectory() as temp_dir:
+                # copy the input files from /data to the the new path
+                data_path = Path(test_data_dir, "test_lichen", test_case, "input")
+                shutil.copyfile(Path(data_path, "config.json"), Path(temp_dir, "config.json"))
 
-            # run Lichen
-            os.system(f"bash {lichen_installation_dir}/bin/process_all.sh {base_path} {data_path}")
+                # run Lichen
+                subprocess.check_call(f"bash {str(lichen_installation_dir)}/bin/process_all.sh {str(temp_dir)} {str(data_path)}", shell=True)
 
-            ex_output_path = f"../data/test_lichen/{test_case}/expected_output"
+                ex_output_path = Path(test_data_dir, "test_lichen", test_case, "expected_output")
 
-            # compare the output and expected output directory structure and file contents
-            ex_files_count = 0
-            for root, dirs, files in os.walk(ex_output_path):
-                ex_files_count += len(dirs) + len(files)
-                for file in files:
-                    if file != "lichen_job_output.txt":
-                        ex_path = f"{root}/{file}"
-                        if root.replace(ex_output_path, '') == "":
-                            act_path = f"{base_path}/{file}"
+                # compare the output and expected output directory structure and file contents
+                ex_files_count = 0
+                for root, dirs, files in os.walk(ex_output_path):
+                    ex_files_count += len(dirs) + len(files)
+                    for file in files:
+                        if file != "lichen_job_output.txt" and file != "git_placeholder.txt":
+                            ex_path = Path(root, file)
+                            if root.replace(str(ex_output_path), "") == "":
+                                act_path = Path(temp_dir, file)
+                            else:
+                                act_path = Path(temp_dir, root.replace(str(ex_output_path), "").strip("/"), file)
+
+                            with open(ex_path) as ex_file:
+                                with open(act_path) as act_file:
+                                    self.assertEqual(ex_file.read().strip(), act_file.read().strip())
+
+                    for dir in dirs:
+                        ex_path = Path(root, dir)
+                        if root.replace(str(ex_output_path), "") == "":
+                            act_path = Path(temp_dir, dir)
                         else:
-                            act_path = f"{base_path}/{root.replace(ex_output_path, '')}/{file}"
+                            act_path = Path(temp_dir, root.replace(str(ex_output_path), "").strip("/"), dir)
+                        self.assertTrue(os.path.isdir(ex_path))
+                        self.assertTrue(os.path.isdir(act_path))
 
-                        with open(ex_path) as ex_file:
-                            with open(act_path) as act_file:
-                                self.assertEqual(ex_file.read().strip(), act_file.read().strip())
+                act_files_count = 0
+                for _, dirs, files in os.walk(temp_dir):
+                    act_files_count += len(dirs) + len(files)
 
-                for dir in dirs:
-                    ex_path = f"{root}/{dir}"
-                    act_path = f"{base_path}/{root.replace(ex_output_path, '')}/{dir}"
-                    self.assertTrue(os.path.isdir(ex_path))
-                    self.assertTrue(os.path.isdir(act_path))
-
-            act_files_count = 0
-            for _, dirs, files in os.walk(base_path):
-                act_files_count += len(dirs) + len(files)
-
-            # NOTE: We must subtract two here because git doesn't store empty directories
-            # This will have to change in the future when we add more test gradeables
-            # may not have empty directories
-            self.assertEqual(ex_files_count, act_files_count - 2)
+                # NOTE: We must subtract two here because git doesn't store empty directories
+                # This will have to change in the future when we add more test gradeables
+                # may not have empty directories
+                self.assertEqual(ex_files_count - 2, act_files_count)

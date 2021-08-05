@@ -6,14 +6,17 @@ the concatenated files.
 
 import argparse
 import os
+import sys
 import json
 import time
+import humanize
 import fnmatch
 from pathlib import Path
 
 IGNORED_FILES = [
     ".submit.timestamp"
 ]
+MAX_CONCAT_SIZE = 1e9
 
 
 # returns a string containing the contents of the files which match the regex in the specified dir
@@ -39,6 +42,12 @@ def getConcatFilesInDir(input_dir, regex_patterns):
                 # append the contents of the file
                 result += tmp.read() + "\n"
     return result
+
+
+def checkTotalSize(total_concat):
+    if total_concat > MAX_CONCAT_SIZE:
+        raise SystemExit(f"ERROR! exceeded {humanize.naturalsize(MAX_CONCAT_SIZE)}"
+                         " of concatenated files allowed")
 
 
 def parse_args():
@@ -123,6 +132,7 @@ def main():
 
     # ==========================================================================
     # loop through and concatenate the selected files for each user in this gradeable
+    total_concat = 0
 
     for dir in regex_dirs:
         gradeable_path = os.path.join(args.datapath, semester, course, dir, gradeable)
@@ -159,6 +169,9 @@ def main():
                 with open(output_file_path, "a") as output_file:
                     concatenated_contents = getConcatFilesInDir(version_path, regex_patterns)
                     output_file.write(concatenated_contents)
+                    total_concat += sys.getsizeof(concatenated_contents)
+
+                checkTotalSize(total_concat)
 
     # ==========================================================================
     # loop over all of the other prior term gradeables and concatenate their submissions
@@ -203,10 +216,16 @@ def main():
                         other_concatenated_contents = getConcatFilesInDir(other_version_path,
                                                                           regex_patterns)
                         other_output_file.write(other_concatenated_contents)
+                        total_concat += sys.getsizeof(other_concatenated_contents)
+
+                    checkTotalSize(total_concat)
 
     # ==========================================================================
     # iterate over all of the created submissions, checking to see if they are empty
     # and adding a message to the top if so (to differentiate empty files from errors in the UI)
+
+    no_files_match_error = "ERROR! No files matched provided regex in selected directories"
+
     for user in os.listdir(os.path.join(args.basepath, "users")):
         user_path = os.path.join(args.basepath, "users", user)
         for version in os.listdir(user_path):
@@ -214,7 +233,9 @@ def main():
             my_concatenated_file = os.path.join(version_path, "submission.concatenated")
             with open(my_concatenated_file, "r+") as my_cf:
                 if my_cf.read() == "":
-                    my_cf.write("ERROR! No files matched provided regex in selected directories")
+                    my_cf.write(no_files_match_error)
+                    total_concat += sys.getsizeof(no_files_match_error)
+            checkTotalSize(total_concat)
 
     # do the same for the other gradeables
     for other_gradeable in prior_term_gradeables:
@@ -228,19 +249,24 @@ def main():
                 my_concatenated_file = os.path.join(other_version_path, "submission.concatenated")
                 with open(my_concatenated_file, "r+") as my_cf:
                     if my_cf.read() == "":
-                        my_cf.write("ERROR! No files matched provided regex in"
-                                    "selected directories")
+                        my_cf.write(no_files_match_error)
+                        total_concat += sys.getsizeof(no_files_match_error)
+                checkTotalSize(total_concat)
 
     # ==========================================================================
     # concatenate provided code
     with open(os.path.join(args.basepath, "provided_code",
                            "submission.concatenated"), "w") as file:
         provided_code_files = os.path.join(args.basepath, "provided_code", "files")
-        file.write(getConcatFilesInDir(provided_code_files, regex_patterns))
+        provided_concatenated_files = getConcatFilesInDir(provided_code_files, regex_patterns)
+        file.write(provided_concatenated_files)
+        total_concat += sys.getsizeof(provided_concatenated_files)
+    checkTotalSize(total_concat)
 
     # ==========================================================================
     end_time = time.time()
-    print("done in " + "%.0f" % (end_time - start_time) + " seconds")
+    print("done in " + "%.0f" % (end_time - start_time) + " seconds,",
+          humanize.naturalsize(total_concat) + " concatenated")
 
 
 if __name__ == "__main__":

@@ -9,3 +9,6 @@ clang==11.0
 
 # Java tokenization
 javac_parser==1.0.0
+
+# turn data into human readable format
+humanize==3.11.0

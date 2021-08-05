@@ -1,0 +1,7 @@
+The test case is meant to test sequences of tokens that repeat several 
+times throughout the file.
+
+To simplify this sequence repeats in this file only once. 
+We can go on and add more unique text around it while not making things go 
+too long. Some may notice how this file which has a second repeating 
+sequence here is getting slightly more complicated.

@@ -6,13 +6,15 @@
 
 typedef int location_in_submission;
 typedef std::string hash;
+typedef std::string user_id;
+typedef int version_number;
 
 // represents the location of a hash within
 // a unique student and version pair
 struct HashLocation {
-  HashLocation(const std::string &s, int v, location_in_submission l, const std::string &sg) : student(s), version(v), location(l), source_gradeable(sg) {}
+  HashLocation(const user_id &s, version_number v, location_in_submission l, const std::string &sg) : student(s), version(v), location(l), source_gradeable(sg) {}
   std::string student;
-  int version;
+  version_number version;
   location_in_submission location;
   std::string source_gradeable;
 };

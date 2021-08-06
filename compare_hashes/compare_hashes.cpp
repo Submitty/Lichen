@@ -161,6 +161,7 @@ bool ranking_sorter(const StudentRanking &a, const StudentRanking &b) {
 // ===================================================================================
 int main(int argc, char* argv[]) {
   std::cout << "COMPARE HASHES...";
+  return 1;
   fflush(stdout);
   time_t overall_start, overall_end;
   time(&overall_start);

@@ -18,7 +18,7 @@
 #include "hash_location.h"
 
 
-// ===================================================================================
+// =============================================================================
 // helper typedefs
 
 typedef int location_in_submission;
@@ -27,7 +27,7 @@ typedef std::string user_id;
 typedef int version_number;
 
 
-// ===================================================================================
+// =============================================================================
 // helper classes
 
 
@@ -41,7 +41,7 @@ struct StudentRanking {
 };
 
 
-// ===================================================================================
+// =============================================================================
 // helper functions
 
 // ensures that all of the regions in the two parameters are adjacent
@@ -92,16 +92,17 @@ bool ranking_sorter(const StudentRanking &a, const StudentRanking &b) {
 }
 
 
-// ===================================================================================
-// ===================================================================================
+// =============================================================================
+// MAIN
+
 int main(int argc, char* argv[]) {
   std::cout << "COMPARE HASHES...";
   fflush(stdout);
   time_t overall_start, overall_end;
   time(&overall_start);
 
-  // ---------------------------------------------------------------------------
-  // deal with command line arguments
+  // ===========================================================================
+  // load config info
 
   assert (argc == 2);
   std::string lichen_gradeable_path_str = argv[1];
@@ -133,7 +134,8 @@ int main(int argc, char* argv[]) {
   // path to prior gradeables' data
   boost::filesystem::path prior_terms_dir = lichen_gradeable_path / "other_gradeables";
 
-  // ---------------------------------------------------------------------------
+
+  // ===========================================================================
   // loop over all submissions and populate the all_hashes and all_submissions structures
 
   // Stores all the hashes and their locations across all submissions (sorted in "bins" of student names)
@@ -235,7 +237,8 @@ int main(int argc, char* argv[]) {
   double diff = difftime(end, start);
   std::cout << "finished loading in " << diff  << " seconds" << std::endl;
 
-  // ---------------------------------------------------------------------------
+
+  // ===========================================================================
   // THIS IS THE MAIN PLAGIARISM DETECTION ALGORITHM
 
   // Used to calculate current progress (printed to the log)
@@ -247,9 +250,8 @@ int main(int argc, char* argv[]) {
   for (std::vector<Submission*>::iterator submission_itr = all_submissions.begin();
        submission_itr != all_submissions.end(); ++submission_itr) {
 
-    // #########################################################################
-    // ## FINDING THE MATCHES ##################################################
-    // #########################################################################
+    // =========================================================================
+    // FINDING THE MATCHES
 
     // walk over every hash in that submission
     std::vector<std::pair<hash, location_in_submission>>::const_iterator hash_itr = (*submission_itr)->getHashes().begin();
@@ -329,15 +331,14 @@ int main(int argc, char* argv[]) {
       highest_matches_itr->second.second = percentMatch;
     }
 
-    // #########################################################################
-    // ## CREATING MATCHES.JSON ################################################
-    // #########################################################################
+    // =========================================================================
+    // Write matches.json file
 
     // holds the JSON file to be written
     std::vector<nlohmann::json> result;
 
 
-    // ********  WRITE THE SUSPICIOUS MATCHES  ********
+    // **********  WRITE THE SUSPICIOUS MATCHES  **********
     // all of the suspicious matches for this submission
     std::map<location_in_submission, std::set<HashLocation> > suspicious_matches = (*submission_itr)->getSuspiciousMatches();
 
@@ -401,10 +402,10 @@ int main(int argc, char* argv[]) {
 
       result.push_back(info);
     }
-    // ********************************************
+    // ****************************************************
 
 
-    // ********  WRITE THE COMMON MATCHES  ********
+    // ************* WRITE THE COMMON MATCHES *************
     // all of the common matches for this submission
     std::set<location_in_submission> common_matches = (*submission_itr)->getCommonMatches();
     for (std::set<location_in_submission>::const_iterator location_itr = common_matches.begin();
@@ -417,10 +418,10 @@ int main(int argc, char* argv[]) {
 
       result.push_back(info);
     }
-    // ************************************************
+    // ****************************************************
 
 
-    // ********  WRITE THE PROVIDED MATCHES  ********
+    // *********** WRITE THE PROVIDED MATCHES *************
     // all of the provided code matches for this submission
     std::set<location_in_submission> provided_matches = (*submission_itr)->getProvidedMatches();
     for (std::set<location_in_submission>::const_iterator location_itr = provided_matches.begin();
@@ -433,10 +434,10 @@ int main(int argc, char* argv[]) {
 
       result.push_back(info);
     }
-    // ************************************************
+    // ****************************************************
 
 
-    // ---------------------------------------------------------------------------
+    // =========================================================================
     // Done creating the JSON file/objects, now we merge them to shrink them in size
 
     // Merge matching regions:
@@ -500,13 +501,9 @@ int main(int argc, char* argv[]) {
     assert(ostr.good());
     ostr << match_data.dump(4) << std::endl;
 
-    // #########################################################################
-    // ## CREATING INDIVIDUAL RANKING FILE #####################################
-    // #########################################################################
-
-    // ---------------------------------------------------------------------------
-    // create a rankings file for every submission. the file contains all the other
-    // students share matches, sorted by decreasing order of the percent match
+    // =========================================================================
+    // create individual ranking file
+    // the file contains all the other students share matches, sorted by decreasing order of the percent match
 
     // find and sort the other submissions it matches with
     std::vector<StudentRanking> student_ranking;
@@ -520,8 +517,7 @@ int main(int argc, char* argv[]) {
         for (std::unordered_map<int, std::unordered_set<hash>>::const_iterator version_itr = matches_itr->second.begin();
              version_itr != matches_itr->second.end(); ++version_itr) {
 
-          // ***** Calculate the Percent Match *****
-
+          // Calculate the Percent Match:
           // count the number of unique hashes for the percent match calculation
           std::vector<std::pair<hash, location_in_submission>> submission_hashes = (*submission_itr)->getHashes();
           std::unordered_set<hash> unique_hashes;
@@ -556,9 +552,8 @@ int main(int argc, char* argv[]) {
         << std::setw(1) << std::right << student_ranking[i].source_gradeable << std::endl;
     }
 
-    // #########################################################################
-    // ## CLEANUP ##############################################################
-    // #########################################################################
+    // =========================================================================
+    // Cleanup
 
     // Done with this submissions. discard the data and clear the memory
     delete (*submission_itr);
@@ -576,7 +571,7 @@ int main(int argc, char* argv[]) {
   diff = difftime(end, start);
   std::cout << "finished walking in " << diff << " seconds" << std::endl;
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Create a general summary of rankings of users by percentage match
 
   // create a single file of students ranked by highest percentage of code plagiarised
@@ -600,7 +595,9 @@ int main(int argc, char* argv[]) {
       << std::setw(3) << std::right << ranking[i].version << std::endl;
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // Done!
+
   time(&overall_end);
   double overall_diff = difftime(overall_end, overall_start);
   std::cout << "COMPARE HASHES done in " << overall_diff << " seconds" << std::endl;

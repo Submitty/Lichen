@@ -12,6 +12,7 @@ echo -e "Installing lichen... "
 
 lichen_repository_dir=/usr/local/submitty/GIT_CHECKOUT/Lichen
 lichen_installation_dir=/usr/local/submitty/Lichen
+lichen_vendor_dir=/usr/local/submitty/Lichen/vendor
 
 
 ########################################################################################################################
@@ -29,17 +30,17 @@ pip install -r ${lichen_repository_dir}/requirements.txt
 ########################################################################################################################
 # get tools/source code from other repositories
 
-mkdir -p vendor/nlohmann
+mkdir -p ${lichen_vendor_dir}/nlohmann
 
 NLOHMANN_JSON_VERSION=3.9.1
 
 echo "Checking for nlohmann/json: ${NLOHMANN_JSON_VERSION}"
 
-if [ -f vendor/nlohmann/json.hpp ] && head -n 10 vendor/nlohmann/json.hpp | grep -q "version ${NLOHMANN_JSON_VERSION}"; then
+if [ -f ${lichen_vendor_dir}/nlohmann/json.hpp ] && head -n 10 ${lichen_vendor_dir}/nlohmann/json.hpp | grep -q "version ${NLOHMANN_JSON_VERSION}"; then
     echo "  already installed"
 else
     echo "  downloading"
-    wget -O vendor/nlohmann/json.hpp https://github.com/nlohmann/json/releases/download/v${NLOHMANN_JSON_VERSION}/json.hpp > /dev/null
+    wget -O ${lichen_vendor_dir}/nlohmann/json.hpp https://github.com/nlohmann/json/releases/download/v${NLOHMANN_JSON_VERSION}/json.hpp > /dev/null
 fi
 
 ########################################################################################################################
@@ -51,7 +52,7 @@ mkdir -p ${lichen_installation_dir}/tools/assignments
 #--------------------
 # plaintext tool
 pushd ${lichen_repository_dir}  > /dev/null
-clang++ -I vendor/ -std=c++11 -Wall tokenizer/plaintext/plaintext_tokenizer.cpp -o ${lichen_installation_dir}/bin/plaintext_tokenizer.out
+clang++ -I ${lichen_vendor_dir} -std=c++11 -Wall tokenizer/plaintext/plaintext_tokenizer.cpp -o ${lichen_installation_dir}/bin/plaintext_tokenizer.out
 if [ $? -ne 0 ]; then
     echo -e "ERROR: FAILED TO BUILD PLAINTEXT TOKENIZER\n"
     exit 1
@@ -62,7 +63,7 @@ popd > /dev/null
 #-------------------------------------------
 # compile & install the hash comparison tool
 pushd ${lichen_repository_dir}  > /dev/null
-clang++ -I vendor/ -lboost_system -lboost_filesystem -Wall -g -std=c++11 -Wall compare_hashes/compare_hashes.cpp -o ${lichen_installation_dir}/bin/compare_hashes.out
+clang++ -I ${lichen_vendor_dir} -lboost_system -lboost_filesystem -Wall -g -std=c++11 -Wall compare_hashes/compare_hashes.cpp -o ${lichen_installation_dir}/bin/compare_hashes.out
 if [ $? -ne 0 ]; then
     echo -e "ERROR: FAILED TO BUILD HASH COMPARISON TOOL\n"
     exit 1

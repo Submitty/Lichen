@@ -12,7 +12,7 @@ echo -e "Installing lichen... "
 
 lichen_repository_dir=/usr/local/submitty/GIT_CHECKOUT/Lichen
 lichen_installation_dir=/usr/local/submitty/Lichen
-lichen_vendor_dir=/usr/local/submitty/GIT_CHECKOUT/vendor
+lichen_vendor_dir=/usr/local/submitty/Lichen/vendor
 
 
 ########################################################################################################################

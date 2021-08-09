@@ -5,9 +5,9 @@
 #include <unordered_map>
 
 typedef int location_in_submission;
-typedef std::string hash;
+typedef unsigned int hash;
 typedef std::string user_id;
-typedef int version_number;
+typedef unsigned int version_number;
 
 // represents the location of a hash within
 // a unique student and version pair

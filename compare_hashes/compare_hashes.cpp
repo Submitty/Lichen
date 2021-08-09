@@ -22,9 +22,9 @@
 // helper typedefs
 
 typedef int location_in_submission;
-typedef std::string hash;
+typedef unsigned int hash;
 typedef std::string user_id;
-typedef int version_number;
+typedef unsigned int version_number;
 
 
 // =============================================================================
@@ -113,11 +113,11 @@ int main(int argc, char* argv[]) {
   assert (istr.good());
   nlohmann::json config_file_json = nlohmann::json::parse(istr);
 
-  std::string semester = config_file_json.value("semester","ERROR");
-  std::string course = config_file_json.value("course","ERROR");
-  std::string gradeable = config_file_json.value("gradeable","ERROR");
-  int sequence_length = config_file_json.value("sequence_length",1);
-  int threshold = config_file_json.value("threshold",5);
+  std::string semester = config_file_json.value("semester", "ERROR");
+  std::string course = config_file_json.value("course", "ERROR");
+  std::string gradeable = config_file_json.value("gradeable", "ERROR");
+  int sequence_length = config_file_json.value("sequence_length", 1);
+  int threshold = config_file_json.value("threshold", 5);
 
   // error checking, confirm there are hashes to work with
   boost::filesystem::path users_root_directory = lichen_gradeable_path / "users";
@@ -188,9 +188,10 @@ int main(int argc, char* argv[]) {
         boost::filesystem::path other_hash_file = other_version_path / "hashes.txt";
         std::ifstream istr(other_hash_file.string());
         assert(istr.good());
-        hash input_hash;
+        std::string input_hash_str;
         int location = 0;
-        while (istr >> input_hash) {
+        while (istr >> input_hash_str) {
+          hash input_hash = (unsigned int)(stoul(input_hash_str, 0, 16));
           location++;
           other_gradeables[input_hash][other_username].push_back(HashLocation(other_username, other_version, location, other_gradeable_str));
         }
@@ -221,9 +222,10 @@ int main(int argc, char* argv[]) {
       hash_file /= "hashes.txt";
       std::ifstream istr(hash_file.string());
       assert(istr.good());
-      hash input_hash;
+      std::string input_hash_str;
       int location = 0;
-      while (istr >> input_hash) {
+      while (istr >> input_hash_str) {
+        hash input_hash = (unsigned int)(stoul(input_hash_str, 0, 16));
         location++;
         all_hashes[input_hash][username].push_back(HashLocation(username, version, location, semester+"__"+course+"__"+gradeable));
         curr_submission->addHash(input_hash, location);
@@ -509,12 +511,12 @@ int main(int argc, char* argv[]) {
     std::vector<StudentRanking> student_ranking;
     std::unordered_map<std::string, std::unordered_map<user_id, std::unordered_map<version_number, std::unordered_set<hash>>>> matches = (*submission_itr)->getStudentsMatched();
 
-    std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<int, std::unordered_set<hash>>>>::const_iterator gradeables_itr = matches.begin();
+    std::unordered_map<std::string, std::unordered_map<user_id, std::unordered_map<version_number, std::unordered_set<hash>>>>::const_iterator gradeables_itr = matches.begin();
     for (; gradeables_itr != matches.end(); ++gradeables_itr) {
       for (std::unordered_map<user_id, std::unordered_map<version_number, std::unordered_set<hash>>>::const_iterator matches_itr = gradeables_itr->second.begin();
          matches_itr != gradeables_itr->second.end(); ++matches_itr) {
 
-        for (std::unordered_map<int, std::unordered_set<hash>>::const_iterator version_itr = matches_itr->second.begin();
+        for (std::unordered_map<version_number, std::unordered_set<hash>>::const_iterator version_itr = matches_itr->second.begin();
              version_itr != matches_itr->second.end(); ++version_itr) {
 
           // Calculate the Percent Match:

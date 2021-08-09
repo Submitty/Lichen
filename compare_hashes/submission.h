@@ -11,9 +11,9 @@
 #include "hash_location.h"
 
 typedef int location_in_submission;
-typedef std::string hash;
+typedef unsigned int hash;
 typedef std::string user_id;
-typedef int version_number;
+typedef unsigned int version_number;
 
 // represents a unique student-version pair, all its
 // hashes, and other submissions with those hashes
@@ -36,7 +36,7 @@ public:
   }
 
   // MODIFIERS
-  void addHash(const hash &h, location_in_submission l) { hashes.push_back(make_pair(h, l)); }
+  void addHash(const hash &h, location_in_submission l) { hashes.push_back(std::make_pair(h, l)); }
 
   void addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location, const hash &matched_hash) {
     // save the found match

@@ -85,9 +85,9 @@ mkdir -p "${BASEPATH}/users"
 
     ############################################################################
     # Run Lichen
-    ./tokenize_all.py    "$tmp_location" || exit 1
-    ./hash_all.py        "$tmp_location" || exit 1
-    ./compare_hashes.out "$tmp_location" || {echo $KILL_ERROR_MESSAGE; exit 1}
+    ./tokenize_all.py    "$tmp_location" || { rm -rf $tmp_location; exit 1; }
+    ./hash_all.py        "$tmp_location" || { rm -rf $tmp_location; exit 1; }
+    ./compare_hashes.out "$tmp_location" || { rm -rf $tmp_location; exit 1; }
 
     ############################################################################
     # Zip the results back up and send them back to the course's lichen directory

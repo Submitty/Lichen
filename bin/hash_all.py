@@ -41,7 +41,7 @@ def hasher(lichen_config, lichen_run_config, my_tokenized_file, my_hashes_file):
                     .hexdigest())[0:8] for x in range(0, num-sequence_length+1)]
 
                 if len(token_hashed_values) > lichen_config["max_sequences_per_file"]:
-                    token_hashed_values = token_hashed_values[slice(0, lichen_config["max_sequences_per_file"])] #noqa E501
+                    token_hashed_values = token_hashed_values[slice(0, lichen_config["max_sequences_per_file"])]  #noqa E501
                     print(f"File {my_hashes_file} truncated after exceeding max sequence limit")
 
                 my_hf.write('\n'.join(token_hashed_values))

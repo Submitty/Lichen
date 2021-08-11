@@ -15,9 +15,9 @@ DATAPATH=$2 # holds the path to a directory conatining courses and their data
 
 KILL_ERROR_MESSAGE="
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* An error occured while running Lichen. Your run was probably killed for using *
-* too much memory. Before rerunning, perhaps try any of the following edits to  *
-* the configuration:                                                            *
+* An error occured while running Lichen. Your run was probably killed for       *
+* exceeding the configured resource limits. Before rerunning, perhaps try any   *
+* of the following edits to the configuration:                                  *
 * - Increasing the sequence length                                              *
 * - Using only active version                                                   *
 * - Decreasing the common code threshold                                        *
@@ -25,7 +25,7 @@ KILL_ERROR_MESSAGE="
 * - Comparing against fewer other gradeables                                    *
 * - Uploading provided code files                                               *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-"
+";
 
 # kill the script if there is no config file
 if [ ! -f "${BASEPATH}/config.json" ]; then
@@ -85,20 +85,20 @@ mkdir -p "${BASEPATH}/users"
 
     ############################################################################
     # Run Lichen
-    ./tokenize_all.py    "$tmp_location" || { rm -rf $tmp_location; exit 1; }
-    ./hash_all.py        "$tmp_location" || { rm -rf $tmp_location; exit 1; }
-    ./compare_hashes.out "$tmp_location" || { rm -rf $tmp_location; exit 1; }
+    ./tokenize_all.py    "$tmp_location" || { rm -rf "$tmp_location"; exit 1; }
+    ./hash_all.py        "$tmp_location" || { rm -rf "$tmp_location"; exit 1; }
+    ./compare_hashes.out "$tmp_location" || { rm -rf "$tmp_location"; echo "${KILL_ERROR_MESSAGE}"; exit 1; }
 
     ############################################################################
     # Zip the results back up and send them back to the course's lichen directory
     cd $tmp_location || exit 1
     tar -czf "/tmp/LICHEN_JOB_${archive_name}.tar.gz" "."
-    rm -rf $tmp_location || exit 1
+    rm -rf "$tmp_location" || exit 1
 
     # TODO: Move the archive back from worker machine
 
     # Extract archive and restore Lichen file structure
-    cd $BASEPATH || exit 1
+    cd "$BASEPATH" || exit 1
     tar --skip-old-files -xzf "/tmp/LICHEN_JOB_${archive_name}.tar.gz" -C "$BASEPATH"
     rm "/tmp/LICHEN_JOB_${archive_name}.tar.gz" || exit 1
 

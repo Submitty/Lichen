@@ -1,0 +1,5 @@
+{
+  "concat_max_total_bytes": 1000000000,
+  "max_sequences_per_file": 10000,
+  "max_matching_positions": 30
+}

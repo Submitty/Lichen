@@ -10,6 +10,7 @@ import os
 import json
 import time
 import hashlib
+from pathlib import Path
 
 
 def parse_args():
@@ -18,9 +19,9 @@ def parse_args():
     return parser.parse_args()
 
 
-def hasher(lichen_config_data, my_tokenized_file, my_hashes_file):
-    language = lichen_config_data["language"]
-    sequence_length = int(lichen_config_data["sequence_length"])
+def hasher(lichen_config, lichen_run_config, my_tokenized_file, my_hashes_file):
+    language = lichen_run_config["language"]
+    sequence_length = int(lichen_run_config["sequence_length"])
 
     data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
     with open(data_json_path) as token_data_file:
@@ -39,6 +40,10 @@ def hasher(lichen_config_data, my_tokenized_file, my_hashes_file):
                     token_values[x:x+sequence_length]).encode())
                     .hexdigest())[0:8] for x in range(0, num-sequence_length+1)]
 
+                if len(token_hashed_values) > lichen_config["max_sequences_per_file"]:
+                    token_hashed_values = token_hashed_values[slice(0, lichen_config["max_sequences_per_file"])] #noqa E501
+                    print(f"File {my_hashes_file} truncated after exceeding max sequence limit")
+
                 my_hf.write('\n'.join(token_hashed_values))
 
 
@@ -46,62 +51,65 @@ def main():
     start_time = time.time()
     args = parse_args()
 
-    with open(os.path.join(args.basepath, "config.json")) as lichen_config:
-        lichen_config_data = json.load(lichen_config)
+    with open(Path(args.basepath, "config.json")) as lichen_run_config_file:
+        lichen_run_config = json.load(lichen_run_config_file)
+
+    with open(Path(__file__).resolve().parent / "lichen_config.json") as lichen_config_file:
+        lichen_config = json.load(lichen_config_file)
 
     print("HASH ALL...", end="")
 
     # ==========================================================================
     # walk the subdirectories of this gradeable
-    users_dir = os.path.join(args.basepath, "users")
+    users_dir = Path(args.basepath, "users")
     if not os.path.isdir(users_dir):
         raise SystemExit("ERROR! Unable to find users directory")
 
     for user in sorted(os.listdir(users_dir)):
-        user_dir = os.path.join(users_dir, user)
+        user_dir = Path(users_dir, user)
         if not os.path.isdir(user_dir):
             continue
 
         for version in sorted(os.listdir(user_dir)):
-            my_dir = os.path.join(user_dir, version)
+            my_dir = Path(user_dir, version)
             if not os.path.isdir(my_dir):
                 continue
 
-            my_tokenized_file = os.path.join(my_dir, "tokens.json")
-            my_hashes_file = os.path.join(my_dir, "hashes.txt")
-            hasher(lichen_config_data, my_tokenized_file, my_hashes_file)
+            my_tokenized_file = Path(my_dir, "tokens.json")
+            my_hashes_file = Path(my_dir, "hashes.txt")
+            hasher(lichen_config, lichen_run_config, my_tokenized_file, my_hashes_file)
 
     # ==========================================================================
     # walk the subdirectories of the other gradeables
 
-    other_gradeables_dir = os.path.join(args.basepath, "other_gradeables")
+    other_gradeables_dir = Path(args.basepath, "other_gradeables")
     if not os.path.isdir(other_gradeables_dir):
         raise SystemExit("ERROR! Unable to find other gradeables directory")
 
     for other_gradeable in sorted(os.listdir(other_gradeables_dir)):
-        other_gradeable_dir = os.path.join(other_gradeables_dir, other_gradeable)
+        other_gradeable_dir = Path(other_gradeables_dir, other_gradeable)
         if not os.path.isdir(other_gradeable_dir):
             continue
 
         for other_user in sorted(os.listdir(other_gradeable_dir)):
-            other_user_dir = os.path.join(other_gradeable_dir, other_user)
+            other_user_dir = Path(other_gradeable_dir, other_user)
             if not os.path.isdir(other_user_dir):
                 continue
 
             for other_version in sorted(os.listdir(other_user_dir)):
-                other_version_dir = os.path.join(other_user_dir, other_version)
+                other_version_dir = Path(other_user_dir, other_version)
                 if not os.path.isdir(other_version_dir):
                     continue
 
-                other_tokenized_file = os.path.join(other_version_dir, "tokens.json")
-                other_hashes_file = os.path.join(other_version_dir, "hashes.txt")
-                hasher(lichen_config_data, other_tokenized_file, other_hashes_file)
+                other_tokenized_file = Path(other_version_dir, "tokens.json")
+                other_hashes_file = Path(other_version_dir, "hashes.txt")
+                hasher(lichen_config, lichen_run_config, other_tokenized_file, other_hashes_file)
 
     # ==========================================================================
     # hash the provided code
-    provided_code_tokenized = os.path.join(args.basepath, "provided_code", "tokens.json")
-    provided_code_hashed = os.path.join(args.basepath, "provided_code", "hashes.txt")
-    hasher(lichen_config_data, provided_code_tokenized, provided_code_hashed)
+    provided_code_tokenized = Path(args.basepath, "provided_code", "tokens.json")
+    provided_code_hashed = Path(args.basepath, "provided_code", "hashes.txt")
+    hasher(lichen_config, lichen_run_config, provided_code_tokenized, provided_code_hashed)
 
     # ==========================================================================
     end_time = time.time()

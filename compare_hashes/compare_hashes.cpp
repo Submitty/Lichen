@@ -102,15 +102,21 @@ int main(int argc, char* argv[]) {
   time(&overall_start);
 
   // ===========================================================================
+  // load Lichen config data
+  std::ifstream lichen_config_istr("./lichen_config.json");
+  assert(lichen_config_istr.good());
+  nlohmann::json lichen_config = nlohmann::json::parse(lichen_config_istr);
+
+  // ===========================================================================
   // load config info
 
-  assert (argc == 2);
+  assert(argc == 2);
   std::string lichen_gradeable_path_str = argv[1];
   boost::filesystem::path lichen_gradeable_path = boost::filesystem::system_complete(lichen_gradeable_path_str);
   boost::filesystem::path config_file_json_path = lichen_gradeable_path / "config.json";
 
   std::ifstream istr(config_file_json_path.string());
-  assert (istr.good());
+  assert(istr.good());
   nlohmann::json config_file_json = nlohmann::json::parse(istr);
 
   std::string semester = config_file_json.value("semester", "ERROR");
@@ -320,7 +326,7 @@ int main(int argc, char* argv[]) {
       continue;
     }
 
-    // Save this submissions highest percent match for later when we geenrate overall_rankings.txt
+    // Save this submissions highest percent match for later when we generate overall_rankings.txt
     float percentMatch = (*submission_itr)->getPercentage();
 
     std::unordered_map<std::string, std::pair<int, float> >::iterator highest_matches_itr = highest_matches.find((*submission_itr)->student());
@@ -375,11 +381,18 @@ int main(int argc, char* argv[]) {
             // keep iterating and editing the same object until a we get to a different submission
             if (matching_positions_itr->student != other["username"]
                 || matching_positions_itr->version != other["version"]
-                || matching_positions_itr->source_gradeable != other["source_gradeable"]) {
+                || matching_positions_itr->source_gradeable != other["source_gradeable"]
+                || matchingpositions.size() >= lichen_config["max_matching_positions"]) {
 
               // found a different one, we push the old one and start over
               other["matchingpositions"] = matchingpositions;
               others.push_back(other);
+
+              if (matchingpositions.size() >= lichen_config["max_matching_positions"]) {
+                std::cout << "Matching positions array truncated for user: [" << other["username"] << "] version: " << other["version"] << std::endl;
+                std::cout << "  - Try increasing the sequence length to fix this problem." << std::endl;
+                break;
+              }
 
               matchingpositions.clear();
               other["username"] = matching_positions_itr->student;

@@ -7,14 +7,28 @@
 
 # TODO: Assert permissions, as necessary
 
-basepath=$1 # holds the path to a directory containing a config for this gradeable
+BASEPATH=$1 # holds the path to a directory containing a config for this gradeable
             # (probably .../lichen/gradeable/<unique number>/ on Submitty)
 
-datapath=$2 # holds the path to a directory conatining courses and their data
+DATAPATH=$2 # holds the path to a directory conatining courses and their data
             # (probably /var/local/submitty/courses on Submitty)
 
+KILL_ERROR_MESSAGE="
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* An error occured while running Lichen. Your run was probably killed for       *
+* exceeding the configured resource limits. Before rerunning, perhaps try any   *
+* of the following edits to the configuration:                                  *
+* - Increasing the sequence length                                              *
+* - Using only active version                                                   *
+* - Decreasing the common code threshold                                        *
+* - Selecting fewer files to be compared                                        *
+* - Comparing against fewer other gradeables                                    *
+* - Uploading provided code files                                               *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+";
+
 # kill the script if there is no config file
-if [ ! -f "${basepath}/config.json" ]; then
+if [ ! -f "${BASEPATH}/config.json" ]; then
     echo "Unable to find config.json in provided directory"
 		exit 1
 fi
@@ -22,20 +36,20 @@ fi
 
 # delete any previous run results
 # TODO: determine if any caching should occur
-rm -rf "${basepath}/logs"
-rm -rf "${basepath}/other_gradeables"
-rm -rf "${basepath}/users"
-rm -f "${basepath}/overall_ranking.txt"
-rm -f "${basepath}/provided_code/submission.concatenated"
-rm -f "${basepath}/provided_code/tokens.json"
-rm -f "${basepath}/provided_code/hashes.txt"
+rm -rf "${BASEPATH}/logs"
+rm -rf "${BASEPATH}/other_gradeables"
+rm -rf "${BASEPATH}/users"
+rm -f "${BASEPATH}/overall_ranking.txt"
+rm -f "${BASEPATH}/provided_code/submission.concatenated"
+rm -f "${BASEPATH}/provided_code/tokens.json"
+rm -f "${BASEPATH}/provided_code/hashes.txt"
 
 # create these directories if they don't already exist
-mkdir -p "${basepath}/logs"
-mkdir -p "${basepath}/provided_code"
-mkdir -p "${basepath}/provided_code/files"
-mkdir -p "${basepath}/other_gradeables"
-mkdir -p "${basepath}/users"
+mkdir -p "${BASEPATH}/logs"
+mkdir -p "${BASEPATH}/provided_code"
+mkdir -p "${BASEPATH}/provided_code/files"
+mkdir -p "${BASEPATH}/other_gradeables"
+mkdir -p "${BASEPATH}/users"
 
 # Run Lichen and exit if an error occurs
 {
@@ -43,21 +57,21 @@ mkdir -p "${basepath}/users"
     # Finish setting up Lichen run
 
     # The default is r-x and we need PHP to be able to write if edits are made to the provided code
-    chmod g=rwxs "${basepath}/provided_code/files" || exit 1
+    chmod g=rwxs "${BASEPATH}/provided_code/files" || exit 1
 
     cd "$(dirname "${0}")" || exit 1
 
     ############################################################################
     # Do some preprocessing
     echo "Beginning Lichen run: $(date +"%Y-%m-%d %H:%M:%S")"
-    ./concatenate_all.py "$basepath" "$datapath" || exit 1
+    ./concatenate_all.py "$BASEPATH" "$DATAPATH" || exit 1
 
     ############################################################################
     # Move the file somewhere to be processed (eventually this will be a worker machine)
 
     # Tar+zip the file structure and save it to /tmp
-    cd $basepath || exit 1
-    archive_name=$(sha1sum "${basepath}/config.json" | awk '{ print $1 }') || exit 1
+    cd $BASEPATH || exit 1
+    archive_name=$(sha1sum "${BASEPATH}/config.json" | awk '{ print $1 }') || exit 1
     tar -czf "/tmp/LICHEN_JOB_${archive_name}.tar.gz" "config.json" "other_gradeables" "users" "provided_code" || exit 1
     cd "$(dirname "${0}")" || exit 1
 
@@ -71,21 +85,21 @@ mkdir -p "${basepath}/users"
 
     ############################################################################
     # Run Lichen
-    ./tokenize_all.py    "$tmp_location" || { rm -rf $tmp_location; exit 1; }
-    ./hash_all.py        "$tmp_location" || { rm -rf $tmp_location; exit 1; }
-    ./compare_hashes.out "$tmp_location" || { rm -rf $tmp_location; exit 1; }
+    ./tokenize_all.py    "$tmp_location" || { rm -rf "$tmp_location"; exit 1; }
+    ./hash_all.py        "$tmp_location" || { rm -rf "$tmp_location"; exit 1; }
+    ./compare_hashes.out "$tmp_location" || { rm -rf "$tmp_location"; echo "${KILL_ERROR_MESSAGE}"; exit 1; }
 
     ############################################################################
     # Zip the results back up and send them back to the course's lichen directory
     cd $tmp_location || exit 1
     tar -czf "/tmp/LICHEN_JOB_${archive_name}.tar.gz" "."
-    rm -rf $tmp_location || exit 1
+    rm -rf "$tmp_location" || exit 1
 
     # TODO: Move the archive back from worker machine
 
     # Extract archive and restore Lichen file structure
-    cd $basepath || exit 1
-    tar --skip-old-files -xzf "/tmp/LICHEN_JOB_${archive_name}.tar.gz" -C "$basepath"
+    cd "$BASEPATH" || exit 1
+    tar --skip-old-files -xzf "/tmp/LICHEN_JOB_${archive_name}.tar.gz" -C "$BASEPATH"
     rm "/tmp/LICHEN_JOB_${archive_name}.tar.gz" || exit 1
 
-} >> "${basepath}/logs/lichen_job_output.txt" 2>&1
+} >> "${BASEPATH}/logs/lichen_job_output.txt" 2>&1

@@ -16,7 +16,9 @@ from pathlib import Path
 IGNORED_FILES = [
     ".submit.timestamp"
 ]
-MAX_CONCAT_SIZE = 1e9
+
+with open(Path(__file__).resolve().parent / "lichen_config.json") as lichen_config_file:
+    LICHEN_CONFIG = json.load(lichen_config_file)
 
 
 # returns a string containing the contents of the files which match the regex in the specified dir
@@ -45,8 +47,9 @@ def getConcatFilesInDir(input_dir, regex_patterns):
 
 
 def checkTotalSize(total_concat):
-    if total_concat > MAX_CONCAT_SIZE:
-        raise SystemExit(f"ERROR! exceeded {humanize.naturalsize(MAX_CONCAT_SIZE)}"
+    if total_concat > LICHEN_CONFIG['concat_max_total_bytes']:
+        raise SystemExit("ERROR! exceeded"
+                         f"{humanize.naturalsize(LICHEN_CONFIG['concat_max_total_bytes'])}"
                          " of concatenated files allowed")
 
 

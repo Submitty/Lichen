@@ -30,7 +30,11 @@ def getConcatFilesInDir(input_dir, regex_patterns):
         if regex_patterns[0] != "":
             files_filtered = []
             for e in regex_patterns:
-                files_filtered.extend(fnmatch.filter(files, e.strip()))
+                # Regex patterns starting with a ! indicate that files should be excluded
+                if e.strip().startswith("!"):
+                    files_filtered.extend([file for file in files if file not in fnmatch.filter(files, e.strip().replace("!", ""))])
+                else:
+                    files_filtered.extend(fnmatch.filter(files, e.strip()))
             files = files_filtered
 
         for my_file in files:

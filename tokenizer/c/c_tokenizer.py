@@ -33,6 +33,8 @@ for token in parsed_data.get_tokens(extent=parsed_data.cursor.extent):
     tmp["line"] = int(token.location.line)
     tmp["char"] = int(token.location.column)
     tmp["type"] = (str(token.kind))[10:]
+    if tmp["type"] == "PUNCTUATION":
+        tmp["type"] += "-" + str(token.spelling)
     tmp["value"] = str(token.spelling)
     tokens.append(tmp)
 

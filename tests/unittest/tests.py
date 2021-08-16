@@ -183,6 +183,8 @@ class TestPythonTokenizer(unittest.TestCase):
             with open(expected_output_file) as file:
                 expected_output = json.load(file)
 
+            print(json.dumps(actual_output, indent=4))
+
             self.assertEqual(actual_output, expected_output)
 
 

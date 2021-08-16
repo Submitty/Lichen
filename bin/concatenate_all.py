@@ -29,12 +29,18 @@ def getConcatFilesInDir(input_dir, regex_patterns):
         files = sorted(my_files)
         if regex_patterns[0] != "":
             files_filtered = []
+            # resolve all of the additions
             for e in regex_patterns:
                 # Regex patterns starting with a ! indicate that files should be excluded
-                if e.strip().startswith("!"):
-                    files_filtered.extend([file for file in files if file not in fnmatch.filter(files, e.strip().replace("!", ""))])
-                else:
+                if not e.strip().startswith("!"):
                     files_filtered.extend(fnmatch.filter(files, e.strip()))
+
+            # resolve the subtractions
+            for e in regex_patterns:
+                if e.strip().startswith("!"):
+                    files_filtered = [file for file in files_filtered if file not in
+                                      fnmatch.filter(files_filtered, e.strip().replace("!", ""))]
+
             files = files_filtered
 
         for my_file in files:

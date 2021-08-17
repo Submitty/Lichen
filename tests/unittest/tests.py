@@ -23,7 +23,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output.json")
 
-            subprocess.check_call(f"{str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.out'))} < {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.py'))} < {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -41,7 +41,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_ignore_punctuation.json")
 
-            subprocess.check_call(f"{str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.out'))} --ignore_punctuation < {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.py'))} --ignore_punctuation < {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -59,7 +59,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_to_lower.json")
 
-            subprocess.check_call(f"{str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.out'))} --to_lower < {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.py'))} --to_lower < {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -77,7 +77,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_ignore_newlines.json")
 
-            subprocess.check_call(f"{str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.out'))} --ignore_newlines < {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.py'))} --ignore_newlines < {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -95,7 +95,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_ignore_everything.json")
 
-            subprocess.check_call(f"{str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.out'))} --ignore_punctuation --to_lower --ignore_numbers --ignore_newlines  < {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.py'))} --ignore_punctuation --to_lower --ignore_numbers --ignore_newlines  < {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)

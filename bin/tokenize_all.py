@@ -41,7 +41,7 @@ def main():
     start_time = time.time()
     args = parse_args()
 
-    print("TOKENIZE ALL...", end="")
+    print("TOKENIZE ALL...", end="", flush=True)
 
     with open(os.path.join(args.basepath, "config.json")) as lichen_config:
         lichen_config_data = json.load(lichen_config)

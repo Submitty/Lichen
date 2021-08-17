@@ -2,1039 +2,1039 @@
     {
         "char": 1,
         "line": 1,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "import"
     },
     {
         "char": 8,
         "line": 1,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "support"
     },
     {
         "char": 16,
         "line": 1,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "as"
     },
     {
         "char": 19,
         "line": 1,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "sp"
     },
     {
         "char": 21,
         "line": 1,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 9,
         "line": 3,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "class"
     },
     {
         "char": 15,
         "line": 3,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "Snake"
     },
     {
         "char": 20,
         "line": 3,
-        "type": "nTypes.OP",
+        "type": "OP-:",
         "value": ":"
     },
     {
         "char": 21,
         "line": 3,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 7,
         "line": 5,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "def"
     },
     {
         "char": 11,
         "line": 5,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "__init__"
     },
     {
         "char": 19,
         "line": 5,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 20,
         "line": 5,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "self"
     },
     {
         "char": 24,
         "line": 5,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 26,
         "line": 5,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "name"
     },
     {
         "char": 30,
         "line": 5,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 31,
         "line": 5,
-        "type": "nTypes.OP",
+        "type": "OP-:",
         "value": ":"
     },
     {
         "char": 32,
         "line": 5,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 10,
         "line": 6,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "self"
     },
     {
         "char": 14,
         "line": 6,
-        "type": "nTypes.OP",
+        "type": "OP-.",
         "value": "."
     },
     {
         "char": 15,
         "line": 6,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "name"
     },
     {
         "char": 20,
         "line": 6,
-        "type": "nTypes.OP",
+        "type": "OP-==",
         "value": "=="
     },
     {
         "char": 22,
         "line": 6,
-        "type": "nTypes.OP",
+        "type": "OP-==",
         "value": "=="
     },
     {
         "char": 25,
         "line": 6,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "name"
     },
     {
         "char": 29,
         "line": 6,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 6,
         "line": 8,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "def"
     },
     {
         "char": 10,
         "line": 8,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "change_name"
     },
     {
         "char": 21,
         "line": 8,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 22,
         "line": 8,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "self"
     },
     {
         "char": 26,
         "line": 8,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 28,
         "line": 8,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "new_name"
     },
     {
         "char": 36,
         "line": 8,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 37,
         "line": 8,
-        "type": "nTypes.OP",
+        "type": "OP-:",
         "value": ":"
     },
     {
         "char": 38,
         "line": 8,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 10,
         "line": 9,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "self"
     },
     {
         "char": 14,
         "line": 9,
-        "type": "nTypes.OP",
+        "type": "OP-.",
         "value": "."
     },
     {
         "char": 15,
         "line": 9,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "name"
     },
     {
         "char": 20,
         "line": 9,
-        "type": "nTypes.OP",
+        "type": "OP-=",
         "value": "="
     },
     {
         "char": 22,
         "line": 9,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "new_name"
     },
     {
         "char": 30,
         "line": 9,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 13,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "def"
     },
     {
         "char": 6,
         "line": 13,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "add"
     },
     {
         "char": 9,
         "line": 13,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 10,
         "line": 13,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 14,
         "line": 13,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 15,
         "line": 13,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 19,
         "line": 13,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 20,
         "line": 13,
-        "type": "nTypes.OP",
+        "type": "OP-:",
         "value": ":"
     },
     {
         "char": 21,
         "line": 13,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 8,
         "line": 14,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num3"
     },
     {
         "char": 12,
         "line": 14,
-        "type": "nTypes.OP",
+        "type": "OP-=",
         "value": "="
     },
     {
         "char": 13,
         "line": 14,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 17,
         "line": 14,
-        "type": "nTypes.OP",
+        "type": "OP-+",
         "value": "+"
     },
     {
         "char": 18,
         "line": 14,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 22,
         "line": 14,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 6,
         "line": 15,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "return"
     },
     {
         "char": 13,
         "line": 15,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num3"
     },
     {
         "char": 17,
         "line": 15,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 17,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "def"
     },
     {
         "char": 6,
         "line": 17,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "max"
     },
     {
         "char": 9,
         "line": 17,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 10,
         "line": 17,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 14,
         "line": 17,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 15,
         "line": 17,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 19,
         "line": 17,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 20,
         "line": 17,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num3"
     },
     {
         "char": 24,
         "line": 17,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 25,
         "line": 17,
-        "type": "nTypes.OP",
+        "type": "OP-:",
         "value": ":"
     },
     {
         "char": 26,
         "line": 17,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 8,
         "line": 18,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "if"
     },
     {
         "char": 11,
         "line": 18,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 12,
         "line": 18,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 17,
         "line": 18,
-        "type": "nTypes.OP",
+        "type": "OP->=",
         "value": ">="
     },
     {
         "char": 20,
         "line": 18,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 24,
         "line": 18,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 26,
         "line": 18,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "and"
     },
     {
         "char": 30,
         "line": 18,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 31,
         "line": 18,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 36,
         "line": 18,
-        "type": "nTypes.OP",
+        "type": "OP->=",
         "value": ">="
     },
     {
         "char": 39,
         "line": 18,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num3"
     },
     {
         "char": 43,
         "line": 18,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 44,
         "line": 18,
-        "type": "nTypes.OP",
+        "type": "OP-:",
         "value": ":"
     },
     {
         "char": 45,
         "line": 18,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 11,
         "line": 19,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "largest"
     },
     {
         "char": 19,
         "line": 19,
-        "type": "nTypes.OP",
+        "type": "OP-=",
         "value": "="
     },
     {
         "char": 21,
         "line": 19,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 25,
         "line": 19,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 8,
         "line": 20,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "elif"
     },
     {
         "char": 13,
         "line": 20,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 14,
         "line": 20,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 19,
         "line": 20,
-        "type": "nTypes.OP",
+        "type": "OP->=",
         "value": ">="
     },
     {
         "char": 22,
         "line": 20,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 26,
         "line": 20,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 28,
         "line": 20,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "and"
     },
     {
         "char": 32,
         "line": 20,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 33,
         "line": 20,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 38,
         "line": 20,
-        "type": "nTypes.OP",
+        "type": "OP->=",
         "value": ">="
     },
     {
         "char": 41,
         "line": 20,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num3"
     },
     {
         "char": 45,
         "line": 20,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 46,
         "line": 20,
-        "type": "nTypes.OP",
+        "type": "OP-:",
         "value": ":"
     },
     {
         "char": 47,
         "line": 20,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 11,
         "line": 21,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "largest"
     },
     {
         "char": 19,
         "line": 21,
-        "type": "nTypes.OP",
+        "type": "OP-=",
         "value": "="
     },
     {
         "char": 21,
         "line": 21,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 25,
         "line": 21,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 8,
         "line": 22,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "else"
     },
     {
         "char": 12,
         "line": 22,
-        "type": "nTypes.OP",
+        "type": "OP-:",
         "value": ":"
     },
     {
         "char": 13,
         "line": 22,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 11,
         "line": 23,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "largest"
     },
     {
         "char": 19,
         "line": 23,
-        "type": "nTypes.OP",
+        "type": "OP-=",
         "value": "="
     },
     {
         "char": 21,
         "line": 23,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num3"
     },
     {
         "char": 25,
         "line": 23,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 8,
         "line": 24,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "return"
     },
     {
         "char": 15,
         "line": 24,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "largest"
     },
     {
         "char": 40,
         "line": 24,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 26,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 7,
         "line": 26,
-        "type": "nTypes.OP",
+        "type": "OP-=",
         "value": "="
     },
     {
         "char": 9,
         "line": 26,
-        "type": "nTypes.NUMBER",
+        "type": "NUMBER",
         "value": "10"
     },
     {
         "char": 11,
         "line": 26,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 27,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 7,
         "line": 27,
-        "type": "nTypes.OP",
+        "type": "OP-=",
         "value": "="
     },
     {
         "char": 9,
         "line": 27,
-        "type": "nTypes.NUMBER",
+        "type": "NUMBER",
         "value": "14"
     },
     {
         "char": 11,
         "line": 27,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 28,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num3"
     },
     {
         "char": 7,
         "line": 28,
-        "type": "nTypes.OP",
+        "type": "OP-=",
         "value": "="
     },
     {
         "char": 9,
         "line": 28,
-        "type": "nTypes.NUMBER",
+        "type": "NUMBER",
         "value": "12"
     },
     {
         "char": 11,
         "line": 28,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 32,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "print"
     },
     {
         "char": 7,
         "line": 32,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 8,
         "line": 32,
-        "type": "nTypes.STRING",
+        "type": "STRING",
         "value": "\"The sum of \""
     },
     {
         "char": 21,
         "line": 32,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 22,
         "line": 32,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 26,
         "line": 32,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 27,
         "line": 32,
-        "type": "nTypes.STRING",
+        "type": "STRING",
         "value": "\",\""
     },
     {
         "char": 30,
         "line": 32,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 31,
         "line": 32,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 35,
         "line": 32,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 36,
         "line": 32,
-        "type": "nTypes.STRING",
+        "type": "STRING",
         "value": "\"is\""
     },
     {
         "char": 40,
         "line": 32,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 41,
         "line": 32,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "add"
     },
     {
         "char": 44,
         "line": 32,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 45,
         "line": 32,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 49,
         "line": 32,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 50,
         "line": 32,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 54,
         "line": 32,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 55,
         "line": 32,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 56,
         "line": 32,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     },
     {
         "char": 2,
         "line": 33,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "print"
     },
     {
         "char": 7,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 8,
         "line": 33,
-        "type": "nTypes.STRING",
+        "type": "STRING",
         "value": "\"The largest number between\""
     },
     {
         "char": 36,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 37,
         "line": 33,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 41,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 42,
         "line": 33,
-        "type": "nTypes.STRING",
+        "type": "STRING",
         "value": "\",\""
     },
     {
         "char": 45,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 46,
         "line": 33,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 50,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 51,
         "line": 33,
-        "type": "nTypes.STRING",
+        "type": "STRING",
         "value": "\"and\""
     },
     {
         "char": 56,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 57,
         "line": 33,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num3"
     },
     {
         "char": 61,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 62,
         "line": 33,
-        "type": "nTypes.STRING",
+        "type": "STRING",
         "value": "\"is\""
     },
     {
         "char": 66,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 67,
         "line": 33,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "max"
     },
     {
         "char": 70,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-(",
         "value": "("
     },
     {
         "char": 71,
         "line": 33,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num1"
     },
     {
         "char": 75,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 76,
         "line": 33,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num2"
     },
     {
         "char": 80,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-,",
         "value": ","
     },
     {
         "char": 81,
         "line": 33,
-        "type": "nTypes.NAME",
+        "type": "NAME",
         "value": "num3"
     },
     {
         "char": 85,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 86,
         "line": 33,
-        "type": "nTypes.OP",
+        "type": "OP-)",
         "value": ")"
     },
     {
         "char": 87,
         "line": 33,
-        "type": "nTypes.NEWLINE",
+        "type": "NEWLINE",
         "value": "\n"
     }
 ]

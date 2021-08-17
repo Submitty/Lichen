@@ -235,7 +235,7 @@ def main():
 
     # ==========================================================================
     # iterate over all of the created submissions, checking to see if they are empty
-    # and adding a message to the top if so (to differentiate empty files from errors in the UI)
+    # and printing a message if so
 
     no_files_match_error = "ERROR! No files matched provided regex in selected directories"
 
@@ -244,11 +244,10 @@ def main():
         for version in os.listdir(user_path):
             version_path = os.path.join(user_path, version)
             my_concatenated_file = os.path.join(version_path, "submission.concatenated")
-            with open(my_concatenated_file, "r+") as my_cf:
+            with open(my_concatenated_file, "r") as my_cf:
                 if my_cf.read() == "":
-                    my_cf.write(no_files_match_error)
-                    total_concat += sys.getsizeof(no_files_match_error)
-            checkTotalSize(total_concat)
+                    print("ERROR: No files matched provided regex in selected directories "
+                          f"for user {user} version {version}")
 
     # do the same for the other gradeables
     for other_gradeable in prior_term_gradeables:
@@ -260,11 +259,10 @@ def main():
             for other_version in os.listdir(other_user_path):
                 other_version_path = os.path.join(other_user_path, other_version)
                 my_concatenated_file = os.path.join(other_version_path, "submission.concatenated")
-                with open(my_concatenated_file, "r+") as my_cf:
+                with open(my_concatenated_file, "r") as my_cf:
                     if my_cf.read() == "":
-                        my_cf.write(no_files_match_error)
-                        total_concat += sys.getsizeof(no_files_match_error)
-                checkTotalSize(total_concat)
+                        print("ERROR: No files matched provided regex in selected directories "
+                              f"for user {other_user} version {other_version}")
 
     # ==========================================================================
     # concatenate provided code

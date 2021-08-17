@@ -14,7 +14,8 @@ import fnmatch
 from pathlib import Path
 
 IGNORED_FILES = [
-    ".submit.timestamp"
+    ".submit.timestamp",
+    ".user_assignment_access.json"
 ]
 
 with open(Path(__file__).resolve().parent / "lichen_config.json") as lichen_config_file:

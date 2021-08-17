@@ -237,8 +237,6 @@ def main():
     # iterate over all of the created submissions, checking to see if they are empty
     # and printing a message if so
 
-    no_files_match_error = "ERROR! No files matched provided regex in selected directories"
-
     for user in os.listdir(os.path.join(args.basepath, "users")):
         user_path = os.path.join(args.basepath, "users", user)
         for version in os.listdir(user_path):

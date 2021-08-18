@@ -244,7 +244,7 @@ def main():
             my_concatenated_file = os.path.join(version_path, "submission.concatenated")
             with open(my_concatenated_file, "r") as my_cf:
                 if my_cf.read() == "":
-                    print("ERROR: No files matched provided regex in selected directories "
+                    print("Warning: No files matched provided regex in selected directories "
                           f"for user {user} version {version}")
 
     # do the same for the other gradeables
@@ -259,7 +259,7 @@ def main():
                 my_concatenated_file = os.path.join(other_version_path, "submission.concatenated")
                 with open(my_concatenated_file, "r") as my_cf:
                     if my_cf.read() == "":
-                        print("ERROR: No files matched provided regex in selected directories "
+                        print("Warning: No files matched provided regex in selected directories "
                               f"for user {other_user} version {other_version}")
 
     # ==========================================================================

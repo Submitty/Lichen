@@ -1,8 +1,8 @@
 {
   "plaintext": {
-    "tokenizer": "plaintext_tokenizer.out",
-    "command_executable": "",
-    "input_as_argument": false,
+    "tokenizer": "plaintext_tokenizer.py",
+    "command_executable": "python3",
+    "input_as_argument": true,
     "command_args": [
       "--ignore_newlines"
     ],

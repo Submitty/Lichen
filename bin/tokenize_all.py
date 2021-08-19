@@ -29,11 +29,15 @@ def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
 
     if not language_token_data.get("input_as_argument"):
         my_concatenated_file = f'< {my_concatenated_file}'
-    cli_args = ' '.join(language_token_data["command_args"])\
-               if "command_args" in language_token_data else ''
 
-    command = f'{language_token_data["command_executable"]} {tokenizer} {cli_args}\
-                    {my_concatenated_file} > {my_tokenized_file}'.strip()
+    if "command_args" in language_token_data:
+        cli_args = " ".join(language_token_data["command_args"])
+    else:
+        cli_args = ""
+
+    command = f"{language_token_data['command_executable']} {tokenizer} "\
+              f"{cli_args} {my_concatenated_file} > {my_tokenized_file}".strip()
+
     os.system(command)
 
 

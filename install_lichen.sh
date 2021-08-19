@@ -49,16 +49,6 @@ fi
 mkdir -p ${lichen_installation_dir}/bin
 mkdir -p ${lichen_installation_dir}/tools/assignments
 
-#--------------------
-# plaintext tool
-pushd ${lichen_repository_dir}  > /dev/null
-clang++ -I ${lichen_vendor_dir} -std=c++11 -Wall -O3 tokenizer/plaintext/plaintext_tokenizer.cpp -o ${lichen_installation_dir}/bin/plaintext_tokenizer.out
-if [ $? -ne 0 ]; then
-    echo -e "ERROR: FAILED TO BUILD PLAINTEXT TOKENIZER\n"
-    exit 1
-fi
-popd > /dev/null
-
 
 #-------------------------------------------
 # compile & install the hash comparison tool
@@ -75,6 +65,7 @@ popd > /dev/null
 
 cp ${lichen_repository_dir}/bin/* ${lichen_installation_dir}/bin/
 
+cp ${lichen_repository_dir}/tokenizer/plaintext/plaintext_tokenizer.py ${lichen_installation_dir}/bin/plaintext_tokenizer.py
 cp ${lichen_repository_dir}/tokenizer/c/c_tokenizer.py ${lichen_installation_dir}/bin/c_tokenizer.py
 cp ${lichen_repository_dir}/tokenizer/python/python_tokenizer.py ${lichen_installation_dir}/bin/python_tokenizer.py
 cp ${lichen_repository_dir}/tokenizer/java/java_tokenizer.py ${lichen_installation_dir}/bin/java_tokenizer.py

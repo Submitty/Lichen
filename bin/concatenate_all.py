@@ -73,7 +73,7 @@ def parse_args():
 
 def validate(config, args):
     # load parameters from the config to be checked
-    regex_patterns = config["regex"].split(',')
+    regex_patterns = config["regex"]
     regex_dirs = config["regex_dirs"]
     language = config["language"]
     threshold = int(config["threshold"])
@@ -139,7 +139,7 @@ def main():
     course = config["course"]
     gradeable = config["gradeable"]
     version_mode = config["version"]
-    regex_patterns = config["regex"].split(',')
+    regex_patterns = config["regex"]
     regex_dirs = config["regex_dirs"]
     prior_term_gradeables = config["prior_term_gradeables"]
     users_to_ignore = config["ignore_submissions"]

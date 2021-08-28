@@ -4,7 +4,7 @@
     "gradeable": "repeated_sequences",
     "config_id": "1",
     "version": "all_versions",
-    "regex": "",
+    "regex": [""],
     "regex_dirs": [
         "submissions"
     ],

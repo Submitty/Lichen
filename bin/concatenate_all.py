@@ -168,6 +168,9 @@ def main():
             # loop over each version
             for version in sorted(os.listdir(user_path)):
                 version_path = os.path.join(user_path, version)
+                if dir == "results":
+                    # only the "details" folder within "results" contains files relevant to Lichen
+                    version_path = os.path.join(version_path, "details")
                 if not os.path.isdir(version_path):
                     continue
                 if version_mode == "active_version" and int(version) != my_active_version:

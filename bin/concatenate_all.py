@@ -218,7 +218,7 @@ def main():
                 for other_version in sorted(os.listdir(other_user_path)):
                     other_version_path = os.path.join(other_user_path, other_version)
                     if dir == "results":
-                        # only the "details" folder within "results" contains files relevant to Lichen
+                        # only the "details" dir within "results" contains files relevant to Lichen
                         other_version_path = os.path.join(other_version_path, "details")
                     if not os.path.isdir(other_version_path):
                         continue

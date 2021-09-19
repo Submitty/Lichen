@@ -19,7 +19,8 @@ struct HashLocation {
   std::string source_gradeable;
 };
 
-bool operator < (const HashLocation &hl1, const HashLocation &hl2) {
+// inline keyword is necessary to prevent linker errors when multiple .cpp files include this header and are then linked
+inline bool operator < (const HashLocation &hl1, const HashLocation &hl2) {
   return hl1.student > hl2.student ||
          (hl1.student == hl2.student && hl1.version < hl2.version) ||
          (hl1.student == hl2.student && hl1.version == hl2.version && hl1.location < hl2.location);

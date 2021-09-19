@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "hash_location.h"
+#include "lichen_config.h"
 
 typedef int location_in_submission;
 typedef unsigned int hash;

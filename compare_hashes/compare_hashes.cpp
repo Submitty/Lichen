@@ -41,6 +41,16 @@ struct StudentRanking {
 };
 
 
+struct LichenConfig {
+  std::string semester;
+  std::string course;
+  std::string gradeable;
+  int sequence_length;
+  int threshold;
+  bool provided_code_enabled;
+}
+
+
 // =============================================================================
 // helper functions
 
@@ -101,11 +111,13 @@ int main(int argc, char* argv[]) {
   time_t overall_start, overall_end;
   time(&overall_start);
 
+
   // ===========================================================================
   // load Lichen config data
   std::ifstream lichen_config_istr("./lichen_config.json");
   assert(lichen_config_istr.good());
   nlohmann::json lichen_config = nlohmann::json::parse(lichen_config_istr);
+  LichenConfig config;
 
   // ===========================================================================
   // load config info
@@ -119,11 +131,11 @@ int main(int argc, char* argv[]) {
   assert(istr.good());
   nlohmann::json config_file_json = nlohmann::json::parse(istr);
 
-  std::string semester = config_file_json.value("semester", "ERROR");
-  std::string course = config_file_json.value("course", "ERROR");
-  std::string gradeable = config_file_json.value("gradeable", "ERROR");
-  int sequence_length = config_file_json.value("sequence_length", 1);
-  int threshold = config_file_json.value("threshold", 5);
+  config.semester = config_file_json.value("semester", "ERROR");
+  config.course = config_file_json.value("course", "ERROR");
+  config.gradeable = config_file_json.value("gradeable", "ERROR");
+  config.sequence_length = config_file_json.value("sequence_length", 1);
+  config.threshold = config_file_json.value("threshold", 5);
 
   // error checking, confirm there are hashes to work with
   boost::filesystem::path users_root_directory = lichen_gradeable_path / "users";
@@ -136,7 +148,7 @@ int main(int argc, char* argv[]) {
   // the file path where we expect to find the hashed instructor provided code file
   boost::filesystem::path provided_code_file = lichen_gradeable_path / "provided_code" / "hashes.txt";
   // if file exists in that location, the provided code mode is enabled.
-  bool provided_code_enabled = boost::filesystem::exists(provided_code_file);
+  config.provided_code_enabled = boost::filesystem::exists(provided_code_file);
   // path to prior gradeables' data
   boost::filesystem::path prior_terms_dir = lichen_gradeable_path / "other_gradeables";
 

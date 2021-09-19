@@ -20,7 +20,7 @@ typedef unsigned int version_number;
 class Submission {
 public:
   // CONSTRUCTOR
-  Submission(const user_id &s, version_number v) : student_(s), version_(v) {}
+  Submission(const user_id &s, version_number v, const LichenConfig &c) : student_(s), version_(v), config_(c) {}
 
   // GETTERS
   const user_id& student() const { return student_; }
@@ -31,26 +31,18 @@ public:
   const std::set<location_in_submission>& getProvidedMatches() const { return provided_matches; }
   const std::unordered_map<std::string, std::unordered_map<user_id, std::unordered_map<version_number, std::unordered_set<hash>>>>& getStudentsMatched() const { return students_matched; }
   const std::vector<std::pair<hash, location_in_submission>> & getHashes() const { return hashes; }
-  float getPercentage() const {
-    return (100.0 * (suspicious_matches.size())) / hashes.size();
-  }
+  float getPercentage() const;
 
   // MODIFIERS
   void addHash(const hash &h, location_in_submission l) { hashes.push_back(std::make_pair(h, l)); }
-
-  void addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location, const hash &matched_hash) {
-    // save the found match
-    suspicious_matches[location].insert(matching_location);
-    // update the students_matched container
-    students_matched[matching_location.source_gradeable][matching_location.student][matching_location.version].insert(matched_hash);
-  }
-
-  void addCommonMatch(location_in_submission location) { common_matches.insert(location); }
-  void addProvidedMatch(location_in_submission location) { provided_matches.insert(location); }
+  void addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location, const hash &matched_hash);
+  void addCommonMatch(location_in_submission location);
+  void addProvidedMatch(location_in_submission location);
 
 private:
   user_id student_;
   version_number version_;
+  LichenConfig config_;
   std::vector<std::pair<hash, location_in_submission> > hashes;
   std::map<location_in_submission, std::set<HashLocation> > suspicious_matches;
   std::set<location_in_submission> common_matches;

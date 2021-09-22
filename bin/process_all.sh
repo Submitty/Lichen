@@ -18,7 +18,7 @@ KILL_ERROR_MESSAGE="
 * An error occured while running Lichen. Your run was probably killed for       *
 * exceeding the configured resource limits. Before rerunning, perhaps try any   *
 * of the following edits to the configuration:                                  *
-* - Increasing the sequence length                                              *
+* - Increasing the hash size                                                    *
 * - Using only active version                                                   *
 * - Decreasing the common code threshold                                        *
 * - Selecting fewer files to be compared                                        *

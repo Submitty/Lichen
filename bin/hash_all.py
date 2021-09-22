@@ -21,7 +21,7 @@ def parse_args():
 
 def hasher(lichen_config, lichen_run_config, my_tokenized_file, my_hashes_file):
     language = lichen_run_config["language"]
-    sequence_length = int(lichen_run_config["sequence_length"])
+    hash_size = int(lichen_run_config["hash_size"])
 
     data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
     with open(data_json_path) as token_data_file:
@@ -37,8 +37,8 @@ def hasher(lichen_config, lichen_run_config, my_tokenized_file, my_hashes_file):
                 num = len(tokens)
                 # FIXME: this truncation should be adjusted after testing
                 token_hashed_values = [(hashlib.md5(''.join(
-                    token_values[x:x+sequence_length]).encode())
-                    .hexdigest())[0:8] for x in range(0, num-sequence_length+1)]
+                    token_values[x:x+hash_size]).encode())
+                    .hexdigest())[0:8] for x in range(0, num-hash_size+1)]
 
                 if len(token_hashed_values) > lichen_config["max_sequences_per_file"]:
                     token_hashed_values = token_hashed_values[slice(0, lichen_config["max_sequences_per_file"])]  # noqa E501

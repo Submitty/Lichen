@@ -62,7 +62,7 @@ mkdir -p ${lichen_installation_dir}/tools/assignments
 #-------------------------------------------
 # compile & install the hash comparison tool
 pushd ${lichen_repository_dir}  > /dev/null
-clang++ -I ${lichen_vendor_dir} -lboost_system -lboost_filesystem -Wall -Wextra -Werror -g -O3 -flto -funroll-loops -std=c++11 compare_hashes/compare_hashes.cpp -o ${lichen_installation_dir}/bin/compare_hashes.out
+clang++ -I ${lichen_vendor_dir} -lboost_system -lboost_filesystem -Wall -Wextra -Werror -g -Ofast -flto -funroll-loops -std=c++11 compare_hashes/compare_hashes.cpp compare_hashes/submission.cpp -o ${lichen_installation_dir}/bin/compare_hashes.out
 if [ $? -ne 0 ]; then
     echo -e "ERROR: FAILED TO BUILD HASH COMPARISON TOOL\n"
     exit 1

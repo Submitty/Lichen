@@ -99,18 +99,18 @@ def validate(config, args):
         if ".." in e:
             raise SystemExit('ERROR! Invalid path component ".." in regex')
 
-    for ptg in other_gradeables:
-        for field in ptg:
+    for gradeable in other_gradeables:
+        for field in gradeable:
             if ".." in field:
                 raise SystemExit('ERROR! Invalid component ".." in other_gradeable path')
 
     # check permissions to make sure we have access to the other gradeables
     my_course_group_perms = Path(args.basepath).group()
-    for ptg in other_gradeables:
-        if Path(args.datapath, ptg["other_semester"], ptg["other_course"]).group()\
+    for gradeable in other_gradeables:
+        if Path(args.datapath, gradeable["other_semester"], gradeable["other_course"]).group()\
            != my_course_group_perms:
-            raise SystemExit(f"ERROR! Invalid permissions to access course {ptg['other_semester']}"
-                  f"/{ptg['other_course']}")
+            raise SystemExit(f"ERROR! Invalid permissions to access course {gradeable['other_semester']}"
+                  f"/{gradeable['other_course']}")
 
     # make sure the regex directory is one of the acceptable directories
     for dir in regex_dirs:

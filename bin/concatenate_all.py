@@ -109,8 +109,8 @@ def validate(config, args):
     for gradeable in other_gradeables:
         if Path(args.datapath, gradeable["other_semester"], gradeable["other_course"]).group()\
            != my_course_group_perms:
-            raise SystemExit(f"ERROR! Invalid permissions to access course {gradeable['other_semester']}"
-                  f"/{gradeable['other_course']}")
+            raise SystemExit("ERROR! Invalid permissions to access course "
+                             f"{gradeable['other_semester']}/{gradeable['other_course']}")
 
     # make sure the regex directory is one of the acceptable directories
     for dir in regex_dirs:

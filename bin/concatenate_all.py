@@ -159,11 +159,17 @@ def main():
                 continue
 
             if version_mode == "active_version":
-                # get the user's active version from their settings file
+                # get the user's active version from their settings file if it exists, else get
+                # most recent version for compatibility with early versions of Submitty
                 submissions_details_path = os.path.join(user_path, 'user_assignment_settings.json')
-                with open(submissions_details_path) as details_file:
-                    details_json = json.load(details_file)
-                    my_active_version = int(details_json["active_version"])
+                if os.path.exists(submissions_details_path):
+                    with open(submissions_details_path) as details_file:
+                        details_json = json.load(details_file)
+                        my_active_version = int(details_json["active_version"])
+                else:
+                    # get the most recent version
+                    print(sorted(os.listdir(user_path)))
+                    my_active_version = sorted(os.listdir(user_path))[-1]
 
             # loop over each version
             for version in sorted(os.listdir(user_path)):
@@ -206,13 +212,17 @@ def main():
                     continue
 
                 if version_mode == "active_version":
-                    # get the user's active version from their settings file
+                    # get the user's active version from their settings file if it exists, else get
+                    # most recent version for compatibility with early versions of Submitty
                     other_submissions_details_path = os.path.join(other_user_path,
                                                                   'user_assignment_settings.json')
-
-                    with open(other_submissions_details_path) as other_details_file:
-                        other_details_json = json.load(other_details_file)
-                        my_active_version = int(other_details_json["active_version"])
+                    if os.path.exists(other_submissions_details_path):
+                        with open(other_submissions_details_path) as other_details_file:
+                            other_details_json = json.load(other_details_file)
+                            my_active_version = int(other_details_json["active_version"])
+                    else:
+                        print(sorted(os.listdir(other_user_path))[-1])
+                        my_active_version = sorted(os.listdir(other_user_path))[-1]
 
                 # loop over each version
                 for other_version in sorted(os.listdir(other_user_path)):

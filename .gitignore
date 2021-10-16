@@ -3,3 +3,6 @@ tools/assignments/*
 __pycache__
 tests/__pycache__
 vendor/
+cmake-build-debug/*
+.idea
+.DS_Store

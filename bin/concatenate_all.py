@@ -168,7 +168,6 @@ def main():
                         my_active_version = int(details_json["active_version"])
                 else:
                     # get the most recent version
-                    print(sorted(os.listdir(user_path)))
                     my_active_version = sorted(os.listdir(user_path))[-1]
 
             # loop over each version
@@ -221,7 +220,7 @@ def main():
                             other_details_json = json.load(other_details_file)
                             my_active_version = int(other_details_json["active_version"])
                     else:
-                        print(sorted(os.listdir(other_user_path))[-1])
+                        # get the most recent version
                         my_active_version = sorted(os.listdir(other_user_path))[-1]
 
                 # loop over each version

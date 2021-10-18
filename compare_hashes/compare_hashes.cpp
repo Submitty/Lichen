@@ -14,6 +14,7 @@
 #include "boost/filesystem/path.hpp"
 #include "nlohmann/json.hpp"
 
+#include "lichen_config.h"
 #include "submission.h"
 #include "hash_location.h"
 
@@ -101,11 +102,13 @@ int main(int argc, char* argv[]) {
   time_t overall_start, overall_end;
   time(&overall_start);
 
+
   // ===========================================================================
   // load Lichen config data
   std::ifstream lichen_config_istr("./lichen_config.json");
   assert(lichen_config_istr.good());
   nlohmann::json lichen_config = nlohmann::json::parse(lichen_config_istr);
+  LichenConfig config;
 
   // ===========================================================================
   // load config info
@@ -119,11 +122,11 @@ int main(int argc, char* argv[]) {
   assert(istr.good());
   nlohmann::json config_file_json = nlohmann::json::parse(istr);
 
-  std::string semester = config_file_json.value("semester", "ERROR");
-  std::string course = config_file_json.value("course", "ERROR");
-  std::string gradeable = config_file_json.value("gradeable", "ERROR");
-  int hash_size = config_file_json.value("hash_size", 1);
-  int threshold = config_file_json.value("threshold", 5);
+  config.semester = config_file_json.value("semester", "ERROR");
+  config.course = config_file_json.value("course", "ERROR");
+  config.gradeable = config_file_json.value("gradeable", "ERROR");
+  config.hash_size = config_file_json.value("hash_size", 1);
+  config.threshold = config_file_json.value("threshold", 5);
 
   // error checking, confirm there are hashes to work with
   boost::filesystem::path users_root_directory = lichen_gradeable_path / "users";
@@ -136,7 +139,7 @@ int main(int argc, char* argv[]) {
   // the file path where we expect to find the hashed instructor provided code file
   boost::filesystem::path provided_code_file = lichen_gradeable_path / "provided_code" / "hashes.txt";
   // if file exists in that location, the provided code mode is enabled.
-  bool provided_code_enabled = boost::filesystem::exists(provided_code_file);
+  config.provided_code_enabled = boost::filesystem::exists(provided_code_file);
   // path to other gradeables' data
   boost::filesystem::path other_gradeables_dir = lichen_gradeable_path / "other_gradeables";
 
@@ -158,7 +161,7 @@ int main(int argc, char* argv[]) {
   time_t start, end;
   time(&start);
 
-  if (provided_code_enabled) {
+  if (config.provided_code_enabled) {
     // load the instructor provided code's hashes
     std::ifstream istr(provided_code_file.string());
     assert(istr.good());
@@ -221,7 +224,7 @@ int main(int argc, char* argv[]) {
       assert (version > 0);
 
       // create a submission object and load to the main submissions structure
-      Submission* curr_submission = new Submission(username, version);
+      Submission* curr_submission = new Submission(username, version, config);
 
       // load the hashes from this submission
       boost::filesystem::path hash_file = version_path;
@@ -233,7 +236,7 @@ int main(int argc, char* argv[]) {
       while (istr >> input_hash_str) {
         hash input_hash = (unsigned int)(stoul(input_hash_str, 0, 16));
         location++;
-        all_hashes[input_hash][username].push_back(HashLocation(username, version, location, semester+"__"+course+"__"+gradeable));
+        all_hashes[input_hash][username].push_back(HashLocation(username, version, location, config.semester + "__" + config.course + "__" + config.gradeable));
         curr_submission->addHash(input_hash, location);
       }
 
@@ -267,7 +270,7 @@ int main(int argc, char* argv[]) {
 
       // if provided code was enabled, look for the submission hash in the provided code's hashes
       bool provided_match_found = false;
-      if (provided_code_enabled) {
+      if (config.provided_code_enabled) {
         std::unordered_set<hash>::iterator provided_match_itr = provided_code.find(hash_itr->first);
         if (provided_match_itr != provided_code.end()) {
           provided_match_found = true;
@@ -292,7 +295,7 @@ int main(int argc, char* argv[]) {
           std::vector<HashLocation>::iterator itr = occurences_itr->second.begin();
           for (; itr != occurences_itr->second.end(); ++itr) {
 
-            if (occurences.size() > (unsigned int)threshold) {
+            if (occurences.size() > (unsigned int) config.threshold) {
               // if the number of students with matching code is more
               // than the threshold, it is considered common code
               (*submission_itr)->addCommonMatch(hash_itr->second);
@@ -368,7 +371,7 @@ int main(int argc, char* argv[]) {
         std::vector<nlohmann::json> matchingpositions;
         nlohmann::json position;
         position["start"] = matching_positions_itr->location;
-        position["end"] = matching_positions_itr->location + hash_size - 1;
+        position["end"] = matching_positions_itr->location + config.hash_size - 1;
         matchingpositions.push_back(position);
 
         // search for all matching positions of the suspicious match in other submissions
@@ -400,7 +403,7 @@ int main(int argc, char* argv[]) {
               other["source_gradeable"] = matching_positions_itr->source_gradeable;
             }
             position["start"] = matching_positions_itr->location;
-            position["end"] = matching_positions_itr->location + hash_size - 1;
+            position["end"] = matching_positions_itr->location + config.hash_size - 1;
             matchingpositions.push_back(position);
           }
         }
@@ -411,7 +414,7 @@ int main(int argc, char* argv[]) {
 
       nlohmann::json info;
       info["start"] = location_itr->first;
-      info["end"] = location_itr->first + hash_size - 1;
+      info["end"] = location_itr->first + config.hash_size - 1;
       info["type"] = "match";
       info["others"] = others;
 
@@ -428,7 +431,7 @@ int main(int argc, char* argv[]) {
 
       nlohmann::json info;
       info["start"] = *location_itr;
-      info["end"] = *location_itr + hash_size - 1;
+      info["end"] = *location_itr + config.hash_size - 1;
       info["type"] = "common";
 
       result.push_back(info);
@@ -444,7 +447,7 @@ int main(int argc, char* argv[]) {
 
       nlohmann::json info;
       info["start"] = *location_itr;
-      info["end"] = *location_itr + hash_size - 1;
+      info["end"] = *location_itr + config.hash_size - 1;
       info["type"] = "provided";
 
       result.push_back(info);
@@ -456,7 +459,7 @@ int main(int argc, char* argv[]) {
     // Done creating the JSON file/objects, now we merge them to shrink them in size
 
     // Merge matching regions:
-    if (result.size() > 0) { // check to make sure that there are more than 1 positions (if it's 1, we can't merge anyway)
+    if (!result.empty()) { // check to make sure that there are more than 1 positions (if it's 1, we can't merge anyway)
       // loop through all positions
       for (unsigned int position = 1; position < result.size(); position++) {
         nlohmann::json* prevPosition = &result[position - 1];

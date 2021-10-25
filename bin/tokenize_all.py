@@ -71,7 +71,7 @@ def main():
             tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file)
 
     # ===========================================================================
-    # tokenize the other prior term gradeables' submissions
+    # tokenize the other other gradeables' submissions
     other_gradeables_dir = os.path.join(args.basepath, "other_gradeables")
     if not os.path.isdir(other_gradeables_dir):
         raise SystemExit("ERROR! Unable to find other gradeables directory")

@@ -77,8 +77,8 @@ def validate(config, args):
     regex_dirs = config["regex_dirs"]
     language = config["language"]
     threshold = int(config["threshold"])
-    sequence_length = int(config["sequence_length"])
-    prior_term_gradeables = config["prior_term_gradeables"]
+    hash_size = int(config["hash_size"])
+    other_gradeables = config["other_gradeables"]
 
     # Check we have a tokenizer to support the configured language
     langs_data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
@@ -87,30 +87,30 @@ def validate(config, args):
         if language not in langs_data:
             raise SystemExit(f"ERROR! tokenizing not supported for language {language}")
 
-    # Check values of common code threshold and sequence length
+    # Check values of common code threshold and hash size
     if (threshold < 2):
         raise SystemExit("ERROR! threshold must be >= 2")
 
-    if (sequence_length < 1):
-        raise SystemExit("ERROR! sequence_length must be >= 1")
+    if (hash_size < 1):
+        raise SystemExit("ERROR! hash_size must be >= 1")
 
     # Check for backwards crawling
     for e in regex_patterns:
         if ".." in e:
             raise SystemExit('ERROR! Invalid path component ".." in regex')
 
-    for ptg in prior_term_gradeables:
-        for field in ptg:
+    for gradeable in other_gradeables:
+        for field in gradeable:
             if ".." in field:
-                raise SystemExit('ERROR! Invalid component ".." in prior_term_gradeable path')
+                raise SystemExit('ERROR! Invalid component ".." in other_gradeable path')
 
-    # check permissions to make sure we have access to the prior term gradeables
+    # check permissions to make sure we have access to the other gradeables
     my_course_group_perms = Path(args.basepath).group()
-    for ptg in prior_term_gradeables:
-        if Path(args.datapath, ptg["prior_semester"], ptg["prior_course"]).group()\
+    for gradeable in other_gradeables:
+        if Path(args.datapath, gradeable["other_semester"], gradeable["other_course"]).group()\
            != my_course_group_perms:
-            raise SystemExit(f"ERROR! Invalid permissions to access course {ptg['prior_semester']}"
-                  f"/{ptg['prior_course']}")
+            raise SystemExit("ERROR! Invalid permissions to access course "
+                             f"{gradeable['other_semester']}/{gradeable['other_course']}")
 
     # make sure the regex directory is one of the acceptable directories
     for dir in regex_dirs:
@@ -141,7 +141,7 @@ def main():
     version_mode = config["version"]
     regex_patterns = config["regex"]
     regex_dirs = config["regex_dirs"]
-    prior_term_gradeables = config["prior_term_gradeables"]
+    other_gradeables = config["other_gradeables"]
     users_to_ignore = config["ignore_submissions"]
 
     # ==========================================================================
@@ -196,14 +196,14 @@ def main():
                 checkTotalSize(total_concat)
 
     # ==========================================================================
-    # loop over all of the other prior term gradeables and concatenate their submissions
-    for other_gradeable in prior_term_gradeables:
+    # loop over all of the other gradeables and concatenate their submissions
+    for other_gradeable in other_gradeables:
         for dir in regex_dirs:
             other_gradeable_path = os.path.join(args.datapath,
-                                                other_gradeable["prior_semester"],
-                                                other_gradeable["prior_course"],
+                                                other_gradeable["other_semester"],
+                                                other_gradeable["other_course"],
                                                 dir,
-                                                other_gradeable["prior_gradeable"])
+                                                other_gradeable["other_gradeable"])
             # loop over each user
             for other_user in sorted(os.listdir(other_gradeable_path)):
                 other_user_path = os.path.join(other_gradeable_path, other_user)
@@ -233,7 +233,7 @@ def main():
                         continue
 
                     other_output_file_path = os.path.join(args.basepath, "other_gradeables",
-                                                          f"{other_gradeable['prior_semester']}__{other_gradeable['prior_course']}__{other_gradeable['prior_gradeable']}",  # noqa: E501
+                                                          f"{other_gradeable['other_semester']}__{other_gradeable['other_course']}__{other_gradeable['other_gradeable']}",  # noqa: E501
                                                           other_user, other_version,
                                                           "submission.concatenated")
 
@@ -264,8 +264,8 @@ def main():
                           f"for user {user} version {version}")
 
     # do the same for the other gradeables
-    for other_gradeable in prior_term_gradeables:
-        other_gradeable_dir_name = f"{other_gradeable['prior_semester']}__{other_gradeable['prior_course']}__{other_gradeable['prior_gradeable']}"  # noqa: E501
+    for other_gradeable in other_gradeables:
+        other_gradeable_dir_name = f"{other_gradeable['other_semester']}__{other_gradeable['other_course']}__{other_gradeable['other_gradeable']}"  # noqa: E501
         for other_user in os.listdir(os.path.join(args.basepath, "other_gradeables",
                                                   other_gradeable_dir_name)):
             other_user_path = os.path.join(args.basepath, "other_gradeables",

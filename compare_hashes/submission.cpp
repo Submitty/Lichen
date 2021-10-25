@@ -16,8 +16,8 @@ float Submission::getPercentage() const {
 
 void Submission::addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location, const hash &matched_hash) {
   // figure out if there is an overlap between this hash and a common/provided match
-  int sequence_length = config_.sequence_length;
-  for (int i = location - 1; i > location - sequence_length && i >= 0; i--) {
+  int hash_size = config_.hash_size;
+  for (int i = location - 1; i > location - hash_size && i >= 0; i--) {
     if (common_matches.find(i) != common_matches.end() || provided_matches.find(i) != provided_matches.end()) {
       return;
     }
@@ -31,8 +31,8 @@ void Submission::addSuspiciousMatch(location_in_submission location, const HashL
 
 void Submission::addCommonMatch(location_in_submission location) {
   // figure out if there is an overlap between this hash and a match
-  int sequence_length = config_.sequence_length;
-  for (int i = location - 1; i > location - sequence_length && i >= 0; i--) {
+  int hash_size = config_.hash_size;
+  for (int i = location - 1; i > location - hash_size && i >= 0; i--) {
     std::map<location_in_submission, std::set<HashLocation> >::const_iterator find_i = suspicious_matches.find(i);
     // if there is an overlap, remove the suspicious match that overlaps
     // hopefully this doesn't cause problems with other submissions thinking
@@ -47,8 +47,8 @@ void Submission::addCommonMatch(location_in_submission location) {
 
 void Submission::addProvidedMatch(location_in_submission location) {
   // figure out if there is an overlap between this hash and a match
-  int sequence_length = config_.sequence_length;
-  for (int i = location - 1; i > location - sequence_length && i >= 0; i--) {
+  int hash_size = config_.hash_size;
+  for (int i = location - 1; i > location - hash_size && i >= 0; i--) {
     std::map<location_in_submission, std::set<HashLocation> >::const_iterator find_i = suspicious_matches.find(i);
     // if there is an overlap, remove the suspicious match that overlaps
     // hopefully this doesn't cause problems with other submissions thinking

@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
   config.semester = config_file_json.value("semester", "ERROR");
   config.course = config_file_json.value("course", "ERROR");
   config.gradeable = config_file_json.value("gradeable", "ERROR");
-  config.sequence_length = config_file_json.value("sequence_length", 1);
+  config.hash_size = config_file_json.value("hash_size", 1);
   config.threshold = config_file_json.value("threshold", 5);
 
   // error checking, confirm there are hashes to work with
@@ -140,8 +140,8 @@ int main(int argc, char* argv[]) {
   boost::filesystem::path provided_code_file = lichen_gradeable_path / "provided_code" / "hashes.txt";
   // if file exists in that location, the provided code mode is enabled.
   config.provided_code_enabled = boost::filesystem::exists(provided_code_file);
-  // path to prior gradeables' data
-  boost::filesystem::path prior_terms_dir = lichen_gradeable_path / "other_gradeables";
+  // path to other gradeables' data
+  boost::filesystem::path other_gradeables_dir = lichen_gradeable_path / "other_gradeables";
 
 
   // ===========================================================================
@@ -153,7 +153,7 @@ int main(int argc, char* argv[]) {
   std::vector<Submission*> all_submissions;
   // Stores all hashes from the instructor provided code
   std::unordered_set<hash> provided_code;
-  // stores all hashes from other prior term gradeables
+  // stores all hashes from other gradeables
   std::unordered_map<hash, std::unordered_map<user_id, std::vector<HashLocation>>> other_gradeables;
   // stores the highest match for every student, used later for generating overall_rankings.txt
   std::unordered_map<std::string, std::pair<int, float>> highest_matches;
@@ -171,10 +171,10 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // load prior gradeables' hashes
+  // load other gradeables' hashes
   // iterate over all other gradeables
   boost::filesystem::directory_iterator end_iter;
-  for (boost::filesystem::directory_iterator other_gradeable_itr(prior_terms_dir); other_gradeable_itr != end_iter; ++other_gradeable_itr) {
+  for (boost::filesystem::directory_iterator other_gradeable_itr(other_gradeables_dir); other_gradeable_itr != end_iter; ++other_gradeable_itr) {
     boost::filesystem::path other_gradeable_path = other_gradeable_itr->path();
     assert (is_directory(other_gradeable_path));
     std::string other_gradeable_str = other_gradeable_itr->path().filename().string();
@@ -193,7 +193,7 @@ int main(int argc, char* argv[]) {
         version_number other_version = std::stoi(str_other_version);
         assert (other_version > 0);
 
-        // load the hashes from this prior submission
+        // load the hashes from this submission from another gradeable
         boost::filesystem::path other_hash_file = other_version_path / "hashes.txt";
         std::ifstream istr(other_hash_file.string());
         assert(istr.good());
@@ -371,7 +371,7 @@ int main(int argc, char* argv[]) {
         std::vector<nlohmann::json> matchingpositions;
         nlohmann::json position;
         position["start"] = matching_positions_itr->location;
-        position["end"] = matching_positions_itr->location + config.sequence_length - 1;
+        position["end"] = matching_positions_itr->location + config.hash_size - 1;
         matchingpositions.push_back(position);
 
         // search for all matching positions of the suspicious match in other submissions
@@ -393,7 +393,7 @@ int main(int argc, char* argv[]) {
 
               if (matchingpositions.size() >= lichen_config["max_matching_positions"]) {
                 std::cout << "Matching positions array truncated for user: [" << other["username"] << "] version: " << other["version"] << std::endl;
-                std::cout << "  - Try increasing the sequence length to fix this problem." << std::endl;
+                std::cout << "  - Try increasing the hash size to fix this problem." << std::endl;
                 break;
               }
 
@@ -403,7 +403,7 @@ int main(int argc, char* argv[]) {
               other["source_gradeable"] = matching_positions_itr->source_gradeable;
             }
             position["start"] = matching_positions_itr->location;
-            position["end"] = matching_positions_itr->location + config.sequence_length - 1;
+            position["end"] = matching_positions_itr->location + config.hash_size - 1;
             matchingpositions.push_back(position);
           }
         }
@@ -414,7 +414,7 @@ int main(int argc, char* argv[]) {
 
       nlohmann::json info;
       info["start"] = location_itr->first;
-      info["end"] = location_itr->first + config.sequence_length - 1;
+      info["end"] = location_itr->first + config.hash_size - 1;
       info["type"] = "match";
       info["others"] = others;
 
@@ -431,7 +431,7 @@ int main(int argc, char* argv[]) {
 
       nlohmann::json info;
       info["start"] = *location_itr;
-      info["end"] = *location_itr + config.sequence_length - 1;
+      info["end"] = *location_itr + config.hash_size - 1;
       info["type"] = "common";
 
       result.push_back(info);
@@ -447,7 +447,7 @@ int main(int argc, char* argv[]) {
 
       nlohmann::json info;
       info["start"] = *location_itr;
-      info["end"] = *location_itr + config.sequence_length - 1;
+      info["end"] = *location_itr + config.hash_size - 1;
       info["type"] = "provided";
 
       result.push_back(info);

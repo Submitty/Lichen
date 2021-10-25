@@ -5,7 +5,7 @@ struct LichenConfig {
     std::string semester;
     std::string course;
     std::string gradeable;
-    int sequence_length;
+    int hash_size;
     int threshold;
     bool provided_code_enabled;
 };

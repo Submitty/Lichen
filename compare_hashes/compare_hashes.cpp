@@ -334,12 +334,13 @@ int main(int argc, char* argv[]) {
     // Save this submissions highest percent match for later when we generate overall_rankings.txt
     float percentMatch = (*submission_itr)->getPercentage();
     unsigned int totalMatchingHashes = (*submission_itr)->getMatchCount();
-    Score submission_score = Score(percentMatch, totalMatchingHashes);
+    Score submission_score(percentMatch, totalMatchingHashes);
 
     std::unordered_map<user_id, std::pair<int, Score> >::iterator highest_matches_itr = highest_matches.find((*submission_itr)->student());
     std::pair<int, Score> new_pair = std::make_pair((*submission_itr)->version(), submission_score);
     if (highest_matches_itr == highest_matches.end()) {
-      highest_matches[(*submission_itr)->student()] = new_pair;
+      // highest_matches[(*submission_itr)->student()] = new_pair;
+      highest_matches.insert(highest_matches.begin(), std::make_pair((*submission_itr)->student(), new_pair));
     }
     else if (percentMatch > highest_matches_itr->second.second.getScore()) {
       highest_matches_itr->second = new_pair;

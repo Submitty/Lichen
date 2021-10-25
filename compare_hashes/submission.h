@@ -32,6 +32,7 @@ public:
   const std::set<location_in_submission>& getProvidedMatches() const { return provided_matches; }
   const std::unordered_map<std::string, std::unordered_map<user_id, std::unordered_map<version_number, std::unordered_set<hash>>>>& getStudentsMatched() const { return students_matched; }
   const std::vector<std::pair<hash, location_in_submission>> & getHashes() const { return hashes; }
+  unsigned int getMatchCount() const { return suspicious_matches.size(); }
   float getPercentage() const;
 
   // MODIFIERS

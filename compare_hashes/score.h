@@ -18,20 +18,21 @@ public:
   // GETTERS
   float getPercent() const { return percent; }
   unsigned int getHashesMatched() const { return hashes_matched; }
-  float getScore() const { assert(score >= 0); return score; }
 
   // MODIFIER
+  // Each submission in the ranking file gets a composite score that weighs both its percentage
+  // of suspicious matches, and its percentile of total number of hashes matched
   void calculateScore(unsigned int max_hashes_matched) {
     assert(PERCENT_WEIGHT + MATCH_WEIGHT == 1);
-    score = PERCENT_WEIGHT*percent + MATCH_WEIGHT*((100.0*hashes_matched)/max_hashes_matched);
+    score = PERCENT_WEIGHT*(percent/100.0) + MATCH_WEIGHT*((1.0*hashes_matched)/max_hashes_matched);
   }
 
   // OPERATORS
   bool operator>(const Score &other_s) const {
-    return this->score > other_s.score;
+    return this->getScore() > other_s.getScore();
   }
   bool operator==(const Score &other_s) const {
-    return this->score == other_s.score;
+    return this->getScore() == other_s.getScore();
   }
   Score& operator=(const Score& other) {
     if (this != &other) {
@@ -53,6 +54,7 @@ private:
     percent = other.percent;
     score = other.score;
   }
+  float getScore() const { assert(score >= 0 && score <= 1); return score; }
 };
 
 #endif

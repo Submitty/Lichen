@@ -159,6 +159,8 @@ int main(int argc, char* argv[]) {
   std::unordered_map<hash, std::unordered_map<user_id, std::vector<HashLocation>>> other_gradeables;
   // stores the highest match for every student, used later for generating overall_rankings.txt
   std::unordered_map<user_id, std::pair<int, Score>> highest_matches;
+  // keeps track of max matching hashes across all submissions, used for calculation of ranking score
+  unsigned int max_hashes_matched = 0;
 
   time_t start, end;
   time(&start);
@@ -334,7 +336,10 @@ int main(int argc, char* argv[]) {
     // Save this submissions highest percent match for later when we generate overall_rankings.txt
     float percentMatch = (*submission_itr)->getPercentage();
     unsigned int totalMatchingHashes = (*submission_itr)->getMatchCount();
-    Score submission_score(percentMatch, totalMatchingHashes);
+    Score submission_score(totalMatchingHashes, percentMatch);
+    if (max_hashes_matched < totalMatchingHashes) {
+      max_hashes_matched = totalMatchingHashes;
+    }
 
     std::unordered_map<user_id, std::pair<int, Score> >::iterator highest_matches_itr = highest_matches.find((*submission_itr)->student());
     std::pair<int, Score> new_pair = std::make_pair((*submission_itr)->version(), submission_score);
@@ -342,7 +347,7 @@ int main(int argc, char* argv[]) {
       // highest_matches[(*submission_itr)->student()] = new_pair;
       highest_matches.insert(highest_matches.begin(), std::make_pair((*submission_itr)->student(), new_pair));
     }
-    else if (percentMatch > highest_matches_itr->second.second.getScore()) {
+    else if (submission_score > highest_matches_itr->second.second) {
       highest_matches_itr->second = new_pair;
     }
 
@@ -554,6 +559,7 @@ int main(int argc, char* argv[]) {
           unsigned int num_hashes_matched = version_itr->second.size();
           float percent = (100.0 * num_hashes_matched) / unique_hashes.size();
           student_ranking.push_back(StudentRanking(matches_itr->first, version_itr->first, gradeables_itr->first, Score(num_hashes_matched, percent)));
+          student_ranking[student_ranking.size()-1].score.calculateScore(num_hashes_matched);
         }
       }
     }
@@ -569,10 +575,10 @@ int main(int argc, char* argv[]) {
     // finally, write the file of ranking for this submission
     for (unsigned int i = 0; i < student_ranking.size(); i++) {
       ranking_student_ostr
-        << std::setw(6) << std::setprecision(2) << std::fixed << student_ranking[i].score.getScore() << "%   "
-        << std::setw(15) << std::left << student_ranking[i].student << " "
-        << std::setw(3) << std::left << student_ranking[i].version << " "
-        << std::setw(1) << std::right << student_ranking[i].source_gradeable << std::endl;
+        << std::setw(15) << std::left << student_ranking[i].student << "  "
+        << std::setw(3) << std::left << student_ranking[i].version << "  "
+        << std::setw(1) << std::right << student_ranking[i].source_gradeable << "  "
+        << std::setw(6) << std::setprecision(2) << std::fixed << student_ranking[i].score.getPercent() << "%" << std::endl;
     }
 
     // =========================================================================
@@ -607,14 +613,15 @@ int main(int argc, char* argv[]) {
   for (std::unordered_map<user_id, std::pair<int, Score> >::iterator itr
         = highest_matches.begin(); itr != highest_matches.end(); ++itr) {
     ranking.push_back(StudentRanking(itr->first, itr->second.first, "", itr->second.second));
+    ranking[ranking.size()-1].score.calculateScore(max_hashes_matched);
   }
 
   std::sort(ranking.begin(), ranking.end(), ranking_sorter);
   for (unsigned int i = 0; i < ranking.size(); i++) {
     ranking_ostr
-      << std::left << std::setw(7) << ranking[i].student << "  "
+      << std::left << std::setw(20) << ranking[i].student << "  "
       << std::setw(3) << ranking[i].version << "  "
-      << std::right << std::setw(4) << std::setprecision(1) << std::fixed << ranking[i].score.getScore() << "%   "
+      << std::right << std::setw(4) << std::setprecision(1) << std::fixed << ranking[i].score.getPercent() << "%   "
       << std::setw(5) << ranking[i].score.getHashesMatched() << std::endl;
   }
 

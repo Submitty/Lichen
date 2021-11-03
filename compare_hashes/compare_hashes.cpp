@@ -342,10 +342,9 @@ int main(int argc, char* argv[]) {
     }
 
     std::unordered_map<user_id, std::pair<int, Score> >::iterator highest_matches_itr = highest_matches.find((*submission_itr)->student());
-    std::pair<int, Score> new_pair = std::make_pair((*submission_itr)->version(), submission_score);
+    std::pair<int, Score> new_pair = {(*submission_itr)->version(), submission_score};
     if (highest_matches_itr == highest_matches.end()) {
-      // highest_matches[(*submission_itr)->student()] = new_pair;
-      highest_matches.insert(highest_matches.begin(), std::make_pair((*submission_itr)->student(), new_pair));
+      highest_matches.insert({(*submission_itr)->student(), new_pair});
     }
     else if (submission_score > highest_matches_itr->second.second) {
       highest_matches_itr->second = new_pair;
@@ -559,7 +558,7 @@ int main(int argc, char* argv[]) {
           unsigned int num_hashes_matched = version_itr->second.size();
           float percent = (100.0 * num_hashes_matched) / unique_hashes.size();
           student_ranking.push_back(StudentRanking(matches_itr->first, version_itr->first, gradeables_itr->first, Score(num_hashes_matched, percent)));
-          student_ranking[student_ranking.size()-1].score.calculateScore(num_hashes_matched);
+          student_ranking.back().score.calculateScore(num_hashes_matched);
         }
       }
     }

@@ -23,16 +23,16 @@ public:
   // Each submission in the ranking file gets a composite score that weighs both its percentage
   // of suspicious matches, and its percentile of total number of hashes matched
   void calculateScore(unsigned int max_hashes_matched) {
-    assert(PERCENT_WEIGHT + MATCH_WEIGHT == 1);
-    score = PERCENT_WEIGHT*(percent/100.0) + MATCH_WEIGHT*((1.0*hashes_matched)/max_hashes_matched);
+    score = PERCENT_WEIGHT*(percent/100.0) + MATCH_WEIGHT*(static_cast<float>(hashes_matched)/max_hashes_matched);
   }
 
   // OPERATORS
   bool operator>(const Score &other_s) const {
-    return this->getScore() > other_s.getScore();
+    constexpr float EPSILON = 0.0001;
+    return std::abs(getScore() - other_s.getScore()) > EPSILON && getScore() > other_s.getScore();
   }
   bool operator==(const Score &other_s) const {
-    return this->getScore() == other_s.getScore();
+    return getScore() == other_s.getScore();
   }
   Score& operator=(const Score& other) {
     if (this != &other) {
@@ -43,8 +43,11 @@ public:
 
 
 private:
-  const float PERCENT_WEIGHT = 0.5;
-  const float MATCH_WEIGHT = 0.5;
+  static constexpr float PERCENT_WEIGHT = 0.5;
+  static constexpr float MATCH_WEIGHT = 0.5;
+  // just a sanity check to make sure these values are appropriately updated in the future
+  static_assert(PERCENT_WEIGHT + MATCH_WEIGHT == 1, "Weights must add to 1");
+
   unsigned int hashes_matched;
   float percent;
   float score;

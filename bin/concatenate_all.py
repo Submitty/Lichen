@@ -57,6 +57,57 @@ def getConcatFilesInDir(input_dir, regex_patterns):
     return result
 
 
+# This function is passed a path to a gradeable and an output path to place files in and
+# concatenates all of the files for each submission into a single file in the output directory
+# returns the total size of the files concatenated
+def processGradeable(config, input_dir, output_dir, total_concat):
+    # loop over each user
+    for user in sorted(os.listdir(input_dir)):
+        user_path = os.path.join(input_dir, user)
+        if not os.path.isdir(user_path):
+            continue
+        elif user in config["ignore_submissions"]:
+            continue
+
+        if config["version"] == "active_version":
+            # get the user's active version from their settings file if it exists, else get
+            # most recent version for compatibility with early versions of Submitty
+            submissions_details_path = os.path.join(user_path, 'user_assignment_settings.json')
+            if os.path.exists(submissions_details_path):
+                with open(submissions_details_path) as details_file:
+                    details_json = json.load(details_file)
+                    my_active_version = int(details_json["active_version"])
+            else:
+                # get the most recent version 
+                my_active_version = sorted(os.listdir(user_path))[-1]
+
+        # loop over each version
+        for version in sorted(os.listdir(user_path)):
+            version_path = os.path.join(user_path, version)
+            if dir == "results":
+                # only the "details" folder within "results" contains files relevant to Lichen
+                version_path = os.path.join(version_path, "details")
+            if not os.path.isdir(version_path):
+                continue
+            if config["version"] == "active_version" and int(version) != my_active_version:
+                continue
+
+            output_file_path = os.path.join(output_dir, user, version, "submission.concatenated")
+
+            if not os.path.exists(os.path.dirname(output_file_path)):
+                os.makedirs(os.path.dirname(output_file_path))
+
+            # append to concatenated file
+            with open(output_file_path, "a") as output_file:
+                concatenated_contents = getConcatFilesInDir(version_path, config["regex"])
+                output_file.write(concatenated_contents)
+                total_concat += sys.getsizeof(concatenated_contents)
+
+            # If we've exceeded the concatenation limit, kill program
+            checkTotalSize(total_concat)
+            return total_concat
+
+
 def checkTotalSize(total_concat):
     if total_concat > LICHEN_CONFIG['concat_max_total_bytes']:
         raise SystemExit("ERROR! exceeded"
@@ -142,6 +193,8 @@ def main():
     regex_patterns = config["regex"]
     regex_dirs = config["regex_dirs"]
     other_gradeables = config["other_gradeables"]
+    # optional field -> other_gradeable_paths=None if key doesn't exist
+    other_gradeable_paths = config.get("other_gradeable_paths")
     users_to_ignore = config["ignore_submissions"]
 
     # ==========================================================================
@@ -149,109 +202,29 @@ def main():
     total_concat = 0
 
     for dir in regex_dirs:
-        gradeable_path = os.path.join(args.datapath, semester, course, dir, gradeable)
-        # loop over each user
-        for user in sorted(os.listdir(gradeable_path)):
-            user_path = os.path.join(gradeable_path, user)
-            if not os.path.isdir(user_path):
-                continue
-            elif user in users_to_ignore:
-                continue
-
-            if version_mode == "active_version":
-                # get the user's active version from their settings file if it exists, else get
-                # most recent version for compatibility with early versions of Submitty
-                submissions_details_path = os.path.join(user_path, 'user_assignment_settings.json')
-                if os.path.exists(submissions_details_path):
-                    with open(submissions_details_path) as details_file:
-                        details_json = json.load(details_file)
-                        my_active_version = int(details_json["active_version"])
-                else:
-                    # get the most recent version
-                    my_active_version = sorted(os.listdir(user_path))[-1]
-
-            # loop over each version
-            for version in sorted(os.listdir(user_path)):
-                version_path = os.path.join(user_path, version)
-                if dir == "results":
-                    # only the "details" folder within "results" contains files relevant to Lichen
-                    version_path = os.path.join(version_path, "details")
-                if not os.path.isdir(version_path):
-                    continue
-                if version_mode == "active_version" and int(version) != my_active_version:
-                    continue
-
-                output_file_path = os.path.join(args.basepath, "users", user,
-                                                version, "submission.concatenated")
-
-                if not os.path.exists(os.path.dirname(output_file_path)):
-                    os.makedirs(os.path.dirname(output_file_path))
-
-                # append to concatenated file
-                with open(output_file_path, "a") as output_file:
-                    concatenated_contents = getConcatFilesInDir(version_path, regex_patterns)
-                    output_file.write(concatenated_contents)
-                    total_concat += sys.getsizeof(concatenated_contents)
-
-                checkTotalSize(total_concat)
+        input_path = os.path.join(args.datapath, semester, course, dir, gradeable)
+        output_path = os.path.join(args.basepath, "users")
+        total_concat = processGradeable(input_path, output_path)
 
     # ==========================================================================
     # loop over all of the other gradeables and concatenate their submissions
     for other_gradeable in other_gradeables:
         for dir in regex_dirs:
-            other_gradeable_path = os.path.join(args.datapath,
-                                                other_gradeable["other_semester"],
-                                                other_gradeable["other_course"],
-                                                dir,
-                                                other_gradeable["other_gradeable"])
-            # loop over each user
-            for other_user in sorted(os.listdir(other_gradeable_path)):
-                other_user_path = os.path.join(other_gradeable_path, other_user)
-                if not os.path.isdir(other_user_path):
-                    continue
-
-                if version_mode == "active_version":
-                    # get the user's active version from their settings file if it exists, else get
-                    # most recent version for compatibility with early versions of Submitty
-                    other_submissions_details_path = os.path.join(other_user_path,
-                                                                  'user_assignment_settings.json')
-                    if os.path.exists(other_submissions_details_path):
-                        with open(other_submissions_details_path) as other_details_file:
-                            other_details_json = json.load(other_details_file)
-                            my_active_version = int(other_details_json["active_version"])
-                    else:
-                        # get the most recent version
-                        my_active_version = sorted(os.listdir(other_user_path))[-1]
-
-                # loop over each version
-                for other_version in sorted(os.listdir(other_user_path)):
-                    other_version_path = os.path.join(other_user_path, other_version)
-                    if dir == "results":
-                        # only the "details" dir within "results" contains files relevant to Lichen
-                        other_version_path = os.path.join(other_version_path, "details")
-                    if not os.path.isdir(other_version_path):
-                        continue
-
-                    other_output_file_path = os.path.join(args.basepath, "other_gradeables",
-                                                          f"{other_gradeable['other_semester']}__{other_gradeable['other_course']}__{other_gradeable['other_gradeable']}",  # noqa: E501
-                                                          other_user, other_version,
-                                                          "submission.concatenated")
-
-                    if not os.path.exists(os.path.dirname(other_output_file_path)):
-                        os.makedirs(os.path.dirname(other_output_file_path))
-
-                    # append to concatenated file
-                    with open(other_output_file_path, "a") as other_output_file:
-                        other_concatenated_contents = getConcatFilesInDir(other_version_path,
-                                                                          regex_patterns)
-                        other_output_file.write(other_concatenated_contents)
-                        total_concat += sys.getsizeof(other_concatenated_contents)
-
-                    checkTotalSize(total_concat)
+            input_path = os.path.join(args.datapath,
+                                      other_gradeable["other_semester"],
+                                      other_gradeable["other_course"],
+                                      dir,
+                                      other_gradeable["other_gradeable"])
+            
+            output_path = os.path.join(args.basepath, "other_gradeables",
+                                       f"{other_gradeable['other_semester']}__{other_gradeable['other_course']}__{other_gradeable['other_gradeable']}")  # noqa: E501
+            total_concat = processGradeable(input_path, output_path)
 
     # ==========================================================================
     # iterate over all of the created submissions, checking to see if they are empty
     # and printing a message if so
+
+    empty_directories = []  # holds a list of users who had no files concatenated
 
     for user in os.listdir(os.path.join(args.basepath, "users")):
         user_path = os.path.join(args.basepath, "users", user)
@@ -260,11 +233,14 @@ def main():
             my_concatenated_file = os.path.join(version_path, "submission.concatenated")
             with open(my_concatenated_file, "r") as my_cf:
                 if my_cf.read() == "":
-                    print("Warning: No files matched provided regex in selected directories "
-                          f"for user {user} version {version}")
+                    empty_directories.append(f"{user}:{version}")
+    if len(empty_directories) > 0:
+        print("Warning: No files matched provided regex in selected directories for user(s):",
+               empty_directories)
 
     # do the same for the other gradeables
     for other_gradeable in other_gradeables:
+        empty_directories = []
         other_gradeable_dir_name = f"{other_gradeable['other_semester']}__{other_gradeable['other_course']}__{other_gradeable['other_gradeable']}"  # noqa: E501
         for other_user in os.listdir(os.path.join(args.basepath, "other_gradeables",
                                                   other_gradeable_dir_name)):
@@ -275,8 +251,10 @@ def main():
                 my_concatenated_file = os.path.join(other_version_path, "submission.concatenated")
                 with open(my_concatenated_file, "r") as my_cf:
                     if my_cf.read() == "":
-                        print("Warning: No files matched provided regex in selected directories "
-                              f"for user {other_user} version {other_version}")
+                        empty_directories.append(f"{other_user}:{other_version}")
+        if len(empty_directories) > 0:
+            print("Warning: No files matched provided regex in selected directories for user(s):",
+                  empty_directories, "in gradeable", other_gradeable)
 
     # ==========================================================================
     # concatenate provided code

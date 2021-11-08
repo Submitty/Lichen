@@ -1,2 +1,2 @@
- 25.71%   bitdiddle         1
- 19.48%   aphacker          1
+bitdiddle             1    25.7%      27
+aphacker              1    19.5%      15

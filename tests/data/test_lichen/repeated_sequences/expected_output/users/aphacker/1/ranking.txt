@@ -1,1 +1,1 @@
- 18.42%   bitdiddle       1   f21__plagiarism__repeated_sequences
+bitdiddle        1    f21__plagiarism__repeated_sequences   18.42%

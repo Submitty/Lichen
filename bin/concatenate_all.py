@@ -11,6 +11,7 @@ import json
 import time
 import humanize
 import fnmatch
+import hashlib
 from pathlib import Path
 
 IGNORED_FILES = [
@@ -60,7 +61,15 @@ def getConcatFilesInDir(input_dir, regex_patterns):
 # This function is passed a path to a gradeable and an output path to place files in and
 # concatenates all of the files for each submission into a single file in the output directory
 # returns the total size of the files concatenated
-def processGradeable(config, input_dir, output_dir, total_concat):
+def processGradeable(basepath, config, input_dir, output_dir, total_concat):
+    # basic error checking
+    if not Path(input_dir).exists():
+        raise SystemExit(f"ERROR: Unable to find directory {input_dir}")
+
+    if Path(input_dir).group() != Path(basepath).group():
+        raise SystemExit(f"ERROR: Group for directory {input_dir} does not"
+                         f"match group for {basepath} directory")
+
     # loop over each user
     for user in sorted(os.listdir(input_dir)):
         user_path = os.path.join(input_dir, user)
@@ -78,7 +87,7 @@ def processGradeable(config, input_dir, output_dir, total_concat):
                     details_json = json.load(details_file)
                     my_active_version = int(details_json["active_version"])
             else:
-                # get the most recent version 
+                # get the most recent version
                 my_active_version = sorted(os.listdir(user_path))[-1]
 
         # loop over each version
@@ -105,7 +114,7 @@ def processGradeable(config, input_dir, output_dir, total_concat):
 
             # If we've exceeded the concatenation limit, kill program
             checkTotalSize(total_concat)
-            return total_concat
+    return total_concat
 
 
 def checkTotalSize(total_concat):
@@ -136,37 +145,44 @@ def validate(config, args):
     with open(langs_data_json_path, 'r') as langs_data_file:
         langs_data = json.load(langs_data_file)
         if language not in langs_data:
-            raise SystemExit(f"ERROR! tokenizing not supported for language {language}")
+            raise SystemExit(f"ERROR: tokenizing not supported for language {language}")
 
     # Check values of common code threshold and hash size
     if (threshold < 2):
-        raise SystemExit("ERROR! threshold must be >= 2")
+        raise SystemExit("ERROR: threshold must be >= 2")
 
     if (hash_size < 1):
-        raise SystemExit("ERROR! hash_size must be >= 1")
+        raise SystemExit("ERROR: hash_size must be >= 1")
 
     # Check for backwards crawling
     for e in regex_patterns:
         if ".." in e:
-            raise SystemExit('ERROR! Invalid path component ".." in regex')
+            raise SystemExit('ERROR: Invalid path component ".." in regex')
 
     for gradeable in other_gradeables:
         for field in gradeable:
             if ".." in field:
-                raise SystemExit('ERROR! Invalid component ".." in other_gradeable path')
+                raise SystemExit('ERROR: Invalid component ".." in other_gradeable path')
 
     # check permissions to make sure we have access to the other gradeables
     my_course_group_perms = Path(args.basepath).group()
     for gradeable in other_gradeables:
         if Path(args.datapath, gradeable["other_semester"], gradeable["other_course"]).group()\
            != my_course_group_perms:
-            raise SystemExit("ERROR! Invalid permissions to access course "
+            raise SystemExit("ERROR: Invalid permissions to access course "
                              f"{gradeable['other_semester']}/{gradeable['other_course']}")
+
+    # check permissions for each path we are given (if any are provided)
+    if config.get("other_gradeable_paths") is not None:
+        for path in config["other_gradeable_paths"]:
+            if Path(path).group() != my_course_group_perms:
+                raise SystemExit(f"ERROR: Group for directory {path} does not"
+                                 f"match group for {args.basepath} directory")
 
     # make sure the regex directory is one of the acceptable directories
     for dir in regex_dirs:
         if dir not in ["submissions", "results", "checkout"]:
-            raise SystemExit("ERROR! ", dir, " is not a valid input directory for Lichen")
+            raise SystemExit(f"ERROR: {dir} is not a valid input directory for Lichen")
 
 
 def main():
@@ -204,7 +220,8 @@ def main():
     for dir in regex_dirs:
         input_path = os.path.join(args.datapath, semester, course, dir, gradeable)
         output_path = os.path.join(args.basepath, "users")
-        total_concat = processGradeable(input_path, output_path)
+        total_concat = processGradeable(args.basepath, config,
+                                        input_path, output_path, total_concat)
 
     # ==========================================================================
     # loop over all of the other gradeables and concatenate their submissions
@@ -215,10 +232,18 @@ def main():
                                       other_gradeable["other_course"],
                                       dir,
                                       other_gradeable["other_gradeable"])
-            
+
             output_path = os.path.join(args.basepath, "other_gradeables",
                                        f"{other_gradeable['other_semester']}__{other_gradeable['other_course']}__{other_gradeable['other_gradeable']}")  # noqa: E501
-            total_concat = processGradeable(input_path, output_path)
+            total_concat = processGradeable(args.basepath, config,
+                                            input_path, output_path, total_concat)
+
+    # take care of any manually-specified paths if they exist
+    if other_gradeable_paths is not None:
+        for path in other_gradeable_paths:
+            dir_name = hashlib.md5(path.encode('utf-8')).hexdigest()  # We hash the path as the name of the gradeable
+            output_path = os.path.join(args.basepath, "other_gradeables", dir_name)
+            total_concat = processGradeable(args.basepath, config, path, output_path, total_concat)
 
     # ==========================================================================
     # iterate over all of the created submissions, checking to see if they are empty
@@ -236,16 +261,15 @@ def main():
                     empty_directories.append(f"{user}:{version}")
     if len(empty_directories) > 0:
         print("Warning: No files matched provided regex in selected directories for user(s):",
-               empty_directories)
+              ", ".join(empty_directories))
 
     # do the same for the other gradeables
-    for other_gradeable in other_gradeables:
+    for other_gradeable in os.listdir(os.path.join(args.basepath, "other_gradeables")):
         empty_directories = []
-        other_gradeable_dir_name = f"{other_gradeable['other_semester']}__{other_gradeable['other_course']}__{other_gradeable['other_gradeable']}"  # noqa: E501
-        for other_user in os.listdir(os.path.join(args.basepath, "other_gradeables",
-                                                  other_gradeable_dir_name)):
+        for other_user in os.listdir(os.path.join(args.basepath,
+                                                  "other_gradeables", other_gradeable)):
             other_user_path = os.path.join(args.basepath, "other_gradeables",
-                                           other_gradeable_dir_name, other_user)
+                                           other_gradeable, other_user)
             for other_version in os.listdir(other_user_path):
                 other_version_path = os.path.join(other_user_path, other_version)
                 my_concatenated_file = os.path.join(other_version_path, "submission.concatenated")
@@ -254,7 +278,7 @@ def main():
                         empty_directories.append(f"{other_user}:{other_version}")
         if len(empty_directories) > 0:
             print("Warning: No files matched provided regex in selected directories for user(s):",
-                  empty_directories, "in gradeable", other_gradeable)
+                  ", ".join(empty_directories), "in gradeable", other_gradeable)
 
     # ==========================================================================
     # concatenate provided code

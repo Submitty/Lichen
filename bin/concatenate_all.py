@@ -205,13 +205,11 @@ def main():
     semester = config["semester"]
     course = config["course"]
     gradeable = config["gradeable"]
-    version_mode = config["version"]
     regex_patterns = config["regex"]
     regex_dirs = config["regex_dirs"]
     other_gradeables = config["other_gradeables"]
     # optional field -> other_gradeable_paths=None if key doesn't exist
     other_gradeable_paths = config.get("other_gradeable_paths")
-    users_to_ignore = config["ignore_submissions"]
 
     # ==========================================================================
     # loop through and concatenate the selected files for each user in this gradeable
@@ -243,7 +241,8 @@ def main():
         for path in other_gradeable_paths:
             dir_name = hashlib.md5(path.encode('utf-8')).hexdigest()  # We hash the path as the name of the gradeable
             output_path = os.path.join(args.basepath, "other_gradeables", dir_name)
-            total_concat = processGradeable(args.basepath, config, path, output_path, total_concat)
+            total_concat = processGradeable(args.basepath, config, path,
+                                            output_path, total_concat)
 
     # ==========================================================================
     # iterate over all of the created submissions, checking to see if they are empty

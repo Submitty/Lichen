@@ -165,6 +165,32 @@ class TestCTokenizer(unittest.TestCase):
 
             self.assertEqual(actual_output, expected_output)
 
+    def testCTokenizerIgnoreComments(self):
+        self.maxDiff = None
+
+        with TemporaryDirectory() as temp_dir:
+            input_file = Path(test_data_dir, "tokenizer", "c", "input.cpp")
+            output_file_with_comments = Path(temp_dir, "output_with_comments.json")
+            output_file_ignore_comments = Path(temp_dir, "output_ignore_comments.json")
+            expected_output_file_ignore_comments = Path(test_data_dir, "tokenizer", "c", "expected_output", "output_ignore_comments.json")
+            expected_output_file_with_comments = Path(test_data_dir, "tokenizer", "c", "expected_output", "output.json")
+
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'c_tokenizer.py'))} {str(input_file)} --ignore_comments > {str(output_file_ignore_comments)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'c_tokenizer.py'))} {str(input_file)} > {str(output_file_with_comments)}", shell=True)
+
+            with open(output_file_with_comments) as file:
+                actual_output_with_comments = json.load(file)
+            with open(output_file_ignore_comments) as file:
+                actual_output_ignore_comments = json.load(file)
+
+            with open(expected_output_file_with_comments) as file:
+                expected_output_with_comments = json.load(file)
+            with open(expected_output_file_ignore_comments) as file:
+                expected_output_ignore_comments = json.load(file)
+
+            self.assertEqual(actual_output_with_comments, expected_output_with_comments)
+            self.assertEqual(actual_output_ignore_comments, expected_output_ignore_comments)
+
 
 class TestPythonTokenizer(unittest.TestCase):
     def testPythonTokenizer(self):

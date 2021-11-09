@@ -239,7 +239,8 @@ def main():
     # take care of any manually-specified paths if they exist
     if other_gradeable_paths is not None:
         for path in other_gradeable_paths:
-            dir_name = hashlib.md5(path.encode('utf-8')).hexdigest()  # We hash the path as the name of the gradeable
+            # We hash the path as the name of the gradeable
+            dir_name = hashlib.md5(path.encode('utf-8')).hexdigest()
             output_path = os.path.join(args.basepath, "other_gradeables", dir_name)
             total_concat = processGradeable(args.basepath, config, path,
                                             output_path, total_concat)

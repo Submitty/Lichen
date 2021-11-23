@@ -27,7 +27,8 @@ def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
 
     tokenizer = f"./{language_token_data['tokenizer']}"
 
-    if not language_token_data.get("input_as_argument"):
+    if language_token_data.get('input_as_argument') is not None and \
+       language_token_data['input_as_argument'] is not False:
         my_concatenated_file = f'< {my_concatenated_file}'
 
     if "command_args" in language_token_data:

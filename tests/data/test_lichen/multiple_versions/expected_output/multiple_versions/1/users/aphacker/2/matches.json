@@ -1,0 +1,118 @@
+[
+    {
+        "end": 4,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 4,
+                        "start": 1
+                    },
+                    {
+                        "end": 13,
+                        "start": 10
+                    }
+                ],
+                "source_gradeable": "f21__blank__multiple_versions",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 1,
+        "type": "match"
+    },
+    {
+        "end": 6,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 6,
+                        "start": 2
+                    }
+                ],
+                "source_gradeable": "f21__blank__multiple_versions",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 2,
+        "type": "match"
+    },
+    {
+        "end": 12,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 12,
+                        "start": 8
+                    }
+                ],
+                "source_gradeable": "f21__blank__multiple_versions",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 8,
+        "type": "match"
+    },
+    {
+        "end": 13,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 4,
+                        "start": 1
+                    },
+                    {
+                        "end": 13,
+                        "start": 10
+                    }
+                ],
+                "source_gradeable": "f21__blank__multiple_versions",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 10,
+        "type": "match"
+    },
+    {
+        "end": 32,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 32,
+                        "start": 11
+                    }
+                ],
+                "source_gradeable": "f21__blank__multiple_versions",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 11,
+        "type": "match"
+    },
+    {
+        "end": 46,
+        "others": [
+            {
+                "matchingpositions": [
+                    {
+                        "end": 46,
+                        "start": 34
+                    }
+                ],
+                "source_gradeable": "f21__blank__multiple_versions",
+                "username": "bitdiddle",
+                "version": 1
+            }
+        ],
+        "start": 34,
+        "type": "match"
+    }
+]

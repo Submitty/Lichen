@@ -1,0 +1,10 @@
+Beginning Lichen run: 2021-12-21 17:20:31
+CONCATENATE ALL...done in 0 seconds, 949 Bytes concatenated
+TOKENIZE ALL...done in 0 seconds
+HASH ALL...done in 0 seconds
+COMPARE HASHES...finished loading in 0 seconds
+hash walk: 33% complete
+hash walk: 66% complete
+hash walk: 100% complete
+finished walking in 0 seconds
+COMPARE HASHES done in 0 seconds

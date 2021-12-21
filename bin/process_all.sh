@@ -85,9 +85,11 @@ mkdir -p "${BASEPATH}/users"
 
     ############################################################################
     # Run Lichen
-    ./tokenize_all.py    "$tmp_location" || { rm -rf "$tmp_location"; exit 1; }
-    ./hash_all.py        "$tmp_location" || { rm -rf "$tmp_location"; exit 1; }
-    ./compare_hashes.out "$tmp_location" || { rm -rf "$tmp_location"; echo "${KILL_ERROR_MESSAGE}"; exit 1; }
+    {  # We still want to unzip files if an error occurs when running Lichen here
+      ./tokenize_all.py    "$tmp_location" &&
+      ./hash_all.py        "$tmp_location" &&
+      ./compare_hashes.out "$tmp_location" || echo "${KILL_ERROR_MESSAGE}";
+    }
 
     ############################################################################
     # Zip the results back up and send them back to the course's lichen directory

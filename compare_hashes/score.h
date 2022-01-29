@@ -2,6 +2,7 @@
 #define SCORE_H
 
 #include <cassert>
+#include <string>
 
 typedef int location_in_submission;
 typedef unsigned int hash;

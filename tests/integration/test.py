@@ -21,26 +21,35 @@ class TestLichen(unittest.TestCase):
                 data_path = Path(test_data_dir, "test_lichen", test_case, "input")
                 shutil.copyfile(Path(data_path, "config.json"), Path(temp_dir, "config.json"))
 
+                # change the group for the temporary directory such that it matches the input group
+                subprocess.check_call(f"chgrp -R {data_path.group()} {temp_dir}", shell=True)
+
                 # run Lichen
                 subprocess.check_call(f"bash {str(lichen_installation_dir)}/bin/process_all.sh {str(temp_dir)} {str(data_path)}", shell=True)
 
                 ex_output_path = Path(test_data_dir, "test_lichen", test_case, "expected_output")
 
                 # compare the output and expected output directory structure and file contents
+                ignored_files_count = 0
                 ex_files_count = 0
                 for root, dirs, files in os.walk(ex_output_path):
                     ex_files_count += len(dirs) + len(files)
                     for file in files:
-                        if file != "lichen_job_output.txt" and file != "git_placeholder.txt":
-                            ex_path = Path(root, file)
-                            if root.replace(str(ex_output_path), "") == "":
-                                act_path = Path(temp_dir, file)
-                            else:
-                                act_path = Path(temp_dir, root.replace(str(ex_output_path), "").strip("/"), file)
+                        if file == "lichen_job_output.txt":
+                            continue
+                        if file == "git_placeholder.txt":
+                            ignored_files_count += 1
+                            continue
 
-                            with open(ex_path) as ex_file:
-                                with open(act_path) as act_file:
-                                    self.assertEqual(ex_file.read().strip(), act_file.read().strip())
+                        ex_path = Path(root, file)
+                        if root.replace(str(ex_output_path), "") == "":
+                            act_path = Path(temp_dir, file)
+                        else:
+                            act_path = Path(temp_dir, root.replace(str(ex_output_path), "").strip("/"), file)
+
+                        with open(ex_path) as ex_file:
+                            with open(act_path) as act_file:
+                                self.assertEqual(ex_file.read().strip(), act_file.read().strip())
 
                     for dir in dirs:
                         ex_path = Path(root, dir)
@@ -52,10 +61,8 @@ class TestLichen(unittest.TestCase):
                         self.assertTrue(os.path.isdir(act_path))
 
                 act_files_count = 0
-                for _, dirs, files in os.walk(temp_dir):
+                for _, dirs, files in os.walk(Path(temp_dir)):
                     act_files_count += len(dirs) + len(files)
 
-                # NOTE: We must subtract two here because git doesn't store empty directories
-                # This will have to change in the future when we add more test gradeables
-                # may not have empty directories
-                self.assertEqual(ex_files_count - 2, act_files_count)
+                # ensure that we didn't miss any files by checking that there are the same number of files in each directory
+                self.assertEqual(ex_files_count - ignored_files_count, act_files_count)

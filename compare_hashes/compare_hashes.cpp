@@ -602,7 +602,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Matching positions array truncated for user(s): ";
     for (std::unordered_map<std::string, int>::const_iterator itr = matching_positions_truncations.begin();
         itr != matching_positions_truncations.end(); itr++) {
-      std::cout << itr->first << ", ";
+      std::cout << itr->first << " (" << itr->second << "), ";
     }
     std::cout << std::endl << "  - Try increasing the hash size or adding a regex to fix this problem." << std::endl;
   }

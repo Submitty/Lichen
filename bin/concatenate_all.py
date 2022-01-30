@@ -8,7 +8,7 @@ import argparse
 import os
 import sys
 import json
-import time
+import datetime
 import humanize
 import fnmatch
 import hashlib
@@ -186,10 +186,10 @@ def validate(config, args):
 
 
 def main():
-    start_time = time.time()
+    start_time = datetime.datetime.now()
     args = parse_args()
 
-    print("CONCATENATE ALL...", end="")
+    print("CONCATENATE ALL:", flush=True)
 
     config_path = os.path.join(args.basepath, "config.json")
     if not os.path.isfile(config_path):
@@ -291,9 +291,8 @@ def main():
     checkTotalSize(total_concat)
 
     # ==========================================================================
-    end_time = time.time()
-    print("done in " + "%.0f" % (end_time - start_time) + " seconds,",
-          humanize.naturalsize(total_concat) + " concatenated")
+    print("Concatenation done in", humanize.precisedelta(start_time, format="%1.f"), ", ",
+          humanize.naturalsize(total_concat), "concatenated")
 
 
 if __name__ == "__main__":

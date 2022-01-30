@@ -6,7 +6,8 @@ Tokenizes the concatenated files.
 import argparse
 import os
 import json
-import time
+import humanize
+import datetime
 
 
 def parse_args():
@@ -43,19 +44,34 @@ def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
 
 
 def main():
-    start_time = time.time()
+    start_time = datetime.datetime.now()
     args = parse_args()
 
-    print("TOKENIZE ALL...", end="", flush=True)
+    print("TOKENIZE ALL:", flush=True)
+    print("[0%                      25%                     50%                     75%                     100%]\n[", end="", flush=True)  # noqa: E501
 
     with open(os.path.join(args.basepath, "config.json")) as lichen_config:
         lichen_config_data = json.load(lichen_config)
 
-    # ===========================================================================
-    # walk the subdirectories to tokenize this gradeable's submissions
     users_dir = os.path.join(args.basepath, "users")
     if not os.path.isdir(users_dir):
-        raise SystemExit("ERROR! Unable to find users directory")
+        raise SystemExit("ERROR: Unable to find users directory")
+
+    other_gradeables_dir = os.path.join(args.basepath, "other_gradeables")
+    if not os.path.isdir(other_gradeables_dir):
+        raise SystemExit("ERROR: Unable to find other gradeables directory")
+
+    # We'll make a rough estimate of the percentage of tokenization done by
+    # taking the percentage of users which have been tokenized thus far
+    total_users = len(os.listdir(users_dir))
+    for dir in os.listdir(other_gradeables_dir):
+        total_users += len(os.listdir(os.path.join(other_gradeables_dir, dir)))
+
+    users_tokenized = 0
+    percent_progress = 0
+
+    # ===========================================================================
+    # walk the subdirectories to tokenize this gradeable's submissions
 
     for user in sorted(os.listdir(users_dir)):
         user_dir = os.path.join(users_dir, user)
@@ -71,11 +87,14 @@ def main():
             my_tokenized_file = os.path.join(my_dir, "tokens.json")
             tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file)
 
+        users_tokenized += 1
+        if int((users_tokenized / total_users) * 100) > percent_progress:
+            new_percent_progress = int((users_tokenized / total_users) * 100)
+            print("|" * (new_percent_progress - percent_progress), end="", flush=True)
+            percent_progress = new_percent_progress
+
     # ===========================================================================
     # tokenize the other other gradeables' submissions
-    other_gradeables_dir = os.path.join(args.basepath, "other_gradeables")
-    if not os.path.isdir(other_gradeables_dir):
-        raise SystemExit("ERROR! Unable to find other gradeables directory")
 
     for other_gradeable in sorted(os.listdir(other_gradeables_dir)):
         other_gradeable_dir = os.path.join(other_gradeables_dir, other_gradeable)
@@ -96,6 +115,12 @@ def main():
                 other_tokenized_file = os.path.join(other_version_dir, "tokens.json")
                 tokenize(lichen_config_data, other_concatenated_file, other_tokenized_file)
 
+            users_tokenized += 1
+            if int((users_tokenized / total_users) * 100) > percent_progress:
+                new_percent_progress = int((users_tokenized / total_users) * 100)
+                print("|" * (new_percent_progress - percent_progress), end="", flush=True)
+                percent_progress = new_percent_progress
+
     # ===========================================================================
     # tokenize the provided code
     provided_code_concat = os.path.join(args.basepath, "provided_code", "submission.concatenated")
@@ -103,8 +128,7 @@ def main():
     tokenize(lichen_config_data, provided_code_concat, provided_code_tokenized)
 
     # ==========================================================================
-    end_time = time.time()
-    print("done in " + "%.0f" % (end_time - start_time) + " seconds")
+    print("]\nTokenization done in", humanize.precisedelta(start_time, format="%1.f"))
 
 
 if __name__ == "__main__":

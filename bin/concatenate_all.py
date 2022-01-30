@@ -291,7 +291,7 @@ def main():
     checkTotalSize(total_concat)
 
     # ==========================================================================
-    print("Concatenation done in", humanize.precisedelta(start_time, format="%1.f"), ", ",
+    print("Concatenation done in", humanize.precisedelta(start_time, format="%1.f") + ",",
           humanize.naturalsize(total_concat), "concatenated")
 
 

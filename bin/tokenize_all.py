@@ -26,16 +26,22 @@ def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
     with open(data_json_path, 'r') as token_data_file:
         data_file = json.load(token_data_file)
         language_token_data = data_file[language]
-        for argument in lichen_config_data["arguments"]:
-            if argument in language_token_data["command_args"]:
-                cli_args.append(language_token_data["command_args"][argument]["argument"])
-            else:
-                print(f"Error: Unknown tokenization argument {argument}")
+        if "arguments" in lichen_config_data.keys():  # For backwards compatibility - TODO: Remove
+            for argument in lichen_config_data["arguments"]:
+                if argument in language_token_data["command_args"]:
+                    cli_args.append(language_token_data["command_args"][argument]["argument"])
+                else:
+                    print(f"Error: Unknown tokenization argument {argument}")
+        else:  # Use the default arguments
+            for argument in language_token_data["command_args"]:
+                if "default" in language_token_data["command_args"][argument].keys() and\
+                        language_token_data["command_args"][argument]["default"]:
+                    cli_args.append(language_token_data["command_args"][argument]["argument"])
 
     tokenizer = f"./{language_token_data['tokenizer']}"
 
     result = subprocess.run([language_token_data['command_executable'],
-                             tokenizer, my_concatenated_file, cli_args],
+                             tokenizer, my_concatenated_file] + cli_args,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
 

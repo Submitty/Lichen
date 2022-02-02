@@ -18,7 +18,8 @@
             },
             "ignore_newlines": {
                 "name": "Ignore newlines",
-                "argument": "--ignore_newlines"
+                "argument": "--ignore_newlines",
+                "default": true
             }
         },
         "token_value": "value",
@@ -38,7 +39,8 @@
         "command_args": {
             "ignore_comments": {
                 "name": "Ignore comments",
-                "argument": "--ignore_comments"
+                "argument": "--ignore_comments",
+                "default": true
             }
         },
         "token_value": "type",

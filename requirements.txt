@@ -5,7 +5,7 @@
 parso==0.8.3
 
 # C/C++ tokenization
-clang==11.0
+clang==14.0
 
 # Java tokenization
 javac_parser==1.0.0

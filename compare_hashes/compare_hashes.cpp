@@ -161,6 +161,9 @@ int main(int argc, char* argv[]) {
   std::unordered_map<user_id, std::vector<std::pair<version_number, Score>>> highest_matches;
   // keeps track of max matching hashes across all submissions, used for calculation of ranking score
   unsigned int max_hashes_matched = 0;
+  // a map of "user_id:version" strings to the non-zero number of times their matching positions array was truncated
+  std::unordered_map<std::string, int> matching_positions_truncations;
+
 
   time_t start, end;
   time(&start);
@@ -383,8 +386,7 @@ int main(int argc, char* argv[]) {
               others.push_back(other);
 
               if (matchingpositions.size() >= lichen_config["max_matching_positions"]) {
-                std::cout << "Matching positions array truncated for user: [" << other["username"] << "] version: " << other["version"] << std::endl;
-                std::cout << "  - Try increasing the hash size to fix this problem." << std::endl;
+                matching_positions_truncations[std::string(other["username"]) + std::string(":") + std::to_string(other["version"].get<int>())]++;
                 break;
               }
 
@@ -554,7 +556,7 @@ int main(int argc, char* argv[]) {
     if (max_hashes_matched < totalMatchingHashes) {
       max_hashes_matched = totalMatchingHashes;
     }
-    
+
     std::pair<version_number, Score> new_pair = {(*submission_itr)->version(), submission_score};
     highest_matches[(*submission_itr)->student()].push_back(new_pair);
     // =========================================================================
@@ -587,13 +589,23 @@ int main(int argc, char* argv[]) {
     my_counter++;
     if (int((my_counter / float(all_submissions.size())) * 100) > my_percent) {
       my_percent = int((my_counter / float(all_submissions.size())) * 100);
-      std::cout << "hash walk: " << my_percent << "% complete" << std::endl;
+      std::cout << "Processing submissions: " << my_percent << "% complete" << std::endl;
     }
   }
 
   time(&end);
   diff = difftime(end, start);
-  std::cout << "finished walking in " << diff << " seconds" << std::endl;
+  std::cout << "Finished processing submissions in " << diff << " seconds" << std::endl;
+
+  // Print out the list of users who had their matching positions array truncated
+  if (matching_positions_truncations.size() > 0) {
+    std::cout << "Matching positions array truncated for user(s): ";
+    for (std::unordered_map<std::string, int>::const_iterator itr = matching_positions_truncations.begin();
+        itr != matching_positions_truncations.end(); itr++) {
+      std::cout << itr->first << " (" << itr->second << "), ";
+    }
+    std::cout << std::endl << "  - Try increasing the hash size or adding a regex to fix this problem." << std::endl;
+  }
 
   // ===========================================================================
   // Create a general summary of rankings of users by percentage match

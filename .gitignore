@@ -3,6 +3,8 @@ tools/assignments/*
 __pycache__
 tests/__pycache__
 vendor/
+tokenizer/node_modules
+tokenizer/dist
 cmake-build-debug
 .idea
 .DS_Store

@@ -99,7 +99,7 @@ bool ranking_sorter(const StudentRanking &a, const StudentRanking &b) {
 // MAIN
 
 int main(int argc, char* argv[]) {
-  std::cout << "COMPARE HASHES...";
+  std::cout << "COMPARE HASHES:" << std::endl;
   fflush(stdout);
   time_t overall_start, overall_end;
   time(&overall_start);
@@ -253,7 +253,7 @@ int main(int argc, char* argv[]) {
 
   time(&end);
   double diff = difftime(end, start);
-  std::cout << "finished loading in " << diff  << " seconds" << std::endl;
+  std::cout << "Finished loading in " << diff  << " seconds" << std::endl;
 
 
   // ===========================================================================
@@ -263,6 +263,9 @@ int main(int argc, char* argv[]) {
   int my_counter = 0;
   int my_percent = 0;
   time(&start);
+
+  std::cout << "[0%                      25%                     50%                     75%                     100%]" << std::endl << "[";
+  fflush(stdout);
 
   // walk over every Submission
   for (std::vector<Submission*>::iterator submission_itr = all_submissions.begin();
@@ -588,14 +591,23 @@ int main(int argc, char* argv[]) {
     // print current progress
     my_counter++;
     if (int((my_counter / float(all_submissions.size())) * 100) > my_percent) {
-      my_percent = int((my_counter / float(all_submissions.size())) * 100);
-      std::cout << "Processing submissions: " << my_percent << "% complete" << std::endl;
+      int new_my_percent = int((my_counter / float(all_submissions.size())) * 100);
+      for (int i=0; i < new_my_percent - my_percent; i++) {
+        std::cout << "|";
+      }
+      fflush(stdout);
+      my_percent = new_my_percent;
     }
+  }
+
+  // Finish printing any remaining portion of the progress bar
+  for (int i=0; i < 100 - my_percent; i++) {
+    std::cout << "|";
   }
 
   time(&end);
   diff = difftime(end, start);
-  std::cout << "Finished processing submissions in " << diff << " seconds" << std::endl;
+  std::cout << "]" << std::endl << "Finished processing submissions in " << diff << " seconds" << std::endl;
 
   // Print out the list of users who had their matching positions array truncated
   if (matching_positions_truncations.size() > 0) {
@@ -606,6 +618,7 @@ int main(int argc, char* argv[]) {
     }
     std::cout << std::endl << "  - Try increasing the hash size or adding a regex to fix this problem." << std::endl;
   }
+  fflush(stdout);
 
   // ===========================================================================
   // Create a general summary of rankings of users by percentage match
@@ -645,5 +658,5 @@ int main(int argc, char* argv[]) {
 
   time(&overall_end);
   double overall_diff = difftime(overall_end, overall_start);
-  std::cout << "COMPARE HASHES done in " << overall_diff << " seconds" << std::endl;
+  std::cout << "Hash comparison done in " << overall_diff << " seconds" << std::endl;
 }

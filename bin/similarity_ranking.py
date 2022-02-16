@@ -81,7 +81,7 @@ def get_submission_stats(user_id, version, matches_file, hashes_file):
             continue
 
         for other in match['others']:
-            other_submission = f"{other['username']}_{other['version']}_{other['source_gradeable']}"  #noqa: E501
+            other_submission = f"{other['username']}_{other['version']}_{other['source_gradeable']}"  # noqa: E501
             if other_submission not in matching_submissions.keys():
                 matching_submissions[other_submission] = Match(other['username'],
                                                                other['version'],
@@ -157,7 +157,7 @@ def main():
 
     with open(Path(args.basepath, 'overall_ranking.txt'), 'w') as ranking_file:
         for s in all_submissions:
-            ranking_file.write(f"{s.user_id:15} {s.version:3} {s.percent_match:4.0%} {s.total_hashes_matched:>8}\n")
+            ranking_file.write(f"{s.user_id:15} {s.version:3} {s.percent_match:4.0%} {s.total_hashes_matched:>8}\n")  # noqa: E501
 
     # ==========================================================================
     print("]\nSimilarity ranking done in", humanize.precisedelta(start_time, format="%1.f"))

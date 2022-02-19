@@ -48,19 +48,19 @@ def parse_args():
     return parser.parse_args()
 
 
-# get_submission_stats is passed a user, version, a path to a matches.json, and
-# a path to a hashes.txt file, and returns a pair of a Submission() object
-# conatining a number of statistics about the specified submission, and a list of
-# Match objects which match this submission
-def get_submission_stats(user_id, version, matches_file, hashes_file):
+# get_submission_stats is passed a user, version, a path to a matches.json, a
+# path to a hashes.txt file, and the hash size and returns a pair of a Submission()
+# object conatining a number of statistics about the specified submission, and a
+# list of Match objects which match this submission
+def get_submission_stats(user_id, version, matches_file, hashes_file, hash_size):
     submission = Submission(user_id, version)
 
     # Determine how many hashes there are in this submission
     with open(hashes_file, 'r') as file:
-        total_hashes = len([0 for _ in file])
+        token_count = len([0 for _ in file]) + hash_size
 
     # If this is a blank/empty submission, return now
-    if total_hashes <= 1:
+    if token_count <= 1:
         return submission, []
 
     # It is possible that there are no matches and thus a matches.json file isn't
@@ -87,11 +87,12 @@ def get_submission_stats(user_id, version, matches_file, hashes_file):
                                                                other['version'],
                                                                other['source_gradeable'])
             matching_submissions[other_submission].matching_hash_count += \
-                match['end'] - max(prev_end, match['start'])
-        submission.total_hashes_matched += match['end'] - max(prev_end, match['start'])
+                match['end'] - max(prev_end, match['start'] - 1)
+        submission.total_hashes_matched += match['end'] - max(prev_end, match['start'] - 1)
+        prev_end = match['end']
 
     # Actually stored as the fraction of the submission which matches
-    submission.percent_match = submission.total_hashes_matched / total_hashes
+    submission.percent_match = submission.total_hashes_matched / token_count
 
     if len(matching_submissions.values()) > 0:
         matching_submissions = list(matching_submissions.values())
@@ -110,6 +111,9 @@ def main():
 
     print("SIMILARITY RANKING:", flush=True)
     print("[0%                      25%                     50%                     75%                     100%]\n[", end="", flush=True)  # noqa: E501
+
+    with open(Path(args.basepath, "config.json")) as lichen_config_file:
+        lichen_config = json.load(lichen_config_file)
 
     users_dir = Path(args.basepath, 'users')
     if not os.path.isdir(users_dir):
@@ -136,8 +140,11 @@ def main():
             matches_file = Path(version_dir, 'matches.json')
             hashes_file = Path(version_dir, 'hashes.txt')
 
-            submission, matching_submissions = get_submission_stats(user, version,
-                                                                    matches_file, hashes_file)
+            submission, matching_submissions = get_submission_stats(user,
+                                                                    version,
+                                                                    matches_file,
+                                                                    hashes_file,
+                                                                    lichen_config['hash_size'])
             all_submissions.append(submission)
 
             # Write the ranking.txt for this submission
@@ -155,9 +162,15 @@ def main():
 
     all_submissions.sort(reverse=True)
 
+    # A set of all the users we've written lines for thus far (duplicates aren't allowed)
+    users_written = set('foo')
     with open(Path(args.basepath, 'overall_ranking.txt'), 'w') as ranking_file:
         for s in all_submissions:
-            ranking_file.write(f"{s.user_id:15} {s.version:3} {s.percent_match:4.0%} {s.total_hashes_matched:>8}\n")  # noqa: E501
+            if s.user_id in users_written:
+                continue
+            ranking_file.write(f"{s.user_id:10} {s.version:3} "
+                               f"{s.percent_match:4.0%} {s.total_hashes_matched:>8}\n")
+            users_written.add(s.user_id)
 
     # ==========================================================================
     print("]\nSimilarity ranking done in", humanize.precisedelta(start_time, format="%1.f"))

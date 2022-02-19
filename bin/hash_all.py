@@ -8,9 +8,10 @@ the tokenized files.
 import argparse
 import os
 import json
-import time
 import hashlib
 from pathlib import Path
+import humanize
+import datetime
 
 
 def parse_args():
@@ -48,7 +49,7 @@ def hasher(lichen_config, lichen_run_config, my_tokenized_file, my_hashes_file):
 
 
 def main():
-    start_time = time.time()
+    start_time = datetime.datetime.now()
     args = parse_args()
 
     with open(Path(args.basepath, "config.json")) as lichen_run_config_file:
@@ -57,13 +58,26 @@ def main():
     with open(Path(__file__).resolve().parent / "lichen_config.json") as lichen_config_file:
         lichen_config = json.load(lichen_config_file)
 
-    print("HASH ALL...", end="")
+    print("HASH ALL:", flush="True")
+    print("[0%                      25%                     50%                     75%                     100%]\n[", end="", flush=True)  # noqa: E501
+
+    users_dir = os.path.join(args.basepath, "users")
+    if not os.path.isdir(users_dir):
+        raise SystemExit("ERROR: Unable to find users directory")
+
+    other_gradeables_dir = os.path.join(args.basepath, "other_gradeables")
+    if not os.path.isdir(other_gradeables_dir):
+        raise SystemExit("ERROR: Unable to find other gradeables directory")
+
+    total_users = len(os.listdir(users_dir))
+    for dir in os.listdir(other_gradeables_dir):
+        total_users += len(os.listdir(os.path.join(other_gradeables_dir, dir)))
+
+    users_hashed = 0
+    percent_progress = 0
 
     # ==========================================================================
     # walk the subdirectories of this gradeable
-    users_dir = Path(args.basepath, "users")
-    if not os.path.isdir(users_dir):
-        raise SystemExit("ERROR! Unable to find users directory")
 
     for user in sorted(os.listdir(users_dir)):
         user_dir = Path(users_dir, user)
@@ -79,12 +93,14 @@ def main():
             my_hashes_file = Path(my_dir, "hashes.txt")
             hasher(lichen_config, lichen_run_config, my_tokenized_file, my_hashes_file)
 
+        users_hashed += 1
+        if int((users_hashed / total_users) * 100) > percent_progress:
+            new_percent_progress = int((users_hashed / total_users) * 100)
+            print("|" * (new_percent_progress - percent_progress), end="", flush=True)
+            percent_progress = new_percent_progress
+
     # ==========================================================================
     # walk the subdirectories of the other gradeables
-
-    other_gradeables_dir = Path(args.basepath, "other_gradeables")
-    if not os.path.isdir(other_gradeables_dir):
-        raise SystemExit("ERROR! Unable to find other gradeables directory")
 
     for other_gradeable in sorted(os.listdir(other_gradeables_dir)):
         other_gradeable_dir = Path(other_gradeables_dir, other_gradeable)
@@ -105,6 +121,12 @@ def main():
                 other_hashes_file = Path(other_version_dir, "hashes.txt")
                 hasher(lichen_config, lichen_run_config, other_tokenized_file, other_hashes_file)
 
+            users_hashed += 1
+            if int((users_hashed / total_users) * 100) > percent_progress:
+                new_percent_progress = int((users_hashed / total_users) * 100)
+                print("|" * (new_percent_progress - percent_progress), end="", flush=True)
+                percent_progress = new_percent_progress
+
     # ==========================================================================
     # hash the provided code
     provided_code_tokenized = Path(args.basepath, "provided_code", "tokens.json")
@@ -112,8 +134,7 @@ def main():
     hasher(lichen_config, lichen_run_config, provided_code_tokenized, provided_code_hashed)
 
     # ==========================================================================
-    end_time = time.time()
-    print("done in " + "%.0f" % (end_time - start_time) + " seconds")
+    print("]\nHashing done in", humanize.precisedelta(start_time, format="%1.f"))
 
 
 if __name__ == "__main__":

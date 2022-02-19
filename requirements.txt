@@ -5,10 +5,10 @@
 parso==0.8.3
 
 # C/C++ tokenization
-clang==11.0
+clang==14.0
 
 # Java tokenization
 javac_parser==1.0.0
 
 # turn data into human readable format
-humanize==3.13.1
+humanize==4.0.0

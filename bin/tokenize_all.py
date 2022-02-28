@@ -6,6 +6,7 @@ Tokenizes the concatenated files.
 import argparse
 import os
 import json
+import subprocess
 import humanize
 import datetime
 
@@ -19,28 +20,38 @@ def parse_args():
 def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
     language = lichen_config_data["language"]
 
+    cli_args = list()
     language_token_data = dict()
 
     data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
     with open(data_json_path, 'r') as token_data_file:
-        token_data = json.load(token_data_file)
-        language_token_data = token_data[language]
+        data_file = json.load(token_data_file)
+        language_token_data = data_file[language]
+        if "arguments" in lichen_config_data.keys():  # For backwards compatibility - TODO: Remove
+            for argument in lichen_config_data["arguments"]:
+                if argument in language_token_data["command_args"]:
+                    cli_args.append(language_token_data["command_args"][argument]["argument"])
+                else:
+                    print(f"Error: Unknown tokenization argument {argument}")
+        else:  # Use the default arguments
+            for argument in language_token_data["command_args"]:
+                if "default" in language_token_data["command_args"][argument].keys() and\
+                        language_token_data["command_args"][argument]["default"]:
+                    cli_args.append(language_token_data["command_args"][argument]["argument"])
 
     tokenizer = f"./{language_token_data['tokenizer']}"
 
-    if language_token_data.get('input_as_argument') is not None and \
-       language_token_data['input_as_argument'] is not False:
-        my_concatenated_file = f'< {my_concatenated_file}'
+    result = subprocess.run([language_token_data['command_executable'],
+                             tokenizer, my_concatenated_file] + cli_args,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
 
-    if "command_args" in language_token_data:
-        cli_args = " ".join(language_token_data["command_args"])
-    else:
-        cli_args = ""
+    stderr = result.stderr.decode('utf-8')
+    if not stderr.isspace() and stderr is not None and stderr != '':
+        print(result.stderr.decode("utf-8"))
 
-    command = f"{language_token_data['command_executable']} {tokenizer} "\
-              f"{cli_args} {my_concatenated_file} > {my_tokenized_file}".strip()
-
-    os.system(command)
+    with open(my_tokenized_file, 'w') as file:
+        file.write(result.stdout.decode('utf-8'))
 
 
 def main():

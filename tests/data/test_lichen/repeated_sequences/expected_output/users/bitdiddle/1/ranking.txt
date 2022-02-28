@@ -1,1 +1,1 @@
-aphacker         1    f21__plagiarism__repeated_sequences   15.22%
+aphacker     1 f21__plagiarism__repeated_sequences       46

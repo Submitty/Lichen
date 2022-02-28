@@ -1,2 +1,2 @@
-aphacker         2    f21__plagiarism__multiple_versions   80.95%
-aphacker         1    f21__plagiarism__multiple_versions   47.62%
+aphacker     2 f21__plagiarism__multiple_versions       44
+aphacker     1 f21__plagiarism__multiple_versions       30

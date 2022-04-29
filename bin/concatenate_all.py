@@ -50,7 +50,7 @@ def getConcatFilesInDir(input_dir, regex_patterns):
             # exclude any files we have ignored for all submissions
             if my_file in IGNORED_FILES:
                 continue
-            
+
             # check for MIME types which are not supported
             file_type = mimetypes.guess_type(my_file)[0]
             if file_type.endswith("/pdf") or file_type.startswith("image/"):

@@ -17,7 +17,6 @@
 #include "lichen_config.h"
 #include "submission.h"
 #include "hash_location.h"
-#include "score.h"
 
 
 // =============================================================================
@@ -27,20 +26,6 @@ typedef int location_in_submission;
 typedef unsigned int hash;
 typedef std::string user_id;
 typedef unsigned int version_number;
-
-
-// =============================================================================
-// helper classes
-
-
-// represents an element in a ranking of students by percent match
-struct StudentRanking {
-  StudentRanking(const user_id &id, int v, const std::string &sg, const Score &s) : student(id), version(v), source_gradeable(sg), score(s) {}
-  user_id student;
-  version_number version;
-  std::string source_gradeable;
-  Score score;
-};
 
 
 // =============================================================================
@@ -89,17 +74,11 @@ void incrementEndPositionsForMatches(nlohmann::json &others) {
 }
 
 
-bool ranking_sorter(const StudentRanking &a, const StudentRanking &b) {
-  return a.score > b.score ||
-        (a.score == b.score && a.student < b.student);
-}
-
-
 // =============================================================================
 // MAIN
 
 int main(int argc, char* argv[]) {
-  std::cout << "COMPARE HASHES...";
+  std::cout << "COMPARE HASHES:" << std::endl;
   fflush(stdout);
   time_t overall_start, overall_end;
   time(&overall_start);
@@ -157,10 +136,6 @@ int main(int argc, char* argv[]) {
   std::unordered_set<hash> provided_code;
   // stores all hashes from other gradeables
   std::unordered_map<hash, std::unordered_map<user_id, std::vector<HashLocation>>> other_gradeables;
-  // stores the matches for every student, used later for generating overall_rankings.txt
-  std::unordered_map<user_id, std::vector<std::pair<version_number, Score>>> highest_matches;
-  // keeps track of max matching hashes across all submissions, used for calculation of ranking score
-  unsigned int max_hashes_matched = 0;
   // a map of "user_id:version" strings to the non-zero number of times their matching positions array was truncated
   std::unordered_map<std::string, int> matching_positions_truncations;
 
@@ -253,7 +228,7 @@ int main(int argc, char* argv[]) {
 
   time(&end);
   double diff = difftime(end, start);
-  std::cout << "finished loading in " << diff  << " seconds" << std::endl;
+  std::cout << "Finished loading in " << diff  << " seconds" << std::endl;
 
 
   // ===========================================================================
@@ -263,6 +238,9 @@ int main(int argc, char* argv[]) {
   int my_counter = 0;
   int my_percent = 0;
   time(&start);
+
+  std::cout << "[0%                      25%                     50%                     75%                     100%]" << std::endl << "[";
+  fflush(stdout);
 
   // walk over every Submission
   for (std::vector<Submission*>::iterator submission_itr = all_submissions.begin();
@@ -320,7 +298,7 @@ int main(int argc, char* argv[]) {
 
           // Note: we DO look for matches across submissions of the same student for self-plagiarism
 
-          // save the locations of all other occurences from proir term submissions
+          // save the locations of all other occurences from prior term submissions
           std::vector<HashLocation>::iterator itr = other_occurences_itr->second.begin();
           for (; itr != other_occurences_itr->second.end(); ++itr) {
             (*submission_itr)->addSuspiciousMatch(hash_itr->second, *itr, hash_itr->first);
@@ -513,89 +491,32 @@ int main(int argc, char* argv[]) {
     ostr << match_data.dump(4) << std::endl;
 
     // =========================================================================
-    // create individual ranking file
-    // the file contains all the other students share matches, sorted by decreasing order of the percent match
-
-    // find and sort the other submissions it matches with
-    std::vector<StudentRanking> student_ranking;
-    std::unordered_map<std::string, std::unordered_map<user_id, std::unordered_map<version_number, std::unordered_set<hash>>>> matches = (*submission_itr)->getStudentsMatched();
-
-    std::unordered_map<std::string, std::unordered_map<user_id, std::unordered_map<version_number, std::unordered_set<hash>>>>::const_iterator gradeables_itr = matches.begin();
-    for (; gradeables_itr != matches.end(); ++gradeables_itr) {
-      for (std::unordered_map<user_id, std::unordered_map<version_number, std::unordered_set<hash>>>::const_iterator matches_itr = gradeables_itr->second.begin();
-         matches_itr != gradeables_itr->second.end(); ++matches_itr) {
-
-        for (std::unordered_map<version_number, std::unordered_set<hash>>::const_iterator version_itr = matches_itr->second.begin();
-             version_itr != matches_itr->second.end(); ++version_itr) {
-
-          // Calculate the Percent Match:
-          // count the number of unique hashes for the percent match calculation
-          std::vector<std::pair<hash, location_in_submission>> submission_hashes = (*submission_itr)->getHashes();
-          std::unordered_set<hash> unique_hashes;
-          for (std::vector<std::pair<hash, location_in_submission>>::const_iterator itr = submission_hashes.begin();
-               itr != submission_hashes.end(); ++itr) {
-            unique_hashes.insert(itr->first);
-          }
-
-          // the percent match is currently calculated using the number of hashes that match between this
-          // submission and the other submission, over the total number of hashes this submission has.
-          // In other words, the percentage is how much of this submission's code was plgairised from the other.
-          unsigned int num_hashes_matched = version_itr->second.size();
-          float percent = (100.0 * num_hashes_matched) / unique_hashes.size();
-          student_ranking.push_back(StudentRanking(matches_itr->first, version_itr->first, gradeables_itr->first, Score(num_hashes_matched, percent)));
-          student_ranking.back().score.calculateScore(num_hashes_matched);
-        }
-      }
-    }
-
-    // =========================================================================
-    // Save this submission's highest percent match for later when we generate overall_rankings.txt
-    float percentMatch = (*submission_itr)->getPercentage();
-    unsigned int totalMatchingHashes = (*submission_itr)->getMatchCount();
-    Score submission_score(totalMatchingHashes, percentMatch);
-    if (max_hashes_matched < totalMatchingHashes) {
-      max_hashes_matched = totalMatchingHashes;
-    }
-
-    std::pair<version_number, Score> new_pair = {(*submission_itr)->version(), submission_score};
-    highest_matches[(*submission_itr)->student()].push_back(new_pair);
-    // =========================================================================
-
-    std::sort(student_ranking.begin(), student_ranking.end(), ranking_sorter);
-
-    // create the directory and a file to write into
-    boost::filesystem::path ranking_student_dir = users_root_directory / (*submission_itr)->student() / std::to_string((*submission_itr)->version());
-    boost::filesystem::path ranking_student_file = ranking_student_dir / "ranking.txt";
-    boost::filesystem::create_directories(ranking_student_dir);
-    std::ofstream ranking_student_ostr(ranking_student_file.string());
-
-    // finally, write the file of ranking for this submission
-    for (unsigned int i = 0; i < student_ranking.size(); i++) {
-      ranking_student_ostr
-        << std::setw(15) << std::left << student_ranking[i].student << "  "
-        << std::setw(3) << std::left << student_ranking[i].version << "  "
-        << std::setw(1) << std::right << student_ranking[i].source_gradeable << "  "
-        << std::setw(6) << std::setprecision(2) << std::fixed << student_ranking[i].score.getPercent() << "%" << std::endl;
-    }
-
-    // =========================================================================
     // Cleanup
 
-    // Done with this submissions. discard the data and clear the memory
+    // Done with this submission. discard the data and clear the memory
     delete (*submission_itr);
     (*submission_itr) = nullptr;
 
-    // print current progress
+    // Print current progress
     my_counter++;
     if (int((my_counter / float(all_submissions.size())) * 100) > my_percent) {
-      my_percent = int((my_counter / float(all_submissions.size())) * 100);
-      std::cout << "Processing submissions: " << my_percent << "% complete" << std::endl;
+      int new_my_percent = int((my_counter / float(all_submissions.size())) * 100);
+      for (int i=0; i < new_my_percent - my_percent; i++) {
+        std::cout << "|";
+      }
+      fflush(stdout);
+      my_percent = new_my_percent;
     }
+  }
+
+  // Finish printing any remaining portion of the progress bar
+  for (int i=0; i < 100 - my_percent; i++) {
+    std::cout << "|";
   }
 
   time(&end);
   diff = difftime(end, start);
-  std::cout << "Finished processing submissions in " << diff << " seconds" << std::endl;
+  std::cout << "]" << std::endl;
 
   // Print out the list of users who had their matching positions array truncated
   if (matching_positions_truncations.size() > 0) {
@@ -608,42 +529,9 @@ int main(int argc, char* argv[]) {
   }
 
   // ===========================================================================
-  // Create a general summary of rankings of users by percentage match
-
-  // create a single file of students ranked by highest percentage of code plagiarised
-  boost::filesystem::path ranking_file = lichen_gradeable_path / "overall_ranking.txt";
-  std::ofstream ranking_ostr(ranking_file.string());
-
-  // take the map of highest matches and convert it to a vector so we can sort it
-  // by percent match and then save it to a file
-  std::vector<StudentRanking> ranking;
-  for (std::unordered_map<user_id, std::vector<std::pair<version_number, Score>>>::iterator itr
-        = highest_matches.begin(); itr != highest_matches.end(); ++itr) {
-
-    std::pair<version_number, Score> best_score = itr->second.front();
-    best_score.second.calculateScore(max_hashes_matched);
-    for (unsigned int i=0; i < itr->second.size(); i++) {
-      itr->second[i].second.calculateScore(max_hashes_matched);
-      if (itr->second[i].second > best_score.second) {
-        best_score = itr->second[i];
-      }
-    }
-    ranking.push_back(StudentRanking(itr->first, best_score.first, "", best_score.second));
-  }
-
-  std::sort(ranking.begin(), ranking.end(), ranking_sorter);
-  for (unsigned int i = 0; i < ranking.size(); i++) {
-    ranking_ostr
-      << std::left << std::setw(20) << ranking[i].student << "  "
-      << std::setw(3) << ranking[i].version << "  "
-      << std::right << std::setw(4) << std::setprecision(1) << std::fixed << ranking[i].score.getPercent() << "%   "
-      << std::setw(5) << ranking[i].score.getHashesMatched() << std::endl;
-  }
-
-  // ===========================================================================
   // Done!
 
   time(&overall_end);
   double overall_diff = difftime(overall_end, overall_start);
-  std::cout << "COMPARE HASHES done in " << overall_diff << " seconds" << std::endl;
+  std::cout << "Hash comparison done in " << overall_diff << " seconds" << std::endl;
 }

@@ -10,10 +10,6 @@ typedef unsigned int hash;
 typedef std::string user_id;
 typedef unsigned int version_number;
 
-float Submission::getPercentage() const {
-  return (100.0 * (suspicious_matches.size())) / hashes.size();
-}
-
 void Submission::addSuspiciousMatch(location_in_submission location, const HashLocation &matching_location, const hash &matched_hash) {
   // figure out if there is an overlap between this hash and a common/provided match
   int hash_size = config_.hash_size;

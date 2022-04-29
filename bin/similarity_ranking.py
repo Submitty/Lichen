@@ -163,10 +163,10 @@ def main():
     all_submissions.sort(reverse=True)
 
     # A set of all the users we've written lines for thus far (duplicates aren't allowed)
-    users_written = set('foo')
+    users_written = set()
     with open(Path(args.basepath, 'overall_ranking.txt'), 'w') as ranking_file:
         for s in all_submissions:
-            if s.user_id in users_written:
+            if s.user_id in users_written or s.total_hashes_matched == 0:
                 continue
             ranking_file.write(f"{s.user_id:10} {s.version:3} "
                                f"{s.percent_match:4.0%} {s.total_hashes_matched:>8}\n")

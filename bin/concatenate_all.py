@@ -12,6 +12,7 @@ import datetime
 import humanize
 import fnmatch
 import hashlib
+import mimetypes
 from pathlib import Path
 
 IGNORED_FILES = [
@@ -49,6 +50,12 @@ def getConcatFilesInDir(input_dir, regex_patterns):
             # exclude any files we have ignored for all submissions
             if my_file in IGNORED_FILES:
                 continue
+            
+            # check for MIME types which are not supported
+            file_type = mimetypes.guess_type(my_file)[0]
+            if file_type.endswith("/pdf") or file_type.startswith("image/"):
+                continue
+
             absolute_path = os.path.join(my_dir, my_file)
             # print a separator & filename
             with open(absolute_path, encoding='ISO-8859-1') as tmp:

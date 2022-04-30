@@ -3,7 +3,8 @@
   "description": "A set of Lichen tokenizers for common languages",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "lint": "eslint src/ test/"
   },
   "author": "Submitty Team",
   "license": "ISC",
@@ -14,6 +15,7 @@
   },
   "devDependencies": {
     "@types/node": "^17.0.17",
+    "eslint": "^8.14.0",
     "typescript": "^4.5.5"
   }
 }

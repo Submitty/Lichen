@@ -2,7 +2,7 @@ import fs from 'fs';
 import Parser from 'tree-sitter';
 import CppLanguage from 'tree-sitter-cpp';
 
-const LANGUAGES: {[language: string]: any} = {
+export const LANGUAGES: {[language: string]: any} = {
   cpp: CppLanguage,
 };
 

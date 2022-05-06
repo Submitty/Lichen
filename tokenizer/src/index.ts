@@ -1,41 +1,61 @@
 import fs from 'fs';
 import { program } from 'commander';
 import { parseFile, LANGUAGES } from './parser';
+import path from 'path'
 
 function errorHandler(message: string) {
   console.error(message);
   process.exit(1);
 }
 
-function tokenizeSubmissions() {
+function getTokensFromSubmission(submissionFileData: string, language: string) {
+  const tree = parseFile(language, submissionFileData);
+    
+  const cursor = tree.rootNode.walk();
 
+  let tokens = []
+  while (true) {
+    if (cursor.gotoFirstChild()) {
+      continue;
+    }
+    else {
+      if (cursor.nodeType.replace(/\s/g, '').length != 0) { // remove whitespace-only tokens
+        tokens.push({
+          'char': cursor.startPosition.column + 1,
+          'line': cursor.startPosition.row + 1,
+          'type': cursor.nodeType,
+          'value': cursor.nodeText
+        });
+      }
+    }
+    if (cursor.gotoNextSibling()) {
+      continue;
+    }
+
+    cursor.gotoParent();
+    while (!cursor.gotoNextSibling()) {
+      if (!cursor.gotoParent()) {
+        break;
+      }
+    }
+    if (cursor.currentNode === tree.rootNode) {
+      break;
+    }
+  }
+  return tokens;
+}
+
+function tokenizeSubmissions(basepath: string) {
+  // We assume that this config has already been validated, so we don't care about providing nice
+  // error messages for invalid config properties
+  const config = JSON.parse(fs.readFileSync(path.join(basepath, 'config.json'), 'utf8'));
+  let tokens = getTokensFromSubmission('src/test.cpp', config.language);
 }
 
 program
   .command('tokenizer <basepath>')
   .action((basepath: string) => {
-    const tree = parseFile('cpp', '../src/test.cpp');
-    
-    const cursor = tree.rootNode.walk();
-    while (true) {
-      if (cursor.gotoFirstChild() || cursor.gotoNextSibling()) {
-        console.log(cursor.nodeType);
-        continue;
-      }
-      cursor.gotoParent();
-      let hadSibling = true;
-      while (!cursor.gotoNextSibling()) {
-        if (!cursor.gotoParent()) {
-          hadSibling = false;
-          break;
-        }
-      }
-      console.log('===> ', cursor.nodeType);
-      if (cursor.currentNode === tree.rootNode) {
-        break;
-      }
-    }
-    
+    tokenizeSubmissions(basepath);
   });
 
 program.parse(process.argv)

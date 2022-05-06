@@ -24,7 +24,7 @@ def hasher(lichen_config, lichen_run_config, my_tokenized_file, my_hashes_file):
     language = lichen_run_config["language"]
     hash_size = int(lichen_run_config["hash_size"])
 
-    data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
+    data_json_path = Path(Path(__file__).resolve().parent.parent, "tokenizer", "tokenizer_config.json")
     with open(data_json_path) as token_data_file:
         token_data = json.load(token_data_file)
 
@@ -55,7 +55,7 @@ def main():
     with open(Path(args.basepath, "config.json")) as lichen_run_config_file:
         lichen_run_config = json.load(lichen_run_config_file)
 
-    with open(Path(__file__).resolve().parent / "lichen_config.json") as lichen_config_file:
+    with open(Path(Path(__file__).resolve().parent.parent, 'bin', 'lichen_config.json')) as lichen_config_file:
         lichen_config = json.load(lichen_config_file)
 
     print("HASH ALL:", flush="True")

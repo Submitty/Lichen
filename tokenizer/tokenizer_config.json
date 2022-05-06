@@ -1,7 +1,7 @@
 {
     "plaintext": {
         "name": "Plain Text",
-        "tokenizer": "plaintext_tokenizer.py",
+        "tokenizer": "plaintext/plaintext_tokenizer.py",
         "command_executable": "python3",
         "command_args": {
             "ignore_punctuation": {
@@ -27,14 +27,14 @@
     },
     "python": {
         "name": "Python",
-        "tokenizer": "python_tokenizer.py",
+        "tokenizer": "python/python_tokenizer.py",
         "command_executable": "python3",
         "token_value": "type",
         "default_hash_size": 14
     },
     "cpp": {
         "name": "C/C++",
-        "tokenizer": "c_tokenizer.py",
+        "tokenizer": "c/c_tokenizer.py",
         "command_executable": "python3",
         "command_args": {
             "ignore_comments": {
@@ -48,14 +48,14 @@
     },
     "java": {
         "name": "Java",
-        "tokenizer": "java_tokenizer.py",
+        "tokenizer": "java/java_tokenizer.py",
         "command_executable": "python3",
         "token_value": "type",
         "default_hash_size": 14
     },
     "mips": {
         "name": "MIPS Assembly",
-        "tokenizer": "mips_tokenizer.py",
+        "tokenizer": "mips/mips_tokenizer.py",
         "command_executable": "python3",
         "token_value": "type",
         "default_hash_size": 5

@@ -13,10 +13,10 @@ jobs:
       - name: Install Python Dependencies
         run: |
           pip install -r requirements.txt
-          find /usr/local/lib/python*/dist-packages -type d -exec chmod 755 {} +
-          find /usr/local/lib/python*/dist-packages -type f -exec chmod 755 {} +
-          find /usr/local/lib/python*/dist-packages -type f -name '*.py*' -exec chmod 644 {} +
-          find /usr/local/lib/python*/dist-packages -type f -name '*.pth' -exec chmod 644 {} +
+          sudo find /usr/local/lib/python*/dist-packages -type d -exec chmod 755 {} +
+          sudo find /usr/local/lib/python*/dist-packages -type f -exec chmod 755 {} +
+          sudo find /usr/local/lib/python*/dist-packages -type f -name '*.py*' -exec chmod 644 {} +
+          sudo find /usr/local/lib/python*/dist-packages -type f -name '*.pth' -exec chmod 644 {} +
       - name: Run Unit Tests
         run: |
           cd tests/unittest

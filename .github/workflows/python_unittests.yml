@@ -1,15 +1,15 @@
-name: Python Unittests
+name: Python Unit Tests
 
 on: [push]
 
 jobs:
-  test-lichen:
+  run unit tests:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: '3.6'
       - name: Install Python Dependencies
         run: |
           pip install -r requirements.txt

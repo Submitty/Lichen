@@ -7,7 +7,6 @@ from tempfile import TemporaryDirectory
 
 
 test_data_dir = Path(__file__).resolve().parent / '..' / 'data'
-lichen_installation_dir = Path("/usr", "local", "submitty", "Lichen")
 
 
 class TestLichen(unittest.TestCase):
@@ -25,7 +24,7 @@ class TestLichen(unittest.TestCase):
                 subprocess.check_call(f"chgrp -R {data_path.group()} {temp_dir}", shell=True)
 
                 # run Lichen
-                subprocess.check_call(f"bash {str(lichen_installation_dir)}/bin/run_lichen.sh {str(temp_dir)} {str(data_path)}", shell=True)
+                subprocess.check_call(f"bash {str(Path(__file__).resolve().parent.parent.parent)}/bin/run_lichen.sh {str(temp_dir)} {str(data_path)}", shell=True)
 
                 ex_output_path = Path(test_data_dir, "test_lichen", test_case, "expected_output")
 

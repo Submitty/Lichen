@@ -6,7 +6,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 
-test_data_dir = Path(__file__).resolve().parent / '..' / 'data'
+test_data_dir = Path(__file__).resolve().parent.parent / 'data'
 
 
 class TestLichen(unittest.TestCase):

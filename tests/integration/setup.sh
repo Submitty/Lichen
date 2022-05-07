@@ -6,7 +6,6 @@ lichen_installation_dir=/usr/local/submitty/Lichen/
 # make a simulated GIT_CHECKOUT directory
 mkdir -p "$lichen_repository_dir"
 cp -r * "$lichen_repository_dir"
-cd "$lichen_repository_dir"
 
 # Setup docker
 sudo apt-get update

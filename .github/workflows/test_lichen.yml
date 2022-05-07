@@ -12,5 +12,5 @@ jobs:
           sudo bash ./tests/integration/setup.sh
       - name: Run Integration Tests
         run: |
-          cd /usr/local/submitty/GIT_CHECKOUT/Lichen/tests/integration
+          cd /usr/local/submitty/Lichen/tests/integration
           sudo python3 -m unittest discover

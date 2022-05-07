@@ -60,3 +60,5 @@ mkdir -p "${BASEPATH}/users"
     ############################################################################
     echo "Lichen run complete: $(date +"%Y-%m-%d %H:%M:%S")"
 } >> "${BASEPATH}/logs/lichen_job_output.txt" 2>&1
+
+ls "$BASEPATH"

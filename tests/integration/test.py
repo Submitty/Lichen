@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import unittest
 import os
 import shutil
@@ -24,7 +26,11 @@ class TestLichen(unittest.TestCase):
                 subprocess.check_call(f"chgrp -R {data_path.group()} {temp_dir}", shell=True)
 
                 # run Lichen
-                print(subprocess.run(['sudo', 'bash', f'{str(Path(__file__).resolve().parent.parent.parent)}/bin/run_lichen.sh', str(temp_dir), str(data_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE))
+                print(subprocess.run(['bash', f'{str(Path(__file__).resolve().parent.parent.parent)}/bin/run_lichen.sh', str(temp_dir), str(data_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE))
+
+                # print the output for debugging purposes if necessary
+                with open(Path(temp_dir, 'logs', 'lichen_job_output.txt'), 'r') as file:
+                    print(file.read())
 
                 ex_output_path = Path(test_data_dir, "test_lichen", test_case, "expected_output")
 

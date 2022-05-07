@@ -9,6 +9,10 @@ mkdir -p $lichen_repository_dir
 cp -r * $lichen_repository_dir
 cd $lichen_repository_dir
 
+# Set up docker in advance
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli
+
 # install Lichen
 mkdir -p $lichen_installation_dir
 bash $lichen_repository_dir/install_lichen.sh

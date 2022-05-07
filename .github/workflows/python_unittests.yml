@@ -12,12 +12,15 @@ jobs:
           python-version: '3.9'
       - name: Install Python Dependencies
         run: |
-          pip -V
           sudo pip install -r requirements.txt
           sudo find /usr/local/lib/python*/dist-packages -type d -exec chmod 755 {} +
           sudo find /usr/local/lib/python*/dist-packages -type f -exec chmod 755 {} +
           sudo find /usr/local/lib/python*/dist-packages -type f -name '*.py*' -exec chmod 644 {} +
           sudo find /usr/local/lib/python*/dist-packages -type f -name '*.pth' -exec chmod 644 {} +
+      - name: Install Tokenizer Dependencies
+        run: |
+          apt-get update
+          apt-get install -y clang
       - name: Run Unit Tests
         run: |
           cd tests/unittest

@@ -8,9 +8,6 @@ mkdir -p "$lichen_repository_dir"
 cp -r * "$lichen_repository_dir"
 cd "$lichen_repository_dir"
 
-# Install Python dependencies for unit tests
-pip install -r "$lichen_repository_dir"/requirements.txt
-
 # Setup docker
 sudo apt-get update
 apt-get install ca-certificates curl gnupg lsb-release

@@ -1,0 +1,19 @@
+name: Python Unittests
+
+on: [push]
+
+jobs:
+  test-lichen:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install Python Dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Run Unit Tests
+        run: |
+          cd tests/unittest
+          sudo python3 -m unittest discover

@@ -1,4 +1,4 @@
-name: Test Lichen
+name: Test Lichen Integration
 
 on: [push]
 
@@ -12,11 +12,7 @@ jobs:
           python-version: '3.9'
       - name: Install Lichen
         run: |
-          sudo bash ./tests/setup.sh
-      - name: Run Unit Tests
-        run: |
-          cd /usr/local/submitty/GIT_CHECKOUT/Lichen/tests/unittest
-          sudo python3 -m unittest discover
+          sudo bash ./tests/integration/setup.sh
       - name: Run Integration Tests
         run: |
           cd /usr/local/submitty/GIT_CHECKOUT/Lichen/tests/integration

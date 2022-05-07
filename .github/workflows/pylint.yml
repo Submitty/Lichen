@@ -4,12 +4,12 @@ on: [push]
 
 jobs:
   python-lint:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.6'
+          python-version: '3.9'
       - name: Cache Pip
         uses: actions/cache@v2
         with:

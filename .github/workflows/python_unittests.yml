@@ -12,7 +12,8 @@ jobs:
           python-version: '3.9'
       - name: Install Python Dependencies
         run: |
-          pip install -r requirements.txt
+          pip -V
+          sudo pip install -r requirements.txt
           sudo find /usr/local/lib/python*/dist-packages -type d -exec chmod 755 {} +
           sudo find /usr/local/lib/python*/dist-packages -type f -exec chmod 755 {} +
           sudo find /usr/local/lib/python*/dist-packages -type f -name '*.py*' -exec chmod 644 {} +

@@ -19,8 +19,8 @@ jobs:
           sudo find /usr/local/lib/python*/dist-packages -type f -name '*.pth' -exec chmod 644 {} +
       - name: Install Tokenizer Dependencies
         run: |
-          apt-get update
-          apt-get install -y clang
+          sudo apt-get update
+          sudo apt-get install -y clang
       - name: Run Unit Tests
         run: |
           cd tests/unittest

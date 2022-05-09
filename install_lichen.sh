@@ -14,7 +14,7 @@ lichen_installation_dir=/usr/local/submitty/Lichen
 cp -r "$lichen_repository_dir"/* "$lichen_installation_dir"
 
 # Install Python Dependencies locally (for concatenation)
-pip install -r /Lichen/requirements.txt
+pip install -r ${lichen_repository_dir}/requirements.txt
 
 # These permissions changes are copied from Submitty/.setup/INSTALL_SUBMITTY_HELPER.sh
 # Setting the permissions are necessary as pip uses the umask of the user/system, which

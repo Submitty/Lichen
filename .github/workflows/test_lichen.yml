@@ -9,8 +9,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Lichen
         run: |
-          bash ./tests/integration/setup.sh
+          sudo bash ./tests/integration/setup.sh
       - name: Run Integration Tests
         run: |
           cd /usr/local/submitty/Lichen/tests/integration
-          python3 -m unittest discover
+          sudo python3 -m unittest discover

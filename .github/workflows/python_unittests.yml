@@ -13,14 +13,10 @@ jobs:
       - name: Install Python Dependencies
         run: |
           pip install -r requirements.txt
-          sudo find /usr/local/lib/python*/dist-packages -type d -exec chmod 755 {} +
-          sudo find /usr/local/lib/python*/dist-packages -type f -exec chmod 755 {} +
-          sudo find /usr/local/lib/python*/dist-packages -type f -name '*.py*' -exec chmod 644 {} +
-          sudo find /usr/local/lib/python*/dist-packages -type f -name '*.pth' -exec chmod 644 {} +
       - name: Install Tokenizer Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang
+          sudo apt-get install -y clang llvm
       - name: Run Unit Tests
         run: |
           cd tests/unittest

@@ -60,6 +60,16 @@ if [ "$?" -ne 0 ]; then
 fi
 popd > /dev/null
 
+####################################################################################################
+# pull or build Lichen Docker image
+
+if [[ "$#" -ge 1 && "$1" == "build" ]]; then
+    docker build -t lichen "$lichen_repository_dir"
+else
+    docker pull williamjallen/lichen:latest
+    docker tag williamjallen/lichen:latest lichen
+fi
+
 #####################################################################################################
 # fix permissions
 chown -R root:root ${lichen_installation_dir}

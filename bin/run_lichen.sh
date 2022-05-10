@@ -13,6 +13,8 @@ BASEPATH="$1" # holds the path to a directory containing a config for this grade
 DATAPATH="$2" # holds the path to a directory conatining courses and their data
               # (probably /var/local/submitty/courses on Submitty)
 
+LICHEN_INSTALLATION_DIR=/usr/local/submitty/Lichen
+
 # kill the script if there is no config file
 if [ ! -f "${BASEPATH}/config.json" ]; then
     echo "Unable to find config.json in provided directory"
@@ -55,7 +57,7 @@ mkdir -p "${BASEPATH}/users"
     ############################################################################
     # Run Lichen
 
-    docker run -v "${BASEPATH}":/data lichen 
+    docker run -v "${BASEPATH}":/data -v "${LICHEN_INSTALLATION_DIR}":/Lichen lichen 
 
     ############################################################################
     echo "Lichen run complete: $(date +"%Y-%m-%d %H:%M:%S")"

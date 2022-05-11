@@ -20,4 +20,4 @@ apt-get install docker-ce docker-ce-cli
 
 # install Lichen
 mkdir -p "$lichen_installation_dir"
-bash "$lichen_repository_dir"/install_lichen.sh
+bash "$lichen_repository_dir"/install_lichen.sh build

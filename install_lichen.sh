@@ -64,7 +64,7 @@ popd > /dev/null
 # pull or build Lichen Docker image
 
 if [[ "$#" -ge 1 && "$1" == "build" ]]; then
-    docker build -t lichen "$lichen_repository_dir"
+    docker build -t submitty/lichen "$lichen_repository_dir"
 else
     docker pull submitty/lichen:latest
     docker tag submitty/lichen:latest lichen

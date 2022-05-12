@@ -14,7 +14,7 @@ KILL_ERROR_MESSAGE="
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 ";
 
-/Lichen/tokenizer/tokenize_all.py                "/data" || exit 1
-/Lichen/hasher/hash_all.py                       "/data" || exit 1
-/Lichen/compare_hashes/compare_hashes.out        "/data" || { echo "${KILL_ERROR_MESSAGE}"; exit 1; } 
-/Lichen/similarity_ranking/similarity_ranking.py "/data";
+python3 /Lichen/tokenizer/tokenize_all.py                "/data" || exit 1
+python3 /Lichen/hasher/hash_all.py                       "/data" || exit 1
+/Lichen/compare_hashes/compare_hashes.out                "/data" || { echo "${KILL_ERROR_MESSAGE}"; exit 1; } 
+python3 /Lichen/similarity_ranking/similarity_ranking.py "/data";

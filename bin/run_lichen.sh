@@ -7,6 +7,11 @@
 
 # TODO: Assert permissions, as necessary
 
+if [ "$#" -ne 2 ] || ! [ -d "$1" ] || ! [ -d "$2" ]; then
+  echo "Usage: $0 <basepath> <datapath>" >&2
+  exit 1
+fi
+
 BASEPATH="$1" # holds the path to a directory containing a config for this gradeable
               # (probably .../lichen/gradeable/<unique number>/ on Submitty)
 
@@ -52,7 +57,7 @@ mkdir -p "${BASEPATH}/users"
     ############################################################################
     # Do some preprocessing
     echo "Beginning Lichen run: $(date +"%Y-%m-%d %H:%M:%S")"
-    ./concatenate_all.py "$BASEPATH" "$DATAPATH" || exit 1
+    python3 concatenate_all.py "$BASEPATH" "$DATAPATH" || exit 1
 
     ############################################################################
     # Run Lichen

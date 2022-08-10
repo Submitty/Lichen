@@ -34,7 +34,7 @@ def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
                     cli_args.append(language_token_data["command_args"][argument]["argument"])
                 else:
                     print(f"Error: Unknown tokenization argument {argument}")
-        else:  # Use the default arguments
+        elif "command_args" in language_token_data:  # Use the default arguments if they exist
             for argument in language_token_data["command_args"]:
                 if "default" in language_token_data["command_args"][argument].keys() and\
                         language_token_data["command_args"][argument]["default"]:

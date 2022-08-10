@@ -148,7 +148,8 @@ def validate(config, args):
     other_gradeables = config["other_gradeables"]
 
     # Check we have a tokenizer to support the configured language
-    langs_data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
+    langs_data_json_path = Path(Path(__file__).resolve().parent.parent,
+                                "tokenizer", "tokenizer_config.json")
     with open(langs_data_json_path, 'r') as langs_data_file:
         langs_data = json.load(langs_data_file)
         if language not in langs_data:

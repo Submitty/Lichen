@@ -9,6 +9,7 @@ import json
 import subprocess
 import humanize
 import datetime
+from pathlib import Path
 
 
 def parse_args():
@@ -23,7 +24,7 @@ def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
     cli_args = list()
     language_token_data = dict()
 
-    data_json_path = "./data.json"  # data.json is in the Lichen/bin directory after install
+    data_json_path = Path(Path(__file__).resolve().parent, 'tokenizer_config.json')
     with open(data_json_path, 'r') as token_data_file:
         data_file = json.load(token_data_file)
         language_token_data = data_file[language]
@@ -39,7 +40,7 @@ def tokenize(lichen_config_data, my_concatenated_file, my_tokenized_file):
                         language_token_data["command_args"][argument]["default"]:
                     cli_args.append(language_token_data["command_args"][argument]["argument"])
 
-    tokenizer = f"./{language_token_data['tokenizer']}"
+    tokenizer = Path(Path(__file__).resolve().parent, language_token_data['tokenizer'])
 
     result = subprocess.run([language_token_data['command_executable'],
                              tokenizer, my_concatenated_file] + cli_args,

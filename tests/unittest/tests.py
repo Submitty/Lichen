@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import unittest
 import os
 import shutil
@@ -8,7 +10,6 @@ from tempfile import TemporaryDirectory
 
 
 test_data_dir = Path(__file__).resolve().parent / '..' / 'data'
-lichen_installation_dir = Path("/usr", "local", "submitty", "Lichen")
 
 
 ################################################################################
@@ -23,7 +24,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output.json")
 
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'plaintext', 'plaintext_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -41,7 +42,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_ignore_punctuation.json")
 
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.py'))} --ignore_punctuation {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'plaintext', 'plaintext_tokenizer.py'))} --ignore_punctuation {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -59,7 +60,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_to_lower.json")
 
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.py'))} --to_lower {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'plaintext', 'plaintext_tokenizer.py'))} --to_lower {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -77,7 +78,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_ignore_newlines.json")
 
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.py'))} --ignore_newlines {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'plaintext', 'plaintext_tokenizer.py'))} --ignore_newlines {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -95,7 +96,7 @@ class TestPlaintextTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "plaintext", "expected_output", "output_ignore_everything.json")
 
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'plaintext_tokenizer.py'))} --ignore_punctuation --to_lower --ignore_numbers --ignore_newlines {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'plaintext', 'plaintext_tokenizer.py'))} --ignore_punctuation --to_lower --ignore_numbers --ignore_newlines {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -115,7 +116,7 @@ class TestMIPSTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "mips", "expected_output", "output.json")
 
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'mips_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'mips', 'mips_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -135,7 +136,7 @@ class TestJavaTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "java", "expected_output", "output.json")
 
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'java_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'java', 'java_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -155,7 +156,7 @@ class TestCTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "c", "expected_output", "output.json")
 
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'c_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'c', 'c_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -175,8 +176,8 @@ class TestCTokenizer(unittest.TestCase):
             expected_output_file_ignore_comments = Path(test_data_dir, "tokenizer", "c", "expected_output", "output_ignore_comments.json")
             expected_output_file_with_comments = Path(test_data_dir, "tokenizer", "c", "expected_output", "output.json")
 
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'c_tokenizer.py'))} {str(input_file)} --ignore_comments > {str(output_file_ignore_comments)}", shell=True)
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'c_tokenizer.py'))} {str(input_file)} > {str(output_file_with_comments)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'c', 'c_tokenizer.py'))} {str(input_file)} --ignore_comments > {str(output_file_ignore_comments)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'c', 'c_tokenizer.py'))} {str(input_file)} > {str(output_file_with_comments)}", shell=True)
 
             with open(output_file_with_comments) as file:
                 actual_output_with_comments = json.load(file)
@@ -201,7 +202,7 @@ class TestPythonTokenizer(unittest.TestCase):
             output_file = Path(temp_dir, "output.json")
             expected_output_file = Path(test_data_dir, "tokenizer", "python", "expected_output", "output.json")
 
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'python_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'tokenizer', 'python', 'python_tokenizer.py'))} {str(input_file)} > {str(output_file)}", shell=True)
 
             with open(output_file) as file:
                 actual_output = json.load(file)
@@ -235,8 +236,8 @@ class TestHashAll(unittest.TestCase):
             cwd = os.getcwd()
 
             # run hash_all
-            os.chdir(Path(lichen_installation_dir, "bin"))
-            subprocess.check_call(f"python3 {str(Path(lichen_installation_dir, 'bin', 'hash_all.py'))} {temp_dir} > /dev/null", shell=True)
+            os.chdir(Path(Path(__file__).resolve().parent.parent.parent, "bin"))
+            subprocess.check_call(f"python3 {str(Path(Path(__file__).resolve().parent.parent.parent, 'hasher', 'hash_all.py'))} {temp_dir} > /dev/null", shell=True)
             os.chdir(cwd)
 
             # test output

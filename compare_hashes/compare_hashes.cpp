@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
 
   // ===========================================================================
   // load Lichen config data
-  std::ifstream lichen_config_istr("./lichen_config.json");
+  std::ifstream lichen_config_istr(boost::filesystem::path(boost::filesystem::system_complete(argv[0]).parent_path().parent_path() / "bin/lichen_config.json").string());
   assert(lichen_config_istr.good());
   nlohmann::json lichen_config = nlohmann::json::parse(lichen_config_istr);
   LichenConfig config;

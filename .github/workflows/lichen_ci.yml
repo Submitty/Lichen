@@ -1,0 +1,38 @@
+name: Lichen CI
+
+on: [push, pull_request]
+
+env:
+  PYTHON_VERSION: 3.8
+
+jobs:
+  python-unit-tests:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install Python Dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Install Tokenizer Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-6.0
+      - name: Run Unit Tests
+        run: |
+          cd tests/unittest
+          python3 -m unittest discover
+
+  test-lichen-integration:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Lichen
+        run: |
+          sudo bash ./tests/integration/setup.sh
+      - name: Run Integration Tests
+        run: |
+          cd /usr/local/submitty/Lichen/tests/integration
+          sudo python3 -m unittest discover

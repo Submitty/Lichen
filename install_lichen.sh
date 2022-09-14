@@ -12,6 +12,8 @@ lichen_repository_dir=/usr/local/submitty/GIT_CHECKOUT/Lichen
 lichen_installation_dir=/usr/local/submitty/Lichen
 lichen_vendor_dir=/usr/local/submitty/Lichen/vendor
 
+rm -rf "$lichen_installation_dir"
+mkdir "$lichen_installation_dir"
 cp -r "$lichen_repository_dir"/* "$lichen_installation_dir"
 
 ####################################################################################################

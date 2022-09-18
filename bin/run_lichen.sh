@@ -37,20 +37,24 @@ rm -f "${BASEPATH}/provided_code/submission.concatenated"
 rm -f "${BASEPATH}/provided_code/tokens.json"
 rm -f "${BASEPATH}/provided_code/hashes.txt"
 
-# create these directories if they don't already exist
+# Make a logs directory so we can start logging any errors
 mkdir -p "${BASEPATH}/logs"
-mkdir -p "${BASEPATH}/provided_code"
-mkdir -p "${BASEPATH}/provided_code/files"
-mkdir -p "${BASEPATH}/other_gradeables"
-mkdir -p "${BASEPATH}/users"
 
 # Run Lichen and exit if an error occurs
 {
+    # Create these directories if they don't already exist
+    mkdir -p "${BASEPATH}/provided_code"
+    [ -d "${BASEPATH}/provided_code/files" ] || {
+      # If PHP hasn't created a files directory already, create one and set the permissions
+      # to allow PHP to edit files here in the future
+      mkdir "${BASEPATH}/provided_code/files"
+      chmod g+wx "${BASEPATH}/provided_code/files" || exit 1
+    }
+    mkdir -p "${BASEPATH}/other_gradeables"
+    mkdir -p "${BASEPATH}/users"
+
     ############################################################################
     # Finish setting up Lichen run
-
-    # The default is r-x and we need PHP to be able to write if edits are made to the provided code
-    chmod g=rwxs "${BASEPATH}/provided_code/files" || exit 1
 
     cd "$(dirname "${0}")" || exit 1
 

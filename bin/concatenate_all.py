@@ -53,7 +53,7 @@ def getConcatFilesInDir(input_dir, regex_patterns):
 
             # check for MIME types which are not supported
             file_type = mimetypes.guess_type(my_file)[0]
-            if file_type.endswith("/pdf") or file_type.startswith("image/"):
+            if file_type is not None and (file_type.endswith("/pdf") or file_type.startswith("image/")):
                 continue
 
             absolute_path = os.path.join(my_dir, my_file)

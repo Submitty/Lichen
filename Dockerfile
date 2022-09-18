@@ -7,7 +7,8 @@ RUN apt-get update \
     && apt-get install -y \
        libboost-all-dev \
        python3.10 \
-       python3-pip
+       python3-pip \
+       clang-6.0
 
 # Python Dependencies
 COPY requirements.txt /Lichen/requirements.txt

@@ -11,4 +11,4 @@ clang==14.0
 javac_parser==1.0.0
 
 # turn data into human readable format
-humanize==4.3.0
+humanize==4.6.0

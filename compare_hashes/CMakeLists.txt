@@ -8,6 +8,8 @@ find_package(Boost REQUIRED COMPONENTS
     filesystem
 )
 
+link_libraries("-static")
+
 add_executable(Lichen
     compare_hashes.cpp
     submission.cpp

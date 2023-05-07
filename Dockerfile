@@ -5,7 +5,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 # C++ and Python
 RUN apt-get update \
     && apt-get install -y \
-       libboost-all-dev \
        python3.8 \
        python3-pip \
        clang-6.0 \

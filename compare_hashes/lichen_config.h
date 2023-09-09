@@ -2,7 +2,7 @@
 #define LICHEN_CONFIG_H
 
 struct LichenConfig {
-    std::string semester;
+    std::string term;
     std::string course;
     std::string gradeable;
     int hash_size;

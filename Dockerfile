@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get install -y \
        libboost-all-dev \
-       python3.10 \
+       python3.9 \
        python3-pip \
        clang-14 \
        default-jdk

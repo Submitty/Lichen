@@ -56,7 +56,7 @@ fi
 
 pushd "${lichen_installation_dir}/compare_hashes" > /dev/null
 cmake "$lichen_repository_dir/compare_hashes"
-cmake --build .
+cmake --build . --parallel "$(nproc)"
 if [ "$?" -ne 0 ]; then
     echo -e "ERROR: FAILED TO BUILD HASH COMPARISON TOOL\n"
     exit 1

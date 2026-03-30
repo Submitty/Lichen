@@ -24,10 +24,8 @@ def main():
     # copy the concatenated file to the temporary file location
     shutil.copy(args.input_file, tmp_cpp_file_name)
 
-    if (os.path.isfile('/usr/lib/llvm-6.0/lib/libclang.so.1')):
-        clang.cindex.Config.set_library_file('/usr/lib/llvm-6.0/lib/libclang.so.1')
-    elif (os.path.isfile('/usr/lib/llvm-3.8/lib/libclang-3.8.so.1')):
-        clang.cindex.Config.set_library_file('/usr/lib/llvm-3.8/lib/libclang-3.8.so.1')
+    if (os.path.isfile('/usr/lib/llvm-14/lib/libclang.so.1')):
+        clang.cindex.Config.set_library_file('/usr/lib/llvm-14/lib/libclang.so.1')
     idx = clang.cindex.Index.create()
 
     # parse the input file

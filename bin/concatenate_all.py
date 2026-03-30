@@ -176,10 +176,10 @@ def validate(config, args):
     # check permissions to make sure we have access to the other gradeables
     my_course_group_perms = Path(args.basepath).group()
     for gradeable in other_gradeables:
-        if Path(args.datapath, gradeable["other_semester"], gradeable["other_course"]).group()\
+        if Path(args.datapath, gradeable["other_term"], gradeable["other_course"]).group()\
            != my_course_group_perms:
             raise SystemExit("ERROR: Invalid permissions to access course "
-                             f"{gradeable['other_semester']}/{gradeable['other_course']}")
+                             f"{gradeable['other_term']}/{gradeable['other_course']}")
 
     # check permissions for each path we are given (if any are provided)
     if config.get("other_gradeable_paths") is not None:
@@ -211,7 +211,7 @@ def main():
     validate(config, args)
 
     # parameters to be used in this file
-    semester = config["semester"]
+    term = config["term"]
     course = config["course"]
     gradeable = config["gradeable"]
     regex_patterns = config["regex"]
@@ -225,7 +225,7 @@ def main():
     total_concat = 0
 
     for dir in regex_dirs:
-        input_path = os.path.join(args.datapath, semester, course, dir, gradeable)
+        input_path = os.path.join(args.datapath, term, course, dir, gradeable)
         output_path = os.path.join(args.basepath, "users")
         total_concat = processGradeable(args.basepath, config,
                                         input_path, output_path, total_concat)
@@ -235,13 +235,13 @@ def main():
     for other_gradeable in other_gradeables:
         for dir in regex_dirs:
             input_path = os.path.join(args.datapath,
-                                      other_gradeable["other_semester"],
+                                      other_gradeable["other_term"],
                                       other_gradeable["other_course"],
                                       dir,
                                       other_gradeable["other_gradeable"])
 
             output_path = os.path.join(args.basepath, "other_gradeables",
-                                       f"{other_gradeable['other_semester']}__{other_gradeable['other_course']}__{other_gradeable['other_gradeable']}")  # noqa: E501
+                                       f"{other_gradeable['other_term']}__{other_gradeable['other_course']}__{other_gradeable['other_gradeable']}")  # noqa: E501
             total_concat = processGradeable(args.basepath, config,
                                             input_path, output_path, total_concat)
 

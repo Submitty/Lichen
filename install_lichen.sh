@@ -20,7 +20,7 @@ cp -r "$lichen_repository_dir"/* "$lichen_installation_dir"
 # install C++ dependencies
 
 apt-get update
-apt-get install -y clang-6.0 libboost-all-dev
+apt-get install -y clang-14 libboost-all-dev
 
 ####################################################################################################
 # Install Python Dependencies locally (for concatenation)

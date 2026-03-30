@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
   assert(istr.good());
   nlohmann::json config_file_json = nlohmann::json::parse(istr);
 
-  config.semester = config_file_json.value("semester", "ERROR");
+  config.term = config_file_json.value("term", "ERROR");
   config.course = config_file_json.value("course", "ERROR");
   config.gradeable = config_file_json.value("gradeable", "ERROR");
   config.hash_size = config_file_json.value("hash_size", 1);
@@ -218,7 +218,7 @@ int main(int argc, char* argv[]) {
       while (istr >> input_hash_str) {
         hash input_hash = (unsigned int)(stoul(input_hash_str, 0, 16));
         location++;
-        all_hashes[input_hash][username].push_back(HashLocation(username, version, location, config.semester + "__" + config.course + "__" + config.gradeable));
+        all_hashes[input_hash][username].push_back(HashLocation(username, version, location, config.term + "__" + config.course + "__" + config.gradeable));
         curr_submission->addHash(input_hash, location);
       }
 

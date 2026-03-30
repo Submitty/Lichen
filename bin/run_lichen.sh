@@ -66,7 +66,7 @@ mkdir -p "${BASEPATH}/logs"
     ############################################################################
     # Run Lichen
 
-    docker run -v "${BASEPATH}":/data -v "${LICHEN_INSTALLATION_DIR}":/Lichen submitty/lichen 
+    docker run --rm -v "${BASEPATH}":/data -v "${LICHEN_INSTALLATION_DIR}":/Lichen submitty/lichen
 
     ############################################################################
     echo "Lichen run complete: $(date +"%Y-%m-%d %H:%M:%S")"

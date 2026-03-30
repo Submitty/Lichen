@@ -3,11 +3,11 @@ name: Lichen CI
 on: [push, pull_request]
 
 env:
-  PYTHON_VERSION: 3.8
+  PYTHON_VERSION: '3.9'
 
 jobs:
   python-unit-tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -19,14 +19,14 @@ jobs:
       - name: Install Tokenizer Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang-6.0
+          sudo apt-get install -y clang-14
       - name: Run Unit Tests
         run: |
           cd tests/unittest
           python3 -m unittest discover
 
   test-lichen-integration:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Install Lichen
